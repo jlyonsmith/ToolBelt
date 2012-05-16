@@ -84,6 +84,7 @@
     <None Include="..\ToolBelt.snk">
       <Link>ToolBelt.snk</Link>
     </None>
+    <None Include="ToolBelt.targets" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build.Framework" />
