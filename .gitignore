@@ -1,0 +1,16 @@
+*.user
+*.cache
+*.sdf
+*.opensdf
+*.suo
+*.orig
+msbuild.log
+obj/
+bin/
+ipch/
+Scratch/
+TestDeployment/
+TestResults/
+Debug/
+Release/
+_UpgradeReport_Files/

@@ -1,0 +1,350 @@
+/// <script>
+///  <vs>10.0</vs>
+///  <clr>4.0</clr>
+///  <fx>4.0</fx>
+///  <refs>
+///   <ref>$(FxReferenceAssemblyPath)Microsoft.CSharp.dll</ref>
+///   <ref>$(FxReferenceAssemblyPath)System.Core.dll</ref>
+///   <ref>$(FxReferenceAssemblyPath)System.dll</ref>
+///   <ref>$(FxReferenceAssemblyPath)System.Xml.dll</ref>
+///   <ref>$(CodeRunnerPath)CodeRunner.dll</ref>
+///   <ref>$(CodeRunnerPath)ToolBelt.dll</ref>
+///  </refs>
+/// </script>
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.IO;
+using System.Xml;
+using CodeRunner;
+using ToolBelt;
+
+public class Program
+{
+    // NOTE: Update this list of files as necessary, e.g. new projects are added to the solution
+    private static string[] fileList = 
+    {
+		@"ToolBelt\Properties\AssemblyInfo.cs",
+		@"Buckle\Properties\AssemblyInfo.cs",
+    };
+
+	public static int Main(string[] args)
+	{
+        if (args.Length != 0 && (args[0] == "-h" || args[0] == "-?"))
+		{
+            Console.WriteLine(@"Usage: {0}
+
+Solution directory must contain a .version file containing XML version information.", 
+				ScriptEnvironment.ScriptPath.FileAndExtension);
+			return 0;
+		}
+
+        ParsedPath projectSln = GetProjectSolution();
+
+		if (projectSln == null)
+		{
+            ConsoleUtility.WriteMessage(MessageType.Error, "Cannot find .sln file to determine project root.");
+			return 1;
+		}
+
+        ConsoleUtility.WriteMessage(MessageType.Normal, "Project root is '{0}'", projectSln.VolumeAndDirectory);
+
+		string projectFileName = projectSln.FileAndExtension.ToString();
+        string projectName = projectFileName.Substring(0, projectFileName.IndexOf('.'));
+        ParsedPath versionFile = projectSln.SetFileAndExtension(projectName + ".version");
+
+        ConsoleUtility.WriteMessage(MessageType.Normal, "Version file is '{0}'", versionFile);
+
+        int major;
+        int minor;
+        int build;
+        int revision;
+        int startYear;
+        
+        if (File.Exists(versionFile))
+            ReadVersionFile(versionFile, out major, out minor, out build, out revision, out startYear);
+        else
+        {
+            major = 1;
+            minor = 0;
+            build = 0;
+            revision = 0;
+            startYear = DateTime.Now.Year;
+        }
+
+        int jBuild = JDate(startYear);
+
+        if (build != jBuild)
+        {
+            revision = 0;
+            build = jBuild;
+        }
+        else 
+        {
+            revision++;
+        }
+
+        string versionBuildAndRevision = String.Format("{0}.{1}", build, revision);
+        string versionMajorAndMinor = String.Format("{0}.{1}", major, minor);
+		string versionMajorMinorAndBuild = String.Format("{0}.{1}.{2}", major, minor, build);
+        string versionFull = String.Format("{0}.{1}.{2}.{3}", major, minor, build, revision);
+        string versionFullCsv = versionFull.Replace('.', ',');
+
+        ConsoleUtility.WriteMessage(MessageType.Normal, "New version is {0}", versionFull);
+        ConsoleUtility.WriteMessage(MessageType.Normal, "Versions updated:");
+		
+		foreach (string file in fileList)
+		{
+            ParsedPath path = projectSln.VolumeAndDirectory.Append(file, PathType.File);
+
+            if (!File.Exists(path))
+            {
+                ConsoleUtility.WriteMessage(MessageType.Error, "File '{0}' does not exist", path);
+                break;
+            }
+
+			switch (path.Extension)
+			{
+				case ".cs":
+                UpdateCSVersion(path, versionMajorAndMinor, versionFull);
+					break;
+					
+				case ".rc":
+					UpdateRCVersion(path, versionFull, versionFullCsv);
+					break;
+
+				case ".wxi":
+					UpdateWxiVersion(path, versionMajorAndMinor, versionBuildAndRevision);
+					break;
+
+				case ".wixproj":
+				case ".proj":
+					UpdateProjVersion(path, versionFull, projectName);
+					break;
+
+				case ".vsixmanifest":
+					UpdateVsixManifestVersion(path, versionFull);
+					break;
+
+                case ".config":
+                    UpdateConfigVersion(path, versionMajorAndMinor);
+                    break;
+
+                case ".svg":
+                    UpdateSvgContentVersion(path, versionMajorMinorAndBuild);
+                    break;
+
+                case ".xml":
+                    if (Path.GetFileNameWithoutExtension(file) == "WMAppManifest")
+                        UpdateWMAppManifestContentVersion(path, versionMajorAndMinor);
+                    break;
+            }
+
+			ConsoleUtility.WriteMessage(MessageType.Normal, path);
+		}
+
+        WriteVersionFile(versionFile, major, minor, build, revision, startYear);
+
+		return 0;
+	}
+
+    private static void ReadVersionFile(
+        ParsedPath parsedPath, out int major, out int minor, out int build, out int revision, out int startYear)
+    {
+        XmlReader reader = null;
+
+        using (reader = XmlReader.Create(parsedPath.ToString()))
+        {
+            reader.MoveToContent();
+            reader.ReadStartElement("Version");
+            reader.MoveToContent();
+            major = reader.ReadElementContentAsInt("Major", "");
+            reader.MoveToContent();
+            minor = reader.ReadElementContentAsInt("Minor", "");
+            reader.MoveToContent();
+            build = reader.ReadElementContentAsInt("Build", "");
+            reader.MoveToContent();
+            revision = reader.ReadElementContentAsInt("Revision", "");
+            reader.MoveToContent();
+            startYear = reader.ReadElementContentAsInt("StartYear", "");
+            reader.MoveToContent();
+            reader.ReadEndElement(); // Version
+        }
+    }
+
+    private static void WriteVersionFile(ParsedPath parsedPath, int major, int minor, int build, int revision, int startYear)
+    {
+        XmlWriterSettings settings = new XmlWriterSettings();
+
+        settings.Indent = true;
+        settings.IndentChars = "\t";
+
+        using (XmlWriter writer = XmlWriter.Create(parsedPath.ToString(), settings))
+        {
+            writer.WriteStartElement("Version");
+            writer.WriteElementString("Major", major.ToString());
+            writer.WriteElementString("Minor", minor.ToString());
+            writer.WriteElementString("Build", build.ToString());
+            writer.WriteElementString("Revision", revision.ToString());
+            writer.WriteElementString("StartYear", startYear.ToString());
+            writer.WriteEndElement(); // Version
+        }
+    }
+
+    static void UpdateSvgContentVersion(string file, string versionMajorMinorBuild)
+    {
+        string contents = File.ReadAllText(file);
+
+        contents = Regex.Replace(
+            contents,
+            @"(?'before'VERSION )([0-9]+\.[0-9]+\.[0-9]+)",
+            "${before}" + versionMajorMinorBuild);
+
+        File.WriteAllText(file, contents);
+    }
+
+    static void UpdateWMAppManifestContentVersion(string file, string versionMajorMinor)
+    {
+        string contents = File.ReadAllText(file);
+
+        contents = Regex.Replace(
+            contents,
+            @"(?'before'Version="")([0-9]+\.[0-9]+)(?'after'\.[0-9]+\.[0-9]+"")",
+            "${before}" + versionMajorMinor + "${after}");
+
+        File.WriteAllText(file, contents);
+    }
+
+    static void UpdateCSVersion(string file, string versionMajorMinor, string version)
+	{
+		string contents = File.ReadAllText(file);
+
+		// Note that we use named substitutions because otherwise Regex gets confused.  "$1" + "1.0.0.0" = "$11.0.0.0".  There is no $11.
+		
+		contents = Regex.Replace(
+			contents,
+            @"(?'before'AssemblyVersion\("")([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)(?'after'""\))",
+            "${before}" + versionMajorMinor + ".0.0${after}");
+
+		contents = Regex.Replace(
+			contents,
+			@"(?'before'AssemblyFileVersion\("")([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)(?'after'""\))",
+			"${before}" + version + "${after}");
+
+		File.WriteAllText(file, contents);
+	}
+
+	static void UpdateRCVersion(string file, string version, string versionCsv)
+	{
+		string contents = File.ReadAllText(file);
+
+		contents = Regex.Replace(
+			contents,
+			@"(?'before'FILEVERSION )([0-9]+,[0-9]+,[0-9]+,[0-9]+)",
+			"${before}" + versionCsv);
+
+		contents = Regex.Replace(
+			contents,
+			@"(?'before'PRODUCTVERSION )([0-9]+,[0-9]+,[0-9]+,[0-9]+)",
+			"${before}" + versionCsv);
+
+		contents = Regex.Replace(
+			contents,
+			@"(?'before'""FileVersion"",[ \t]*"")([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)(?'after'"")",
+			"${before}" + version + "${after}");
+
+		contents = Regex.Replace(
+			contents,
+			@"(?'before'""ProductVersion"",[ \t]*"")([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)(?'after'"")",
+			"${before}" + version + "${after}");
+
+		File.WriteAllText(file, contents);
+	}
+
+	static void UpdateWxiVersion(string file, string versionMajorMinor, string versionBuildAndRevision)
+	{
+		string contents = File.ReadAllText(file);
+
+		contents = Regex.Replace(
+			contents,
+			@"(?'before'ProductVersion = "")([0-9]+\.[0-9]+)(?'after'"")",
+			"${before}" + versionMajorMinor + "${after}");
+
+		contents = Regex.Replace(
+			contents,
+            @"(?'before'ProductBuild = "")([0-9]+\.([0-9]|[1-9][0-9]))(?'after'"")",
+			"${before}" + versionBuildAndRevision + "${after}");
+
+		File.WriteAllText(file, contents);
+	}
+
+    static void UpdateConfigVersion(string file, string versionMajorMinor)
+    {
+        // In .config files we are looking for the section that contains an assembly reference 
+        // for the section handler.
+        string contents = File.ReadAllText(file);
+
+        contents = Regex.Replace(
+            contents,
+            @"(?'before', +Version=)\d+\.\d+(?'after'\.0\.0 *,)",
+            "${before}" + versionMajorMinor + "${after}");
+
+        File.WriteAllText(file, contents);
+    }
+
+	static void UpdateProjVersion(string file, string version, string projectName)
+	{
+		string contents = File.ReadAllText(file);
+
+		contents = Regex.Replace(
+			contents,
+			@"(?'before'<OutputName>" + projectName + @"_)([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)(?'after'</OutputName>)",
+			"${before}" + version + "${after}");
+
+		File.WriteAllText(file, contents);
+	}
+
+	static void UpdateVsixManifestVersion(string file, string version)
+	{
+		string contents = File.ReadAllText(file);
+
+		contents = Regex.Replace(
+			contents,
+			@"(?'before'<Version>)([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)(?'after'</Version>)",
+			"${before}" + version + "${after}");
+
+		File.WriteAllText(file, contents);
+	}
+
+	static private ParsedPath GetProjectSolution()
+	{
+		try
+		{
+			string fileSpec = "*.sln";
+
+			FileInfo[] files = DirectoryInfoUtility.GetFiles(
+                Environment.CurrentDirectory, fileSpec, SearchScope.RecurseParentDirectories);
+
+			if (files.Length == 0)
+			{
+				Console.WriteLine("Unable to find file '{0}' to determine project root", fileSpec);
+				return null;
+			}
+
+            return new ParsedPath(files[0].FullName, PathType.File);
+		}
+		catch
+		{
+			return null;
+		}
+	}
+
+	static private int JDate(int startYear)
+	{
+		DateTime today = DateTime.Today;
+		
+		return (((today.Year - startYear + 1) * 10000) + (today.Month * 100) + today.Day);
+	}
+}

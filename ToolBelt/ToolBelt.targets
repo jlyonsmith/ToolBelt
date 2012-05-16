@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- 
+    Instructions for use:
+    
+    - Include this file after the Microsoft.CSharp.targets file 
+    - Add a <ResourceStringWrapperType/> element to your project file with either ToolBelt.Message or System.String in it.
+    - Add a <MessageRexFile Include="MyStringResources.resx" /> for each .resx file
+    - Remove all <Compile ... />'s for .Designer.cs files 
+  -->
+  <PropertyGroup>
+    <PrepareResourcesDependsOn>GenerateMessageResources;$(PrepareResourcesDependsOn)</PrepareResourcesDependsOn>
+    <CoreCleanDependsOn>$(CoreCleanDependsOn);CleanMessageResources</CoreCleanDependsOn>
+    <ToolBeltAssemblyFile Condition="'$(ToolBeltAssemblyFile)' == ''">$(MSBuildExtensionsPath)\ToolBelt\ToolBelt.dll</ToolBeltAssemblyFile>
+  </PropertyGroup>
+
+  <UsingTask AssemblyFile="$(ToolBeltAssemblyFile)" TaskName="Buckle" />
+
+  <Target 
+    Name="CleanMessageResources" 
+    Condition="'@(Buckle)' != ''"
+    DependsOnTargets="PrepareMessageResourceNames">
+    <Delete 
+      Files="@(Buckle->'%(LogicalName)')" 
+      TreatErrorsAsWarnings="true"/> 
+    <Delete 
+      Files="@(Buckle->'%(OutputName)')"
+      TreatErrorsAsWarnings="true"/> 
+</Target>
+
+  <Target 
+    Name="PrepareMessageResourceNames">
+    <ItemGroup>
+      <!-- Add metadata to the message resx file item list for input and output file names -->
+			<Buckle>
+				<LogicalName Condition="'%(Buckle.LogicalName)' == ''">$(BaseIntermediateOutputPath)%(Buckle.Filename).resources</LogicalName>
+				<OutputName Condition="'%(Buckle.OutputName)' == ''">$(BaseIntermediateOutputPath)%(Buckle.FileName).cs</OutputName>
+			</Buckle>
+			<!-- Add .resource file into list of embedded resources instead of the .resx file -->
+			<EmbeddedResource Include="%(Buckle.LogicalName)">
+				<WithCulture>false</WithCulture>
+				<Type>Non-Resx</Type>
+				<LogicalName>$(RootNamespace).%(Buckle.Filename).resources</LogicalName>
+			</EmbeddedResource>
+			<Compile Include="%(Buckle.OutputName)" />
+		</ItemGroup>
+  </Target>
+
+  <Target 
+    Name="GenerateMessageResources"
+    Inputs="@(Buckle);"
+    Outputs="%(Buckle.LogicalName);@(Buckle->'%(OutputName)')"
+    Condition="'@(Buckle)' != ''"
+    DependsOnTargets="PrepareMessageResourceNames">
+
+    <!-- Compile the wrapper class -->
+    <Buckle ResXFileName="%(Buckle.Identity)" Namespace="$(RootNamespace)" WrapperClass="$(ResourceStringWrapperType)" OutputFileName="%(Buckle.OutputName)" />
+
+    <!-- Compile the resource file -->
+    <GenerateResource
+      Sources="@(Buckle)"
+      OutputResources="%(Buckle.LogicalName)">
+    </GenerateResource>
+  </Target>
+</Project>
+
