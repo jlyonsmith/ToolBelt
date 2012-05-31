@@ -18,9 +18,9 @@ namespace ToolBelt
 		/// <param name="scope">The scope of the search. <see cref="SearchScope"/></param>
 		/// <param name="baseDir">Base directory for partially qualified file names</param>
 		/// <returns>An array of <c>DirectoryInfo</c> objects for files matching the search pattern. </returns>
-		public static DirectoryInfo[] GetDirectories(string path, string searchPattern, SearchScope scope)
+		public static IList<DirectoryInfo> GetDirectories(ParsedPath dirSpec, SearchScope scope)
 		{
-			ParsedPath rootPath = new ParsedPath(searchPattern, PathType.File).MakeFullPath(new ParsedPath(path, PathType.Directory));
+			ParsedPath rootPath = dirSpec.MakeFullPath();
 		
 			if (scope != SearchScope.DirectoryOnly)
 			{			
@@ -96,9 +96,9 @@ namespace ToolBelt
 		/// <param name="scope">The scope of the search.</param>
 		/// <param name="baseDir">Base directory to use for partially qualified paths</param>
 		/// <returns>An array of <c>FileInfo</c> objects for files matching the search pattern. </returns>
-		public static FileInfo [] GetFiles(string path, string searchPattern, SearchScope scope)
+		public static IList<FileInfo> GetFiles(ParsedPath fileSpec, SearchScope scope)
 		{
-			ParsedPath rootPath = new ParsedPath(searchPattern, PathType.File).MakeFullPath(new ParsedPath(path, PathType.Directory));
+			ParsedPath rootPath = fileSpec.MakeFullPath();
 		
 			if (scope != SearchScope.DirectoryOnly)
 			{			
@@ -117,7 +117,7 @@ namespace ToolBelt
 			}
 		}
 
-		private static FileInfo [] NonRecursiveGetFiles(ParsedPath rootPath)
+		private static IList<FileInfo> NonRecursiveGetFiles(ParsedPath rootPath)
 		{
 			DirectoryInfo dirInfo = new DirectoryInfo(rootPath.VolumeAndDirectory);
 		

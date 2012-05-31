@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace ToolBelt
 {
@@ -40,14 +41,14 @@ namespace ToolBelt
 		/// <param name="fileSpec"></param>
 		/// <param name="scope"></param>
 		/// <returns></returns>
-		public static string[] GetFiles(string path, string searchPattern, SearchScope scope)
+		public static IList<ParsedPath> GetFiles(ParsedPath fileSpec, SearchScope scope)
 		{
-			FileInfo[] fileInfos = DirectoryInfoUtility.GetFiles(path, searchPattern, scope);
+			IList<FileInfo> fileInfos = DirectoryInfoUtility.GetFiles(fileSpec, scope);
 
-            string[] files = new string[fileInfos.Length];
+            ParsedPath[] files = new ParsedPath[fileInfos.Count];
 
-            for (int i = 0; i < fileInfos.Length; i++)
-                files[i] = fileInfos[i].FullName;
+            for (int i = 0; i < fileInfos.Count; i++)
+                files[i] = new ParsedPath(fileInfos[i].FullName, PathType.File);
 
             return files;
 		}
@@ -58,14 +59,14 @@ namespace ToolBelt
 		/// <param name="dirSpec"></param>
 		/// <param name="scope"></param>
 		/// <returns></returns>
-		public static string[] GetDirectories(string path, string searchPattern, SearchScope scope)
+		public static IList<ParsedPath> GetDirectories(ParsedPath dirSpec, SearchScope scope)
 		{
-			DirectoryInfo[] dirInfos = DirectoryInfoUtility.GetDirectories(path, searchPattern, scope);
+			IList<DirectoryInfo> dirInfos = DirectoryInfoUtility.GetDirectories(dirSpec, scope);
 
-            string[] dirs = new string[dirInfos.Length];
+            ParsedPath[] dirs = new ParsedPath[dirInfos.Count];
 
-            for (int i = 0; i < dirInfos.Length; i++)
-                dirs[i] = dirInfos[i].FullName;
+            for (int i = 0; i < dirInfos.Count; i++)
+                dirs[i] = new ParsedPath(dirInfos[i].FullName, PathType.Directory);
 
             return dirs;
         }

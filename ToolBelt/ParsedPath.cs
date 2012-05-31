@@ -1,9 +1,11 @@
 using System;
+using System.Linq;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 namespace ToolBelt
 {
@@ -189,10 +191,12 @@ namespace ToolBelt
             // Do we still have anything?
             if (path.Length == 0)
                 throw new ArgumentException("Path is zero length");
-                
+                                                
             // Do an invalid character check once now
-            if (path.IndexOfAny(Path.GetInvalidPathChars()) != -1)
+            if (path.IndexOfAny(ParsedPath.InvalidPathChars) != -1)
+            {
                 throw new ArgumentException("Path contains invalid characters");
+            }
 
             // Convert '/' into '\'
             path = path.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
@@ -303,11 +307,13 @@ namespace ToolBelt
             if (typeHint == PathType.Directory && dir == String.Empty)
                 throw new ArgumentException("Missing directory");
 
-            // You can't have wildcards in the directory part or double '\\' characters in the directory
-            if (dir.IndexOfAny(WildcardChars) != -1 ||
-                dir.IndexOf(PathUtility.UncPrefixChars, StringComparison.InvariantCultureIgnoreCase) != -1)
+            // Fix double directory separators - it happens too often to be an error
+            dir = dir.Replace(PathUtility.UncPrefixChars, String.Empty + Path.DirectorySeparatorChar);
+
+            // You can't have wildcards in the directory part
+            if (dir.IndexOfAny(WildcardChars) != -1)
                 throw new ArgumentException("Invalid characters in path");
-                
+            
             // If user wanted a VolumeOnly, validate that we have no directory, file or extension
             if (!autoTypeHint && typeHint == PathType.Volume && 
                 (dir != String.Empty || file != String.Empty || ext != String.Empty))
@@ -970,6 +976,18 @@ namespace ToolBelt
         public static ParsedPath Parse(string value)
         {
             return new ParsedPath(value, PathType.Automatic);
+        }
+
+        #endregion
+
+        #region Static Properties
+
+        public static char[] InvalidPathChars
+        {
+            get
+            {
+                return Path.GetInvalidPathChars();
+            }
         }
 
         #endregion

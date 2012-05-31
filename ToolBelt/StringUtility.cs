@@ -126,7 +126,7 @@ namespace ToolBelt
         /// <param name="text">The text to break up.</param>
         /// <param name="lineLength">The maximum length of a line</param>
         /// <returns>An array of strings no longer than the given line length</returns>
-        public static string[] WordWrap(string text, int lineLength)
+        public static string[] WordWrap(this string text, int lineLength)
         {
             List<string> lines = new List<string>();
             
@@ -168,17 +168,18 @@ namespace ToolBelt
         /// <summary>Format a string using the invariant culture. Use for persisted strings not returned to user.
         /// </summary>
         /// <see>string.Format</see> for argument format.
-        public static string InvariantFormat(string format, params object[] args)
+        public static string InvariantFormat(this string format, params object[] args)
         {
             return string.Format(CultureInfo.InvariantCulture, format, args);
         }
 
         /// <summary> Format a string using the current culture. Use for strings returned to user.</summary>
         /// <see>string.Format</see> for argument format.
-        public static string CultureFormat(string format, params object[] args)
+        public static string CultureFormat(this string format, params object[] args)
         {
             return string.Format(CultureInfo.CurrentCulture, format, args);
         }
+
         /// <summary>
         /// This method searches for each occurrence of a tagged variable in <c>source</c> and 
         /// replaces it with the value from the a dictionary <c>subs</c>.  Comparisons are done case
@@ -189,7 +190,7 @@ namespace ToolBelt
         /// <param name="tagSuffix">The tag suffix</param>
         /// <param name="dictionary">A dictionary of tag values</param>
         /// <returns>A string with all tags replaced</returns>
-        public static string ReplaceTags(string source, string tagPrefix, string tagSuffix, IDictionary dictionary)
+        public static string ReplaceTags(this string source, string tagPrefix, string tagSuffix, IDictionary dictionary)
         {
             return ReplaceTags(source, tagPrefix, tagSuffix, dictionary, TaggedStringOptions.LeaveUnknownTags);
         }
@@ -206,7 +207,7 @@ namespace ToolBelt
         /// <param name="flags"><see cref="TaggedStringOptions"/> for the replace operation</param>
         /// <returns>A string with all tags replaced</returns>
         public static string ReplaceTags(
-            string source, string tagPrefix, string tagSuffix, IDictionary dictionary, TaggedStringOptions flags)
+            this string source, string tagPrefix, string tagSuffix, IDictionary dictionary, TaggedStringOptions flags)
         {
             if (string.IsNullOrEmpty(source))
                 return source;
