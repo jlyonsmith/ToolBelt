@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{775B7519-4FB8-4E8C-8785-3D8FE08C1FFA}"
+	ProjectSection(SolutionItems) = preProject
+		Scripts\ToastIt.bat = Scripts\ToastIt.bat
+		Scripts\UpdateVersion.csr = Scripts\UpdateVersion.csr
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EF60F8C0-BCDF-484C-9F81-1262C02A4315}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.OSX", "ToolBelt\ToolBelt.OSX.csproj", "{2055D34D-3DF2-444B-937B-32CC1A6E11DF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = ToolBelt\ToolBelt.OSX.csproj
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

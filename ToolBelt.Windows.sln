@@ -5,13 +5,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{775B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EF60F8C0-BCDF-484C-9F81-1262C02A4315}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt", "ToolBelt\ToolBelt.csproj", "{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt", "ToolBelt\ToolBelt.Windows.csproj", "{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buckle", "Buckle\Buckle.csproj", "{A7D06A02-DE03-4548-AA5D-51A1338F01A3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buckle", "Buckle\Buckle.Windows.csproj", "{A7D06A02-DE03-4548-AA5D-51A1338F01A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.Tests", "ToolBelt\Tests\ToolBelt.Tests.csproj", "{DD431EDF-A479-4788-AD84-966E1CD3C3A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.Tests", "ToolBelt\Tests\ToolBelt.Tests.Windows.csproj", "{DD431EDF-A479-4788-AD84-966E1CD3C3A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandTestProgram", "ToolBelt\Tests\CommandTestProgram\CommandTestProgram.csproj", "{3F580F82-2C10-4360-B648-431162383731}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandTestProgram", "ToolBelt\Tests\CommandTestProgram\CommandTestProgram.Windows.csproj", "{3F580F82-2C10-4360-B648-431162383731}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
