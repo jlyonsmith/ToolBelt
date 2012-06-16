@@ -1,6 +1,21 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Buckle/BuckleTool.cs">
+    <Files>
+      <File FileName="ToolBelt/MSBuildOutputter.cs" Line="34" Column="39" />
+      <File FileName="ToolBelt/ParsedPath.cs" Line="747" Column="1" />
+      <File FileName="ToolBelt/OutputHelper.cs" Line="26" Column="1" />
+      <File FileName="Buckle/BuckleTool.cs" Line="589" Column="16" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="Buckle.OSX" expanded="True" />
+          <Node name="ToolBelt.OSX" expanded="True" selected="True" />
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

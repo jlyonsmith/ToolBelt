@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ToolBelt;
 using System.Xml;
 using System.Drawing;
 using System.Globalization;
@@ -9,18 +8,11 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.Reflection;
 using System.Diagnostics;
+using System.Resources;
 
-namespace ToolBelt
+namespace Buckle
 {
-	public enum AccessModifier
-	{
-		Public, Internal
-	}
-	
-	[CommandLineCopyright("Copyright (c) 2010, John Lyon-Smith")]
-	[CommandLineDescription("Generates strongly typed wrappers for string .resx resources")]
-	[CommandLineTitle("Buckle ResX to C# String Wrapper Class Generator")]
-	public class BuckleTool : IProcessCommandLine
+	public class BuckleTool
 	{
 		#region Classes
 		private class ResourceItem
@@ -78,105 +70,117 @@ namespace ToolBelt
 
 		#region Fields
 		private List<ResourceItem> resources = new List<ResourceItem>();
-		private StreamReader reader;
 		private StreamWriter writer;
 		private const string InvalidCharacters = ".$*{}|<>";
-		private CommandLineParser parser;
-		private bool runningFromCommandLine = false;
         private bool haveDrawingResources = false;
+		public string ResXFileName;
+		public string ResourcesFileName;
+		public string CsFileName;
+		public string Namespace;
+		public string BaseName;
+		public string WrapperClass;
+		public string Modifier;
+		public bool NoLogo;
+		public bool ShowUsage;
+		public bool Incremental;
+
+		public bool HasOutputErrors { get; set; }
 		
 		#endregion
 
 		#region Constructors
-		public BuckleTool(IOutputter outputter)
+		public BuckleTool()
 		{
-			this.Output = new OutputHelper(outputter);
 		}
 
 		#endregion		
 	
-		#region Properties
-		public OutputHelper Output { get; private set; }
-
-		[DefaultCommandLineArgument("default", Description = "Input resource file", ValueHint = "<resx-file>")]
-		public ParsedPath ResXFileName { get; set; }
-		
-		[CommandLineArgument("output", ShortName = "o", Description = "Output file", ValueHint = "<output-cs>")]
-		public ParsedPath OutputFileName { get; set; }
-
-		[CommandLineArgument("namespace", ShortName = "n", Description = "Namespace to generate wrapper class in", ValueHint = "<name-space>")]
-		public string Namespace { get; set; }
-		
-		[CommandLineArgument("basename", ShortName = "b", Description = "The case sensitive root name of the .resource file in the assembly without it's extension but including the fully qualified namespace.", ValueHint = "<base-name>")]
-		public string BaseName { get; set; }
-		
-		[CommandLineArgument("wrapper", ShortName = "w", Description = "Fully qualified string wrapper class; must be either System.String or ToolBelt.Message (or equivalent) class", ValueHint = "<wrapper-class>")]
-		public string WrapperClass { get; set; }
-		
-		[CommandLineArgument("access", ShortName = "a", Description = "Resource class access; public or internal", ValueHint = "<public-internal>")]
-		public AccessModifier Modifier { get; set; }
-
-        [CommandLineArgument("nologo", Description = "Suppresses the logo and banner", ValueHint = "<bool>")]
-        public bool NoLogo { get; set; }
-
-		public CommandLineParser Parser
-		{
-			get
-			{
-				if (this.parser == null)
-				{
-					this.parser = new CommandLineParser(typeof(BuckleTool));
-				}
-				
-				return parser;
-			}
-		}
-		 
-		#endregion	
-		
 		#region Methods
 		public void Execute()
 		{
             if (!NoLogo)
             {
-                Output.Message(Parser.LogoBanner);
+				WriteMessage("Buckle ResX to C# String Wrapper Class Generator. Copyright (c) 2012, John Lyon-Smith." + Environment.NewLine);
             }
 		
-			if (!runningFromCommandLine)
+			if (ShowUsage)
 			{
-                Parser.GetTargetArguments(this);
-				Output.Message(MessageImportance.Normal, Parser.CommandName + Parser.Arguments);
+				WriteMessage(@"Generates strongly typed wrappers for string and bitmap .resx resources
+	
+Usage: Buckle.exe <resx-file>             Input .resx file
+                  [-o:<output-cs>]        Output .cs file
+                  [-r:<output-cs>]        Output .resources file
+                  [-n:<namespace>]        Namespace to use in generated C#
+                  [-b:<basename>]         Case sensitive root name of the .resource file
+                  [-w:<wrapper-class>]    String wrapper class (see Message.cs)
+                  [-a:<access>]           Access modifier for properties and methods
+                  [-q]                    Suppress logo
+                  [-i]                    Build outputs only if out-of-date
+                  [-h] or [-?]            Show help
+");
+				return;
 			}
-		
+
 			if (ResXFileName == null)
 			{
-				Output.Message(Parser.Usage);
+				WriteError("A .resx file must be specified");
 				return;
 			}
 			
 			if (WrapperClass == null)
 			{
-				Output.Error("A string wrapper class must be specified");
+				WriteError("A string wrapper class must be specified");
 				return;
 			} 
 			
-			if (OutputFileName == null)
+			if (CsFileName == null)
 			{
-				OutputFileName = ResXFileName.SetExtension(".cs");
+				CsFileName = Path.ChangeExtension(ResXFileName, ".cs");
 			}
-			
-			using (this.reader = new StreamReader(ResXFileName))
+
+			if (ResourcesFileName == null)
 			{
-				using (this.writer = new StreamWriter(OutputFileName, false, Encoding.ASCII))
-				{
-					GenerateCode();
-				}
+				ResourcesFileName = Path.ChangeExtension(ResXFileName, ".resources");
 			}
+
+			if (String.IsNullOrEmpty(Modifier))
+			{
+				Modifier = "public";
+			}
+
+			DateTime resxLastWriteTime = File.GetLastWriteTime(ResXFileName);
+
+			if (Incremental &&
+			    resxLastWriteTime < File.GetLastWriteTime(CsFileName) &&
+				resxLastWriteTime < File.GetLastWriteTime(ResourcesFileName))
+			{
+				return;
+			}
+
+			ReadResources();
+
+			using (this.writer = new StreamWriter(CsFileName, false, Encoding.ASCII))
+			{
+				WriteCsFile();
+			}
+
+			WriteResourcesFile();
 		}
 
-		private void GenerateCode()
+		private void WriteResourcesFile()
 		{
-			ReadResources();
+			IResourceWriter resourceWriter = new ResourceWriter(ResourcesFileName);
+
+			foreach (var resource in resources)
+			{
+				resourceWriter.AddResource(resource.Name, resource.ValueString);
+			}
+
+			resourceWriter.Close();
+		}
+
+		private void WriteCsFile()
+		{
 			WriteNamespaceStart();
 			WriteClassStart();
 
@@ -191,10 +195,10 @@ namespace ToolBelt
 				}
 				else
 				{
-					Output.Warning("Resource skipped. Type {0} is not public.", item.DataType);
+					WriteWarning("Resource skipped. Type {0} is not public.", item.DataType);
 				}
 			}
-			Output.Message("Generated strongly typed resource wrapper method(s) for {0} resource(s) in {1}", num, ResXFileName);
+			WriteMessage("Generated strongly typed resource wrapper method(s) for {0} resource(s) in {1}", num, ResXFileName);
 			WriteClassEnd();
 			WriteNamespaceEnd();
 		}
@@ -210,7 +214,7 @@ namespace ToolBelt
 //
 
 "
-				, now.ToShortDateString(), now.ToShortTimeString(), ResXFileName.FileAndExtension));
+				, now.ToShortDateString(), now.ToShortTimeString(), Path.GetFileName(ResXFileName)));
 			
 			if ((Namespace != null) && (Namespace.Length != 0))
 			{
@@ -261,9 +265,9 @@ using System.Globalization;
 {{
     internal static readonly ResourceManager ResourceManager = new ResourceManager("
                 ,
-                ResXFileName.FileAndExtension, 
-                Modifier.ToString().ToLower(), 
-                OutputFileName.File));
+                Path.GetFileName(ResXFileName), 
+                Modifier, 
+                Path.GetFileNameWithoutExtension(CsFileName)));
 
             if (String.IsNullOrWhiteSpace(this.BaseName))
             {
@@ -271,7 +275,7 @@ using System.Globalization;
 @"typeof({0}));
 "
 				    , 
-                    OutputFileName.File));
+                    Path.GetFileNameWithoutExtension(CsFileName)));
             }
             else
             {
@@ -311,7 +315,7 @@ using System.Globalization;
 				}
 				catch (ApplicationException exception)
 				{
-					Output.Error("Resource has been skipped: {0}", exception.Message);
+					WriteError("Resource has been skipped: {0}", exception.Message);
 				}
 				for (int j = 0; j < paramCount; j++)
 				{
@@ -342,14 +346,17 @@ using System.Globalization;
     /// </summary>"
 						);
 				}
+
 				if ((string.Equals(WrapperClass, "String", StringComparison.OrdinalIgnoreCase) ||
 					string.Equals(WrapperClass, "System.String", StringComparison.Ordinal)))
 				{
-					WriteStringMethodBody(item, OutputFileName.File, builder.ToString(), paramCount, parameters, parametersWithTypes);
+					WriteStringMethodBody(item, Path.GetFileNameWithoutExtension(CsFileName), 
+						builder.ToString(), paramCount, parameters, parametersWithTypes);
 				}
 				else
 				{
-					WriteMessageMethodBody(item, OutputFileName.File, builder.ToString(), paramCount, parameters, parametersWithTypes);
+					WriteMessageMethodBody(item, Path.GetFileNameWithoutExtension(CsFileName), 
+                    	builder.ToString(), paramCount, parameters, parametersWithTypes);
 				}
 			}
 			else
@@ -507,7 +514,7 @@ using System.Globalization;
 				string attribute = element.GetAttribute("name");
 				if ((attribute == null) || (attribute.Length == 0))
 				{
-					Output.Warning("Resource skipped. Empty name attribute: {0}", element.OuterXml);
+					WriteWarning("Resource skipped. Empty name attribute: {0}", element.OuterXml);
 					continue;
 				}
 				
@@ -527,7 +534,7 @@ using System.Globalization;
 					}
 					catch (Exception exception)
 					{
-						Output.Warning("Resource skipped. Could not load type {0}: {1}", typeName, exception.Message);
+						WriteWarning("Resource skipped. Could not load type {0}: {1}", typeName, exception.Message);
 						continue;
 					}
 				}
@@ -545,7 +552,7 @@ using System.Globalization;
 					}
 					if (stringResourceValue == null)
 					{
-						Output.Warning("Resource skipped.  Empty value attribute: {0}", element.OuterXml);
+						WriteWarning("Resource skipped.  Empty value attribute: {0}", element.OuterXml);
 						continue;
 					}
 					item = new ResourceItem(attribute, stringResourceValue);
@@ -561,27 +568,105 @@ using System.Globalization;
 			}
 		}
 
-		#endregion
-
-		#region IProcessCommandLine Members
-
 		public bool ProcessCommandLine(string[] args)
 		{
-			this.runningFromCommandLine = true;
-
 			try
 			{
-				Parser.ParseAndSetTarget(args, this);
+				foreach (var arg in args)
+				{
+					if (arg.StartsWith("-"))
+					{
+						switch (arg[1])
+						{
+						case 'h':
+						case '?':
+							ShowUsage = true;
+							return true;
+						case 'i':
+							Incremental = true;
+							continue;
+						case 'q':
+							NoLogo = true;
+							continue;
+						case 'b':
+							CheckAndSetArgument(arg, ref BaseName);
+							break;
+						case 'o':
+							CheckAndSetArgument(arg, ref CsFileName); 
+							break;
+						case 'r':
+							CheckAndSetArgument(arg, ref ResourcesFileName); 
+							break;
+						case 'n':
+							CheckAndSetArgument(arg, ref Namespace); 
+							break;
+						case 'w':
+							CheckAndSetArgument(arg, ref WrapperClass); 
+							if (WrapperClass != "Message" && WrapperClass != "String")
+								throw new ApplicationException(string.Format("Wrapper class must be Message or String"));
+							break;
+						case 'm':
+							CheckAndSetArgument(arg, ref Modifier); 
+							if (Modifier != "public" && Modifier != "internal")
+								throw new ApplicationException(string.Format("Wrapper class must be public or internal"));
+							break;
+						default:
+							throw new ApplicationException(string.Format("Unknown argument '{0}'", arg[1]));
+						}
+					}
+					else if (String.IsNullOrEmpty(ResXFileName))
+					{
+						ResXFileName = arg;
+					}
+					else
+					{
+						throw new ApplicationException("Only one .resx file can be specified");
+					}
+				}
 			}
-			catch (CommandLineArgumentException e)
+			catch (ApplicationException e)
 			{
-				Output.Error(e.Message);
+				WriteError(e.Message);
 				return false;
 			}
 
-			// All the semantic checking of arguments is done when the task is executed
-
 			return true;
+		}
+
+		private void CheckAndSetArgument(string arg, ref string val)
+		{
+			if (arg[2] != ':')
+			{
+				throw new ApplicationException(string.Format("Argument {0} is missing a colon", arg[1]));
+			}
+	
+			if (string.IsNullOrEmpty(val))
+		    {
+				val = arg.Substring(3);
+			}
+			else
+			{
+				throw new ApplicationException(string.Format("Argument {0} has already been set", arg[1]));
+			}
+		}
+
+		private void WriteError(string format, params object[] args)
+		{
+			Console.Write("error: ");
+			Console.Write(format, args);
+			this.HasOutputErrors = true;
+		}
+
+		private void WriteWarning(string format, params object[] args)
+		{
+			Console.Write("warning: ");
+			Console.Write(format, args);
+			this.HasOutputErrors = true;
+		}
+
+		private void WriteMessage(string format, params object[] args)
+		{
+			Console.WriteLine(format, args);
 		}
 
 		#endregion

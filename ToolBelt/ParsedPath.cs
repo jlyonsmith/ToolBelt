@@ -744,8 +744,6 @@ namespace ToolBelt
                 
             while (m.Success)
             {
-                int n = m.Index;
-
                 // Move past the non-relative portion
                 sb.Append(dir, index, m.Index - index);
                 index = m.Index;

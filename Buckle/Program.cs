@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ToolBelt;
 
 namespace Buckle
 {
@@ -9,15 +8,15 @@ namespace Buckle
 	{
 		static int Main(string[] args)
 		{
-			BuckleTool tool = new BuckleTool(new ConsoleOutputter());
+			BuckleTool tool = new BuckleTool();
 
-			if (!((IProcessCommandLine)tool).ProcessCommandLine(args))
+			if (!tool.ProcessCommandLine(args))
 				return 1;
 
 			try
 			{
 				tool.Execute();
-				return (tool.Output.HasOutputErrors ? 1 : 0);
+				return (tool.HasOutputErrors ? 1 : 0);
 			}
 			catch (Exception exception)
 			{

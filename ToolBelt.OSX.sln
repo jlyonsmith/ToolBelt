@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{775B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EF60F8C0-BCDF-484C-9F81-1262C02A4315}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buckle.OSX", "Buckle\Buckle.OSX.csproj", "{A7D06A02-DE03-4548-AA5D-51A1338F01A3}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.OSX", "ToolBelt\ToolBelt.OSX.csproj", "{2055D34D-3DF2-444B-937B-32CC1A6E11DF}"
 EndProject
 Global
@@ -27,11 +29,60 @@ Global
 		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = ToolBelt\ToolBelt.OSX.csproj
+		StartupItem = Buckle\Buckle.OSX.csproj
+		Policies = $0
+		$0.TextStylePolicy = $1
+		$1.FileWidth = 120
+		$1.TabWidth = 4
+		$1.EolMarker = Windows
+		$1.inheritsSet = Mono
+		$1.inheritsScope = text/plain
+		$1.scope = text/plain
+		$0.TextStylePolicy = $2
+		$2.inheritsSet = null
+		$2.scope = text/microsoft-resx
+		$0.XmlFormattingPolicy = $3
+		$3.inheritsSet = null
+		$3.scope = text/microsoft-resx
+		$0.TextStylePolicy = $4
+		$4.inheritsSet = null
+		$4.scope = application/xml
+		$0.XmlFormattingPolicy = $5
+		$5.inheritsSet = Mono
+		$5.inheritsScope = application/xml
+		$5.scope = application/xml
+		$0.TextStylePolicy = $6
+		$6.inheritsSet = null
+		$6.scope = application/config+xml
+		$0.XmlFormattingPolicy = $7
+		$7.inheritsSet = null
+		$7.scope = application/config+xml
+		$0.TextStylePolicy = $8
+		$8.inheritsSet = null
+		$8.scope = text/x-csharp
+		$0.CSharpFormattingPolicy = $9
+		$9.BeforeMethodDeclarationParentheses = False
+		$9.BeforeMethodCallParentheses = False
+		$9.BeforeConstructorDeclarationParentheses = False
+		$9.BeforeIndexerDeclarationBracket = False
+		$9.BeforeDelegateDeclarationParentheses = False
+		$9.NewParentheses = False
+		$9.SpacesBeforeBrackets = False
+		$9.inheritsSet = Mono
+		$9.inheritsScope = text/x-csharp
+		$9.scope = text/x-csharp
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

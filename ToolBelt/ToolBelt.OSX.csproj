@@ -24,6 +24,11 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="BeforeBuild" command="/bin/bash CompileResources.sh" workingdir="${ProjectDir}" />
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,11 +38,14 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="BeforeBuild" command="/bin/bash CompileResources.sh" workingdir="${ProjectDir}" />
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BigEndianBitConverter.cs" />
-    <Compile Include="Buckle.cs" />
-    <Compile Include="BuckleTool.cs" />
     <Compile Include="CollectionHelper.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="CommandLineParser.cs" />
@@ -59,7 +67,6 @@
     <Compile Include="LittleEndianBitConverter.cs" />
     <Compile Include="Memory.cs" />
     <Compile Include="Message.cs" />
-    <Compile Include="MSBuildOutputter.cs" />
     <Compile Include="NonClosingStreamWrapper.cs" />
     <Compile Include="NullOutputter.cs" />
     <Compile Include="OutputEventArgs.cs" />
@@ -75,6 +82,9 @@
     <Compile Include="StreamUtility.cs" />
     <Compile Include="StringUtility.cs" />
     <Compile Include="TraceOutputter.cs" />
+    <Compile Include="CommandLineParserResources.cs" />
+    <Compile Include="ConsoleUtilityResources.cs" />
+    <Compile Include="OutputterResources.cs" />
   </ItemGroup>
   <ItemGroup>
     <Buckle Include="CommandLineParserResources.resx" />
@@ -83,9 +93,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ToolBelt.targets" />
-    <None Include="snk">
-      <Link>ToolBelt.snk</Link>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build.Framework" />
@@ -97,4 +104,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Toaster\Toaster.targets" />
+  <ItemGroup>
+    <EmbeddedResource Include="CommandLineParserResources.resources" />
+    <EmbeddedResource Include="ConsoleUtilityResources.resources" />
+    <EmbeddedResource Include="OutputterResources.resources" />
+  </ItemGroup>
 </Project>

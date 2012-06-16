@@ -9,7 +9,6 @@ namespace ToolBelt
         #region Private Fields
         private IOutputter outputter;
         private bool hasOutputErrors;
-        private ResourceManager resourceManager;
         private bool warningsAsErrors;
 
         #endregion
@@ -24,7 +23,6 @@ namespace ToolBelt
         public OutputHelper(IOutputter outputter, ResourceManager resourceManager)
         {
             this.outputter = outputter;
-            this.resourceManager = resourceManager;
             this.hasOutputErrors = false;
             this.warningsAsErrors = false;
         }
