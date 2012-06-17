@@ -9,9 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{775B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EF60F8C0-BCDF-484C-9F81-1262C02A4315}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buckle.OSX", "Buckle\Buckle.OSX.csproj", "{A7D06A02-DE03-4548-AA5D-51A1338F01A3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buckle.MacOS", "Buckle\Buckle.MacOS.csproj", "{A7D06A02-DE03-4548-AA5D-51A1338F01A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.OSX", "ToolBelt\ToolBelt.OSX.csproj", "{2055D34D-3DF2-444B-937B-32CC1A6E11DF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.MacOS", "ToolBelt\ToolBelt.MacOS.csproj", "{2055D34D-3DF2-444B-937B-32CC1A6E11DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,7 +41,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Buckle\Buckle.OSX.csproj
+		StartupItem = Buckle\Buckle.MacOS.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1
 		$1.FileWidth = 120
