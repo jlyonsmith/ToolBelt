@@ -3,9 +3,7 @@ namespace ToolBelt
 	using System;
 	using System.Runtime.InteropServices;
 
-	/// <summary>
-	/// Summary description for Memory.
-	/// </summary>
+#if WINDOWS
 	public unsafe sealed class Memory
 	{
 		#region NativeMethods
@@ -259,4 +257,5 @@ namespace ToolBelt
 			return Compare((byte*)pMem1, (byte*)pMem2, length * sizeof(double)) / sizeof(double);
 		}
 	}
+#endif
 }
