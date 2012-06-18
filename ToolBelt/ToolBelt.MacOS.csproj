@@ -11,7 +11,7 @@
     <RootNamespace>ToolBelt</RootNamespace>
     <ResourceStringWrapperType>ToolBelt.Message</ResourceStringWrapperType>
     <FileAlignment>512</FileAlignment>
-    <AssemblyName>ToolBelt.MacOS</AssemblyName>
+    <AssemblyName>ToolBelt</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>none</DebugType>
