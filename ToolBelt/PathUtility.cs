@@ -22,7 +22,7 @@ namespace ToolBelt
 		/// <summary>
 		/// Prefix for UNC file paths. 
 		/// </summary>
-		public static readonly string UncPrefixChars = @"\\";
+		public static readonly string UncPrefixChars = new string (Path.DirectorySeparatorChar, 2);
 		
 		/// <summary>
 		/// Character used to separate the file extension from the main part of the file name.

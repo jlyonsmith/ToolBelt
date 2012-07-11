@@ -142,7 +142,7 @@ namespace ToolBelt
             get
             {
                 if (relativePathPartSingleLineRegex == null)
-                    relativePathPartSingleLineRegex = new Regex(@"[.]+\\", RegexOptions.Singleline);
+                    relativePathPartSingleLineRegex = new Regex(@"[.]+" + Path.DirectorySeparatorChar, RegexOptions.Singleline);
                 
                 return relativePathPartSingleLineRegex;
             }
@@ -198,7 +198,7 @@ namespace ToolBelt
                 throw new ArgumentException("Path contains invalid characters");
             }
 
-            // Convert '/' into '\'
+            // Convert '/' into '\' or vica versa
             path = path.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 
             int i; // Always the beginning index
