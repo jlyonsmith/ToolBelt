@@ -4,6 +4,7 @@
 *.opensdf
 *.suo
 *.orig
+.DS_Store
 msbuild.log
 obj/
 bin/
