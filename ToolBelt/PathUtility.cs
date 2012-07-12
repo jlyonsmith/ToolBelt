@@ -25,6 +25,20 @@ namespace ToolBelt
 		public static readonly string UncPrefixChars = new string (Path.DirectorySeparatorChar, 2);
 		
 		/// <summary>
+		/// Character used to separate the directories
+		/// </summary>
+		public static readonly char DirectorySeparatorChar = Path.DirectorySeparatorChar;
+
+		/// <summary>
+		/// Alternate character used to separate the directories ('\' on Unix, '/' on Windows)
+		/// </summary>
+#if WINDOWS
+		public static readonly char AltDirectorySeparatorChar = '//';
+#else
+		public static readonly char AltDirectorySeparatorChar = '\\';
+#endif
+
+		/// <summary>
 		/// Character used to separate the file extension from the main part of the file name.
 		/// </summary>
 		public static readonly char ExtensionSeparatorChar = '.';

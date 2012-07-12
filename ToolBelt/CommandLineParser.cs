@@ -545,7 +545,7 @@ namespace ToolBelt
 		/// <param name="argumentSpecificationType">The <see cref="Type" /> in which the command line arguments are defined.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="argumentSpecificationType" /> is a null reference.</exception>
 		public CommandLineParser(Type argumentSpecificationType)
-			: this(argumentSpecificationType, null, CommandLineParserFlags.None)
+			: this(argumentSpecificationType, null, CommandLineParserFlags.Default)
 		{
 		}
 
@@ -569,7 +569,7 @@ namespace ToolBelt
 		/// <param name="resourceReaderType">A resource reader object with a <code>GetString</code> method</param>
 		/// <exception cref="ArgumentNullException"><paramref name="argumentSpecificationType" /> is a null reference.</exception>
 		public CommandLineParser(Type argumentSpecificationType, Type resourceReaderType) :
-			this(argumentSpecificationType, resourceReaderType, CommandLineParserFlags.None)
+			this(argumentSpecificationType, resourceReaderType, CommandLineParserFlags.Default)
 		{
 		} 
 		
@@ -1177,7 +1177,9 @@ namespace ToolBelt
 							break;
 						}
 					case '-':
+#if WINDOWS
 					case '/':
+#endif
 						int endIndex = argument.IndexOfAny(new char[] { ':', '+', '-' }, 1);
 						string argumentName = argument.Substring(1, endIndex == -1 ? argument.Length - 1 : endIndex - 1);
 						string argumentValue;
@@ -2252,10 +2254,10 @@ namespace ToolBelt
 		/// <summary>
 		/// All switches are matched case sensitively.
 		/// </summary>
-		CaseSensitive = 0x0001,
+		CaseSensitive = 1<<0,
 		/// <summary>
 		/// Normal parsing.  All switches are matched case insensitive.
 		/// </summary>
-		None = 0x0000
+		Default = 0
 	}
 }

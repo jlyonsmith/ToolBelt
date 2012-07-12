@@ -199,7 +199,7 @@ namespace ToolBelt
             }
 
             // Convert '/' into '\' or vica versa
-            path = path.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            path = path.Replace(PathUtility.AltDirectorySeparatorChar, PathUtility.DirectorySeparatorChar);
 
             int i; // Always the beginning index
             int j; // Always the ending index
@@ -681,13 +681,18 @@ namespace ToolBelt
         {
             if (basePath == null)
                 basePath = new ParsedPath(System.Environment.CurrentDirectory, PathType.Directory);
-            
+
+#if WINDOWS
             if (!basePath.HasVolume)
                 throw new ArgumentException("Base directory has no volume");
-                
+#endif
+
             if (basePath.Directory == String.Empty)
                 throw new ArgumentException("Base directory has no directory");
 
+			if (!basePath.HasRootDirectory)
+				throw new ArgumentException("Base directory has no root");
+                
             string machine = String.Empty;
             string share = String.Empty;
             string drive = String.Empty;
