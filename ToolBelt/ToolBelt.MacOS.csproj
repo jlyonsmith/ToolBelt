@@ -63,7 +63,6 @@
     <Compile Include="PathUtility.cs" />
     <Compile Include="ProcessCycleStopwatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PropertyCollection.cs" />
     <Compile Include="ReadOnlyDictionary.cs" />
     <Compile Include="RemoteOutputter.cs" />
     <Compile Include="StreamUtility.cs" />
