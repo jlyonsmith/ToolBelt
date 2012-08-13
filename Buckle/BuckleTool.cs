@@ -643,14 +643,14 @@ using System.Globalization;
 		private void WriteError(string format, params object[] args)
 		{
 			Console.Write("error: ");
-			Console.Write(format, args);
+			Console.WriteLine(format, args);
 			this.HasOutputErrors = true;
 		}
 
 		private void WriteWarning(string format, params object[] args)
 		{
 			Console.Write("warning: ");
-			Console.Write(format, args);
+			Console.WriteLine(format, args);
 			this.HasOutputErrors = true;
 		}
 
