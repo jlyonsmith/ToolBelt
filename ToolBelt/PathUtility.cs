@@ -43,6 +43,11 @@ namespace ToolBelt
 		/// </summary>
 		public static readonly char ExtensionSeparatorChar = '.';
 
+		/// <summary>
+		/// The volume separator character. Only Windows platforms use this.
+		/// </summary>
+		public static readonly char VolumeSeparatorChar = ':';
+
         /// <summary>
         /// Searches multiple directories for a file.
         /// </summary>

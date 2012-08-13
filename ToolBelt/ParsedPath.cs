@@ -242,7 +242,7 @@ namespace ToolBelt
                 if (typeHint == PathType.Automatic && path.Length == machine.Length + share.Length)
                     typeHint = PathType.Volume;
             }
-            else if (path.Length >= 2 && path[1] == Path.VolumeSeparatorChar)
+            else if (path.Length >= 2 && path[1] == PathUtility.VolumeSeparatorChar)
             {
                 drive = path.Substring(0, 2);
                 
@@ -683,8 +683,11 @@ namespace ToolBelt
                 basePath = new ParsedPath(System.Environment.CurrentDirectory, PathType.Directory);
 
 #if WINDOWS
-            if (!basePath.HasVolume)
-                throw new ArgumentException("Base directory has no volume");
+			if (!basePath.HasVolume)
+				throw new ArgumentException("Base directory has no volume");
+#else
+			if (basePath.HasVolume)
+				throw new ArgumentException("Base directory is not a Unix style path");
 #endif
 
             if (basePath.Directory == String.Empty)
@@ -701,7 +704,7 @@ namespace ToolBelt
             string ext = this.Extension;
         
             // Does this path contain a volume?
-            if (HasVolume)
+            if (this.HasVolume)
             {
                 // Yes, copy this paths volume
                 if (HasUnc)
@@ -727,6 +730,15 @@ namespace ToolBelt
                     drive = basePath.Drive;
                 }
             }
+
+#if MACOS
+			if (dir.StartsWith("~/"))
+			{
+				ParsedPath personalPath = new ParsedPath(Environment.GetFolderPath(Environment.SpecialFolder.Personal), PathType.Directory);
+
+				dir = personalPath + dir.Substring(2);
+			}
+#endif
 
             StringBuilder sb = new StringBuilder(dir.Length);
             int index = 0;  

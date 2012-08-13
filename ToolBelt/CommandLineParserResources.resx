@@ -181,7 +181,7 @@
     <value>Resource reader '{0}' does not contain a property '{1}'</value>
   </data>
   <data name="ShortFormat" xml:space="preserve">
-    <value>(Short format: /{0})</value>
+    <value>(Short format: -{0})</value>
   </data>
   <data name="Text_LowerCase" xml:space="preserve">
     <value>text</value>

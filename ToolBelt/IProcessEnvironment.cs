@@ -14,6 +14,6 @@ namespace ToolBelt
         /// Process the environment.
         /// </summary>
         /// <returns></returns>
-        bool ProcessEnvironment();
+        void ProcessEnvironment();
     }
 }

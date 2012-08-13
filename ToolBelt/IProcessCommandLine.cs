@@ -14,6 +14,6 @@ namespace ToolBelt
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        bool ProcessCommandLine(string[] args);
+        void ProcessCommandLine(string[] args);
     }
 }

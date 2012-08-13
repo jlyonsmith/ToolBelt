@@ -1390,12 +1390,14 @@ namespace ToolBelt
 			{
 				lineLength = 79;
 
+#if WINDOWS
 				// There may not be a console window.  Sadly, there is no way to check if there is or not!
 				try
 				{
 					lineLength = Console.BufferWidth;
 				}
 				catch (IOException) { }
+#endif
 			}
 			else
 			{
@@ -1431,7 +1433,7 @@ namespace ToolBelt
 			Debug.Assert(command != null);  // ... but zero length command is OK
 
 			helpText.AppendFormat("{0,-22}{1}", CommandLineParserResources.Syntax_Propercase, 
-				this.CommandName.ToLower(CultureInfo.InvariantCulture));
+				this.CommandName);
 
 			if (HasCommandArgument && command.Length == 0)
 			{
@@ -1593,7 +1595,7 @@ namespace ToolBelt
 				{
 					valueText = ":<" + CommandLineParserResources.Number_Lowercase + ">";
 				}
-				else
+				else if (argument.ValueType != typeof(bool))
 				{
 					valueText = ":<" + CommandLineParserResources.Value_Lowercase + ">";
 				}

@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Programmers ToolBelt .NET")]
 [assembly: AssemblyCompany("John Lyon-Smith")]
 [assembly: AssemblyProduct("ToolBelt")]
-[assembly: AssemblyCopyright("Copyright © John Lyon-Smith 2010")]
+[assembly: AssemblyCopyright("Copyright © 2012, John Lyon-Smith.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]

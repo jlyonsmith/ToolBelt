@@ -128,7 +128,9 @@ namespace ToolBelt
         /// <returns>An array of strings no longer than the given line length</returns>
         public static string[] WordWrap(this string text, int lineLength)
         {
-            List<string> lines = new List<string>();
+			Debug.Assert(lineLength > 0);
+
+			List<string> lines = new List<string>();
             
             // First, split the string up on any newline boundaries
             lines.AddRange(text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None));

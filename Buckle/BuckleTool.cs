@@ -568,69 +568,59 @@ using System.Globalization;
 			}
 		}
 
-		public bool ProcessCommandLine(string[] args)
+		public void ProcessCommandLine(string[] args)
 		{
-			try
+			foreach (var arg in args)
 			{
-				foreach (var arg in args)
+				if (arg.StartsWith("-"))
 				{
-					if (arg.StartsWith("-"))
+					switch (arg[1])
 					{
-						switch (arg[1])
-						{
-						case 'h':
-						case '?':
-							ShowUsage = true;
-							return true;
-						case 'i':
-							Incremental = true;
-							continue;
-						case 'q':
-							NoLogo = true;
-							continue;
-						case 'b':
-							CheckAndSetArgument(arg, ref BaseName);
-							break;
-						case 'o':
-							CheckAndSetArgument(arg, ref CsFileName); 
-							break;
-						case 'r':
-							CheckAndSetArgument(arg, ref ResourcesFileName); 
-							break;
-						case 'n':
-							CheckAndSetArgument(arg, ref Namespace); 
-							break;
-						case 'w':
-							CheckAndSetArgument(arg, ref WrapperClass); 
-							if (WrapperClass != "Message" && WrapperClass != "String")
-								throw new ApplicationException(string.Format("Wrapper class must be Message or String"));
-							break;
-						case 'm':
-							CheckAndSetArgument(arg, ref Modifier); 
-							if (Modifier != "public" && Modifier != "internal")
-								throw new ApplicationException(string.Format("Wrapper class must be public or internal"));
-							break;
-						default:
-							throw new ApplicationException(string.Format("Unknown argument '{0}'", arg[1]));
-						}
-					}
-					else if (String.IsNullOrEmpty(ResXFileName))
-					{
-						ResXFileName = arg;
-					}
-					else
-					{
-						throw new ApplicationException("Only one .resx file can be specified");
+					case 'h':
+					case '?':
+						ShowUsage = true;
+						return;
+					case 'i':
+						Incremental = true;
+						continue;
+					case 'q':
+						NoLogo = true;
+						continue;
+					case 'b':
+						CheckAndSetArgument(arg, ref BaseName);
+						break;
+					case 'o':
+						CheckAndSetArgument(arg, ref CsFileName); 
+						break;
+					case 'r':
+						CheckAndSetArgument(arg, ref ResourcesFileName); 
+						break;
+					case 'n':
+						CheckAndSetArgument(arg, ref Namespace); 
+						break;
+					case 'w':
+						CheckAndSetArgument(arg, ref WrapperClass); 
+						if (WrapperClass != "Message" && WrapperClass != "String")
+							throw new ApplicationException(string.Format("Wrapper class must be Message or String"));
+						break;
+					case 'm':
+						CheckAndSetArgument(arg, ref Modifier); 
+						if (Modifier != "public" && Modifier != "internal")
+							throw new ApplicationException(string.Format("Wrapper class must be public or internal"));
+						break;
+					default:
+						throw new ApplicationException(string.Format("Unknown argument '{0}'", arg[1]));
 					}
 				}
+				else if (String.IsNullOrEmpty(ResXFileName))
+				{
+					ResXFileName = arg;
+				}
+				else
+				{
+					throw new ApplicationException("Only one .resx file can be specified");
+				}
 			}
-			catch (ApplicationException e)
-			{
-				WriteError(e.Message);
-				return false;
-			}
-
-			return true;
 		}
 
 		private void CheckAndSetArgument(string arg, ref string val)

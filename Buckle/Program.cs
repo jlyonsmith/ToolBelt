@@ -10,11 +10,10 @@ namespace Buckle
 		{
 			BuckleTool tool = new BuckleTool();
 
-			if (!tool.ProcessCommandLine(args))
-				return 1;
-
 			try
 			{
+				tool.ProcessCommandLine(args);
+
 				tool.Execute();
 				return (tool.HasOutputErrors ? 1 : 0);
 			}
