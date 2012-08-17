@@ -13,20 +13,25 @@ namespace ToolBelt
 	public static class Command
 	{
 		#region Private Methods
-		private static string CreateBatchFile(string command)
+		private static string CreateScriptFile(string command)
 		{
-			string batchContents = String.Format("@echo off\r\n{0}\r\n", command);
-			ParsedPath batchFile = new ParsedPath(Path.GetTempFileName(), PathType.File).SetExtension(".bat");
+#if WINDOWS
+			string scriptContents = String.Format("@echo off\r\n{0}\r\n", command);
+			ParsedPath scriptFileName = new ParsedPath(Path.GetTempFileName(), PathType.File).SetExtension(".bat");
+#elif MACOS
+			string scriptContents = command;
+			ParsedPath scriptFileName = new ParsedPath(Path.GetTempFileName(), PathType.File).SetExtension(".sh");
+#endif
 
-			File.WriteAllText(batchFile, batchContents);
+			File.WriteAllText(scriptFileName, scriptContents);
 
 			if (debugMode)
 			{
-				Console.WriteLine(batchFile + ":");
-				Console.WriteLine(batchContents);
+				Console.WriteLine(scriptFileName + ":");
+				Console.WriteLine(scriptContents);
 			}
 
-			return batchFile;
+			return scriptFileName;
 		}
 
 		#endregion
@@ -101,27 +106,34 @@ namespace ToolBelt
 		public static int Run(string command, TextWriter outputWriter, TextWriter errorWriter)
 		{
 			int exitCode = -1;
-			string batchFileName = null;
+			string scriptFileName = null;
 
 			try
 			{
-				batchFileName = CreateBatchFile(command);
+				scriptFileName = CreateScriptFile(command);
 
 				if (debugMode)
 				{
 					outputWriter.WriteLine(command);
 					return 0;
 				}
-				
-				string newCmdString = "/c \"" + batchFileName + "\"";
-				string comspec = System.Environment.GetEnvironmentVariable("COMSPEC");
+
+#if WINDOWS
+				string shell = System.Environment.GetEnvironmentVariable("COMSPEC");
+				string argString = "/c \"" + scriptFileName + "\"";
+#elif MACOS
+				string shell = "/bin/bash";
+				string argString = "\"" + scriptFileName + "\"";
+#endif
+
 				Process p = new Process();
 
-				p.StartInfo = new ProcessStartInfo(comspec, newCmdString);
+				p.StartInfo = new ProcessStartInfo(shell, argString);
 				p.StartInfo.UseShellExecute = false;
 				p.StartInfo.CreateNoWindow = true;
 				p.StartInfo.RedirectStandardOutput = true;
 				p.StartInfo.RedirectStandardError = true;
+				p.StartInfo.WorkingDirectory = Environment.CurrentDirectory;
 
 				if (outputWriter != null && errorWriter != null)
 				{
@@ -158,8 +170,8 @@ namespace ToolBelt
 			}
 			finally
 			{
-				if (batchFileName != null)
-					File.Delete(batchFileName);
+				if (scriptFileName != null)
+					File.Delete(scriptFileName);
 			}
 
 			return exitCode;

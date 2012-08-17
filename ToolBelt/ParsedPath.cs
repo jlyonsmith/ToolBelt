@@ -1536,7 +1536,7 @@ namespace ToolBelt
             get 
             {
                 return new ParsedPath(
-                    path.Substring(0, machineLength + shareLength + driveLength + fileLength), 
+                    path.Substring(0, machineLength + shareLength + driveLength + dirLength + fileLength), 
                     machineLength, shareLength, driveLength, dirLength, fileLength, 0);
             } 
         }
