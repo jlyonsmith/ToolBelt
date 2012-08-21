@@ -230,12 +230,11 @@ namespace ToolBelt
 
                 // Find a key; use the case sensitivity specified by callers dictionary
                 string key = source.Substring(tagStart + tagPrefix.Length, tagEnd - tagStart - tagPrefix.Length);
-                string val = dictionary[key] as string;
 
-                if (val != null)
+                if (dictionary.Contains(key))
                 {
                     sb.Remove(tagStart, tagEnd + tagSuffix.Length - tagStart);
-                    sb.Insert(tagStart, val);
+					sb.Insert(tagStart, (string)dictionary[key]);
                 }
                 else
                 {
@@ -245,7 +244,7 @@ namespace ToolBelt
                     }
                     if ((flags & TaggedStringOptions.ThrowOnUnknownTags) == TaggedStringOptions.ThrowOnUnknownTags)
                     {
-                        throw new ArgumentException(string.Format("Uknown tag '{0}' in string", key), "source");
+						throw new InvalidOperationException("{0}{1}{2} is undefined".CultureFormat(tagPrefix, key, tagSuffix));
                     }
                 }
                 
