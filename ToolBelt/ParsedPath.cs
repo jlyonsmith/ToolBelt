@@ -110,9 +110,6 @@ namespace ToolBelt
 
         #region Class Data
         
-        private static readonly char[] BadDirTrailChars = new char[] {PathUtility.ExtensionSeparatorChar, ' ', '\t'};
-        private static readonly char[] WildcardChars = new char[] {'*', '?'};
-        
         /// <summary>
         /// Represents an empty, uninitialized <see cref="ParsedPath"/>
         /// </summary>
@@ -193,7 +190,7 @@ namespace ToolBelt
                 throw new ArgumentException("Path is zero length");
                                                 
             // Do an invalid character check once now
-            if (path.IndexOfAny(ParsedPath.InvalidPathChars) != -1)
+            if (path.IndexOfAny(PathUtility.InvalidPathChars) != -1)
             {
                 throw new ArgumentException("Path contains invalid characters");
             }
@@ -284,7 +281,7 @@ namespace ToolBelt
 
                 // There is a file name so we can continue.  Now that we know that, we can trim the end of 
                 // the path.
-                path = path.TrimEnd(BadDirTrailChars);
+                path = path.TrimEnd(PathUtility.BadDirTrailChars);
                 
                 // Chop off the file name
                 file = path.Substring(i, path.Length - i);
@@ -311,7 +308,7 @@ namespace ToolBelt
             dir = dir.Replace(PathUtility.UncPrefixChars, String.Empty + Path.DirectorySeparatorChar);
 
             // You can't have wildcards in the directory part
-            if (dir.IndexOfAny(WildcardChars) != -1)
+            if (dir.IndexOfAny(PathUtility.WildcardChars) != -1)
                 throw new ArgumentException("Invalid characters in path");
             
             // If user wanted a VolumeOnly, validate that we have no directory, file or extension
@@ -351,7 +348,7 @@ namespace ToolBelt
                 
                 if (j > 0)
                 {
-                    dirPart = dirPart.TrimEnd(BadDirTrailChars);
+                    dirPart = dirPart.TrimEnd(PathUtility.BadDirTrailChars);
                     
                     // Deals with the '\.. . . ..   .....\' situation
                     if (dirPart == "")
@@ -580,7 +577,7 @@ namespace ToolBelt
             if (String.IsNullOrEmpty(newExtension))
                 throw new ArgumentException("New extension must not be empty");
 
-            if (newExtension.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
+            if (newExtension.IndexOfAny(PathUtility.InvalidPathChars) != -1)
                 throw new ArgumentException("Extension contains invalid characters");
 
             if (!newExtension.StartsWith("."))
@@ -608,7 +605,7 @@ namespace ToolBelt
             if (String.IsNullOrEmpty(newFileAndExtension))
                 throw new ArgumentException("New file name must not be empty");
 
-            if (newFileAndExtension.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
+            if (newFileAndExtension.IndexOfAny(PathUtility.InvalidFileNameChars) != -1)
                 throw new ArgumentException("File/extension name contains invalid characters");
 
             string newFile;
@@ -995,18 +992,6 @@ namespace ToolBelt
 
         #endregion
 
-        #region Static Properties
-
-        public static char[] InvalidPathChars
-        {
-            get
-            {
-                return Path.GetInvalidPathChars();
-            }
-        }
-
-        #endregion
-
         #region Overrides
         /// <summary>
         /// Returns a <see cref="T:System.String"/> equivalent to the entire path 
@@ -1201,7 +1186,7 @@ namespace ToolBelt
         {
             get
             {
-                return (FileAndExtension.ToString().IndexOfAny(WildcardChars) != -1);
+                return (FileAndExtension.ToString().IndexOfAny(PathUtility.WildcardChars) != -1);
             }
         }
 

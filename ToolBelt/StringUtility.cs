@@ -203,10 +203,10 @@ namespace ToolBelt
         /// insensitively. 
         /// </summary>
         /// <param name="source">String containing tagged entities</param>
-        /// <param name="dict">A dictionary of tag values</param>
         /// <param name="tagPrefix">The tag prefix</param>
         /// <param name="tagSuffix">The tag suffix</param>
-        /// <param name="flags"><see cref="TaggedStringOptions"/> for the replace operation</param>
+		/// <param name="dictionary">A dictionary of tag values</param>
+		/// <param name="flags"><see cref="TaggedStringOptions"/> for the replace operation</param>
         /// <returns>A string with all tags replaced</returns>
         public static string ReplaceTags(
             this string source, string tagPrefix, string tagSuffix, IDictionary dictionary, TaggedStringOptions flags)
@@ -228,16 +228,16 @@ namespace ToolBelt
                 if (tagStart < 0)
                     break;
 
-                // Find a key; use the case sensitivity specified by callers dictionary
-                string key = source.Substring(tagStart + tagPrefix.Length, tagEnd - tagStart - tagPrefix.Length);
+				string key = source.Substring(tagStart + tagPrefix.Length, tagEnd - tagStart - tagPrefix.Length);
 
-                if (dictionary.Contains(key))
+				if (dictionary.Contains(key))
                 {
                     sb.Remove(tagStart, tagEnd + tagSuffix.Length - tagStart);
 					sb.Insert(tagStart, (string)dictionary[key]);
                 }
                 else
                 {
+					Console.WriteLine ("  not found");
                     if ((flags & TaggedStringOptions.RemoveUnknownTags) == TaggedStringOptions.RemoveUnknownTags)
                     {
                         sb.Remove(tagStart, tagEnd + tagSuffix.Length - tagStart);
