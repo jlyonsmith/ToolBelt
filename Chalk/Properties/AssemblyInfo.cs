@@ -8,8 +8,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("Release")]
 #endif
 
-[assembly: AssemblyTitle("Buckle")]
-[assembly: AssemblyDescription("String Resource Strongly Typed Class Wrapper Generator")]
+[assembly: AssemblyTitle("Chalk")]
+[assembly: AssemblyDescription("Version number updating tool")]
 [assembly: AssemblyCompany("John Lyon-Smith")]
 [assembly: AssemblyProduct("ToolBelt")]
 [assembly: AssemblyCopyright("Copyright © John Lyon-Smith 2012")]

@@ -83,7 +83,6 @@ namespace Buckle
 		public bool NoLogo;
 		public bool ShowUsage;
 		public bool Incremental;
-
 		public bool HasOutputErrors { get; set; }
 		
 		#endregion
@@ -107,7 +106,7 @@ namespace Buckle
 			{
 				WriteMessage(@"Generates strongly typed wrappers for string and bitmap .resx resources
 	
-Usage: Buckle.exe <resx-file>             Input .resx file
+Usage: Buckle <resx-file>                 Input .resx file
                   [-o:<output-cs>]        Output .cs file
                   [-r:<output-cs>]        Output .resources file
                   [-n:<namespace>]        Namespace to use in generated C#
