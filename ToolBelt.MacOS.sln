@@ -8,10 +8,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{775B
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EF60F8C0-BCDF-484C-9F81-1262C02A4315}"
+	ProjectSection(SolutionItems) = preProject
+		ToolBelt.version = ToolBelt.version
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.MacOS", "ToolBelt\ToolBelt.MacOS.csproj", "{2055D34D-3DF2-444B-937B-32CC1A6E11DF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buckle.MacOS", "Buckle\Buckle.MacOS.csproj", "{A7D06A02-DE03-4548-AA5D-51A1338F01A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chalk.MacOS", "Chalk\Chalk.MacOS.csproj", "{92B08CD8-A9A8-4970-BFEF-DC3C2C49B73D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +28,10 @@ Global
 		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Debug|x86.Build.0 = Debug|x86
 		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|x86.ActiveCfg = Release|x86
 		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|x86.Build.0 = Release|x86
+		{92B08CD8-A9A8-4970-BFEF-DC3C2C49B73D}.Debug|x86.ActiveCfg = Debug|x86
+		{92B08CD8-A9A8-4970-BFEF-DC3C2C49B73D}.Debug|x86.Build.0 = Debug|x86
+		{92B08CD8-A9A8-4970-BFEF-DC3C2C49B73D}.Release|x86.ActiveCfg = Release|x86
+		{92B08CD8-A9A8-4970-BFEF-DC3C2C49B73D}.Release|x86.Build.0 = Release|x86
 		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Debug|x86.ActiveCfg = Debug|x86
 		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Debug|x86.Build.0 = Debug|x86
 		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Release|x86.ActiveCfg = Release|x86
@@ -31,13 +40,13 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = ToolBelt\ToolBelt.MacOS.csproj
+		StartupItem = Chalk\Chalk.MacOS.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1
 		$1.FileWidth = 120
-		$1.TabWidth = 4
-		$1.EolMarker = Windows
-		$1.inheritsSet = Mono
+		$1.TabsToSpaces = False
+		$1.EolMarker = Unix
+		$1.inheritsSet = VisualStudio
 		$1.inheritsScope = text/plain
 		$1.scope = text/plain
 		$0.TextStylePolicy = $2
