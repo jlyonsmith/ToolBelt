@@ -20,7 +20,6 @@ namespace ToolBelt
         private Type t;
         private static Dictionary<Type, ResourceManager> resourceManagers = new Dictionary<Type, ResourceManager>();
 
-        // Methods
         private Message()
         {
         }
@@ -33,9 +32,9 @@ namespace ToolBelt
             this.t = type;
         }
 
-        public static implicit operator string(Message utfMessage)
+        public static implicit operator string(Message message)
         {
-            return utfMessage.ToString();
+            return message.ToString();
         }
 
         public override string ToString()
@@ -49,7 +48,6 @@ namespace ToolBelt
             return format;
         }
 
-        // Properties
         internal string Name
         {
             get
