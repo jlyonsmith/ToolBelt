@@ -99,23 +99,32 @@ namespace Buckle
 		{
             if (!NoLogo)
             {
-				WriteMessage("Buckle ResX to C# String Wrapper Class Generator. Copyright (c) 2012, John Lyon-Smith." + Environment.NewLine);
+				string version = ((AssemblyFileVersionAttribute)Assembly.GetExecutingAssembly()
+					.GetCustomAttributes(typeof(AssemblyFileVersionAttribute), true)[0]).Version;
+				
+				WriteMessage("Buckle ResX to C# String Wrapper Class Generator. Version {0}", version);
+				WriteMessage("Copyright (c) 2012, John Lyon-Smith." + Environment.NewLine);
             }
 		
 			if (ShowUsage)
 			{
 				WriteMessage(@"Generates strongly typed wrappers for string and bitmap .resx resources
 	
-Usage: Buckle <resx-file>                 Input .resx file
-                  [-o:<output-cs>]        Output .cs file
-                  [-r:<output-cs>]        Output .resources file
-                  [-n:<namespace>]        Namespace to use in generated C#
-                  [-b:<basename>]         Case sensitive root name of the .resource file
-                  [-w:<wrapper-class>]    String wrapper class (see Message.cs)
-                  [-a:<access>]           Access modifier for properties and methods
-                  [-q]                    Suppress logo
-                  [-i]                    Build outputs only if out-of-date
-                  [-h] or [-?]            Show help
+Usage: mono Buckle.exe <args>
+
+Arguments:
+          <resx-file>              Input .resx file.
+          [-o:<output-cs>]         Output .cs file.
+          [-r:<output-resources>]  Output .resources file.
+          [-n:<namespace>]         Namespace to use in generated C#.
+          [-b:<basename>]          The root name of the resource file without its extension 
+                                   but including any fully qualified namespace name. See
+                                   ResourceManager constructor documentation for details.
+          [-w:<wrapper-class>]     String wrapper class. See Message.cs for details.
+          [-a:<access>]            Access modifier for properties and methods.
+          [-q]                     Suppress logo.
+          [-i]                     Incremental build. Create outputs only if out-of-date.
+          [-h] or [-?]             Show help.
 ");
 				return;
 			}
