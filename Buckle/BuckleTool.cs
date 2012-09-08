@@ -114,8 +114,8 @@ Usage: mono Buckle.exe <args>
 
 Arguments:
           <resx-file>              Input .resx file.
-          [-o:<output-cs>]         Output .cs file.
-          [-r:<output-resources>]  Output .resources file.
+          [-o:<output-cs>]         Specify different name for .cs file.
+          [-r:<output-resources>]  Specify different name for .resources file.
           [-n:<namespace>]         Namespace to use in generated C#.
           [-b:<basename>]          The root name of the resource file without its extension 
                                    but including any fully qualified namespace name. See
@@ -166,6 +166,7 @@ Arguments:
 			}
 
 			ReadResources();
+			WriteMessage("Read file '{0}'", ResXFileName);
 
 			using (this.writer = new StreamWriter(CsFileName, false, Encoding.ASCII))
 			{
@@ -173,6 +174,7 @@ Arguments:
 			}
 
 			WriteResourcesFile();
+			WriteMessage("Generated file '{0}'", ResourcesFileName);
 		}
 
 		private void WriteResourcesFile()
@@ -206,9 +208,10 @@ Arguments:
 					WriteWarning("Resource skipped. Type {0} is not public.", item.DataType);
 				}
 			}
-			WriteMessage("Generated strongly typed resource wrapper method(s) for {0} resource(s) in {1}", num, ResXFileName);
 			WriteClassEnd();
 			WriteNamespaceEnd();
+
+			WriteMessage("Generated wrapper class '{0}' for {1} resource(s)", CsFileName, num);
 		}
 
 		private void WriteNamespaceStart()
@@ -608,8 +611,6 @@ using System.Globalization;
 						break;
 					case 'w':
 						CheckAndSetArgument(arg, ref WrapperClass); 
-						if (WrapperClass != "Message" && WrapperClass != "String")
-							throw new ApplicationException(string.Format("Wrapper class must be Message or String"));
 						break;
 					case 'm':
 						CheckAndSetArgument(arg, ref Modifier); 

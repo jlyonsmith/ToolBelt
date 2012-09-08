@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buckle.MacOS", "Buckle\Buck
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chalk.MacOS", "Chalk\Chalk.MacOS.csproj", "{92B08CD8-A9A8-4970-BFEF-DC3C2C49B73D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.UnitTest", "..\ToolBelt.UnitTest\ToolBelt.UnitTest\ToolBelt.UnitTest.csproj", "{FB36E9BD-4571-42F1-AA6A-6D0D460071D8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -36,6 +38,10 @@ Global
 		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Debug|x86.Build.0 = Debug|x86
 		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Release|x86.ActiveCfg = Release|x86
 		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Release|x86.Build.0 = Release|x86
+		{FB36E9BD-4571-42F1-AA6A-6D0D460071D8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FB36E9BD-4571-42F1-AA6A-6D0D460071D8}.Debug|x86.Build.0 = Debug|Any CPU
+		{FB36E9BD-4571-42F1-AA6A-6D0D460071D8}.Release|x86.ActiveCfg = Release|Any CPU
+		{FB36E9BD-4571-42F1-AA6A-6D0D460071D8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
