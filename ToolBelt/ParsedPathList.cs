@@ -22,15 +22,23 @@ namespace ToolBelt
             paths = new List<ParsedPath>();
         }
 
-        public ParsedPathList(string pathList, PathType pathType)
-        {
-            string[] splitPaths = pathList.Split(Path.PathSeparator);
+		public ParsedPathList(string pathList, PathType pathType)
+		{
+			string[] splitPaths = pathList.Split(Path.PathSeparator);
+			
+			paths = new List<ParsedPath>();
+			
+			foreach (string splitPath in splitPaths)
+				paths.Add(new ParsedPath(splitPath, pathType));
+		}
 
-            paths = new List<ParsedPath>();
+		public ParsedPathList(IEnumerable<ParsedPath> otherPaths)
+		{
+			this.paths = new List<ParsedPath>();
 
-            foreach (string splitPath in splitPaths)
-                paths.Add(new ParsedPath(splitPath, pathType));
-        }
+			foreach (var path in otherPaths)
+				this.paths.Add(path);
+		}
 
         public ParsedPathList(IList<string> pathList, PathType pathType)
         {
