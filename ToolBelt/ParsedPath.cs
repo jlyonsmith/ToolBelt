@@ -171,32 +171,7 @@ namespace ToolBelt
             string file = String.Empty;
             string ext = String.Empty;
 
-            // Null reference is bad
-            if (path == null)
-                throw new ArgumentNullException("path");
-
-            // Remove leading/trailing spaces 
-            path = path.Trim();
-            
-            // Remove any surrounding quotes
-            if (path.Length >= 2 && path[0] == '\"')
-            {
-                path = SurroundingQuotesSingleLineRegex.Replace(path, @"$1");
-                path = path.Trim(null);
-            }
-
-            // Do we still have anything?
-            if (path.Length == 0)
-                throw new ArgumentException("Path is zero length");
-                                                
-            // Do an invalid character check once now
-            if (path.IndexOfAny(PathUtility.InvalidPathChars) != -1)
-            {
-                throw new ArgumentException("Path contains invalid characters");
-            }
-
-            // Convert '/' into '\' or vica versa
-            path = path.Replace(PathUtility.AltDirectorySeparatorChar, PathUtility.DirectorySeparatorChar);
+			ValidateAndNormalizePath(ref path);
 
             int i; // Always the beginning index
             int j; // Always the ending index
@@ -525,6 +500,37 @@ namespace ToolBelt
 
         #region Instance Methods
 
+		private void ValidateAndNormalizePath(ref string path)
+		{
+			// Null reference is bad
+			if (path == null)
+				throw new ArgumentNullException("path");
+			
+			// Remove leading/trailing spaces 
+			path = path.Trim();
+			
+			// Remove any surrounding quotes
+			if (path.Length >= 2 && path[0] == '\"')
+			{
+				// TODO: This can be done without a RegEx for better performance
+				path = SurroundingQuotesSingleLineRegex.Replace(path, @"$1");
+				path = path.Trim(null);
+			}
+			
+			// Do we still have anything?
+			if (path.Length == 0)
+				throw new ArgumentException("Path is zero length");
+			
+			// Do an invalid character check once now
+			if (path.IndexOfAny(PathUtility.InvalidPathChars) != -1)
+			{
+				throw new ArgumentException("Path contains invalid characters");
+			}
+			
+			// Convert '/' into '\' or vica versa
+			path = path.Replace(PathUtility.AltDirectorySeparatorChar, PathUtility.DirectorySeparatorChar);
+		}
+
         /// <summary>
         /// Combine a path fragment with an existing path. You can only combine to the path if it is not 
         /// contain a filename or extension.
@@ -572,13 +578,9 @@ namespace ToolBelt
         /// </summary>
         /// <param name="newExtension"></param>
         /// <returns></returns>
-        public ParsedPath SetExtension(string newExtension)
+        public ParsedPath WithExtension(string newExtension)
         {
-            if (String.IsNullOrEmpty(newExtension))
-                throw new ArgumentException("New extension must not be empty");
-
-            if (newExtension.IndexOfAny(PathUtility.InvalidPathChars) != -1)
-                throw new ArgumentException("Extension contains invalid characters");
+			ValidateAndNormalizePath(ref newExtension);
 
             if (!newExtension.StartsWith("."))
                 throw new ArgumentException("Extensions must start with a '.'");
@@ -600,13 +602,9 @@ namespace ToolBelt
         /// </summary>
         /// <param name="newFile">The new file name</param>
         /// <returns>A new path with the give file name</returns>
-        public ParsedPath SetFileAndExtension(string newFileAndExtension)
+        public ParsedPath WithFileAndExtension(string newFileAndExtension)
         {
-            if (String.IsNullOrEmpty(newFileAndExtension))
-                throw new ArgumentException("New file name must not be empty");
-
-            if (newFileAndExtension.IndexOfAny(PathUtility.InvalidFileNameChars) != -1)
-                throw new ArgumentException("File/extension name contains invalid characters");
+			ValidateAndNormalizePath(ref newFileAndExtension);
 
             string newFile;
             string newExtension;
@@ -638,6 +636,61 @@ namespace ToolBelt
                 newFile.Length,
                 newExtension.Length);
         }
+
+		/// <summary>
+		/// Creates a new <see cref="ParsedPath"/> with the new directory.
+		/// </summary>
+		/// <returns>
+		/// The new <see cref="ParsedPath"/>.
+		/// </returns>
+		/// <param name='newDirectory'>
+		/// New directory.
+		/// </param>
+		public ParsedPath WithDirectory(IEnumerable<string> newDirectoryParts)
+		{
+			StringBuilder sb = new StringBuilder();
+
+			foreach (var newDirectoryPart in newDirectoryParts)
+			{
+				string dirPart = newDirectoryPart; 
+
+				ValidateAndNormalizePath(ref dirPart);
+
+				int i = dirPart.IndexOf(PathUtility.DirectorySeparatorChar);
+
+				if (i != dirPart.Length - 1)
+					throw new ArgumentException(
+						"Directory part '{0}' must contain a single {1} at the end".CultureFormat(dirPart, PathUtility.DirectorySeparatorChar));
+
+				sb.Append(dirPart);
+			}
+	
+			string newDir = sb.ToString();
+			string path = this.Volume + newDir + this.File + this.Extension;
+
+			return new ParsedPath(
+				path,
+				machineLength,
+				shareLength,
+				driveLength,
+				newDir.Length,
+				fileLength,
+				extLength);
+		}
+
+		/// <summary>
+		/// Creates a new ParsedPath with the new volume.
+		/// </summary>
+		/// <returns>
+		/// The volume.
+		/// </returns>
+		/// <param name='newVolume'>
+		/// New volume.
+		/// </param>
+		public ParsedPath WithVolume(string newVolume)
+		{
+			throw new NotImplementedException();
+		}
 
         /// <overloads>Creates a fully qualified file path.</overloads>
         /// <summary>
@@ -781,7 +834,7 @@ namespace ToolBelt
                     for (; i >= 0 && sb[i] != Path.DirectorySeparatorChar; i--);
                     
                     if (i < 0)
-                        throw new ArgumentException("To many relative directories in path");
+                        throw new ArgumentException("Too many relative directories in path");
 
                     sb.Remove(i + 1, sb.Length - i - 1);
                 }
@@ -885,97 +938,31 @@ namespace ToolBelt
                 ext.Length);
         }
 
-        /// <summary>
-        /// Makes a path that corresponds the immediate parent directory of the existing path.   <see cref="ParsedPath.MakeFullPath()"/> is 
-        /// called before the parent is determined, using the current directory as the base path,
-        /// in case the given path is relative.
-        /// </summary>
-        /// <returns>A <see cref="ParsedPath"/> object with the immediate parent directory of the original directory</returns>
-        public ParsedPath MakeParentPath()
-        {
-            return MakeParentPath(-1, null);
-        }
+		/// <summary>
+		/// Makes the parent path.
+		/// </summary>
+		/// <returns>
+		/// The parent path.
+		/// </returns>
+		/// <param name='level'>
+		/// Number of levels up the path to go; 0, -1, -2, etc..
+		/// </param>
+		public ParsedPath MakeParentPath(int level)
+		{
+			string[] subDirs = this.SubDirectories;
+			int n = subDirs.Length + level;
 
-        /// <summary>
-        /// Makes a path that corresponds the a parent directory of the existing path.   <see cref="ParsedPath.MakeFullPath()"/> is 
-        /// called before the parent is determined, using the current directory as the base path,
-        /// in case the given path is relative.
-        /// </summary>
-        /// <param name="depthChange">The relative depth level of the parent.  -1 is the immediate parent, then -2 and so on.</param>
-        /// <exception cref="ArgumentOutOfRangeException">If the number of levels specified is more than the number of levels in the path, 
-        /// i.e. would go below the root directory of the path.</exception>
-        /// <returns>A <see cref="ParsedPath"/> object with the specified parent directory of the original directory</returns>
-        public ParsedPath MakeParentPath(int depthChange)
-        {
-            return MakeParentPath(depthChange, null);
-        }
+			if (n == 0)
+				throw new InvalidOperationException(
+					"Insufficient directories to make parent path {0} levels down".CultureFormat(-level));
 
-        /// <summary>
-        /// Makes a path that corresponds the immediate parent directory of the existing path.   <see cref="ParsedPath.MakeFullPath()"/> is 
-        /// called before the parent is determined, using the current directory as the base path, in case the given path is relative.
-        /// </summary>
-        /// <param name="basePath">Base path to use when fully qualifying a relative path</param>
-        /// <exception cref="ArgumentOutOfRangeException">If the number of levels specified is more than the number of levels in the path, 
-        /// i.e. would go below the root directory of the path.</exception>
-        /// <returns>A <see cref="ParsedPath"/> object with the specified parent directory of the original directory</returns>
-        public ParsedPath MakeParentPath(ParsedPath basePath)
-        {
-            return MakeParentPath(-1, basePath);
-        }
+			return this.WithDirectory(new ArrayRange<string>(subDirs, 0, n));
+		}
 
-        /// <summary>
-        /// Makes a path that corresponds the immediate parent directory of the existing path.   <see cref="ParsedPath.MakeFullPath()"/> is 
-        /// called before the parent is determined using <code>basePath</code> as the base directory.
-        /// </summary>
-        /// <param name="depthChange">The depth level of the parent.  -1 is the immediate parent, the next -2 and so on.</param>
-        /// <param name="basePath">Base path to use when fully qualifying a relative path</param>
-        /// <exception cref="ArgumentOutOfRangeException">If the number of levels specified is more than the number of levels in the path, 
-        /// i.e. would go below the </exception>
-        /// <returns><code>null</code> if this method is called on the root directory, otherwise a <see cref="ParsedPath"/>
-        /// containing same volume, file and extension and a directory equivalent to the parent of the old directory.</returns>
-        public ParsedPath MakeParentPath(int depthChange, ParsedPath basePath)
-        {
-            if (IsRootDirectory)
-                throw new ArgumentException("Path is already root directory");
-                
-            if (depthChange >= 0)
-                throw new ArgumentOutOfRangeException("depthChange", "Depth change must be < 0");
-            
-            ParsedPath fullPath = this.MakeFullPath(basePath);
-            
-            // Copy the stuff that is unchanged
-            string machine = fullPath.Machine;
-            string share = fullPath.Share;
-            string drive = fullPath.Drive;
-            string dir = fullPath.Directory;
-            string file = fullPath.File;
-            string ext = fullPath.Extension;
-            
-            // Find the nth parent
-            int i = dir.Length;
-            
-            while (depthChange++ < 0)
-            {
-                if (i == 1)
-                    throw new ArgumentOutOfRangeException("depthChange", "Number of levels specified would go beyond root directory.");
-                    
-                i = dir.LastIndexOf(Path.DirectorySeparatorChar, i - 2) + 1;
-            }			
-            
-            // Extract the parent directory
-            dir = dir.Substring(0, i);
-
-            string path = (machine.Length == 0 ? drive : machine + share) + dir + file + ext;
-
-            return new ParsedPath(
-                path,
-                machine.Length,
-                share.Length,
-                drive.Length,
-                dir.Length,
-                file.Length,
-                ext.Length);
-        }
+		public ParsedPath MakeParentPath()
+		{
+			return MakeParentPath(-1);
+		}
         
         #endregion
 
@@ -1015,7 +1002,6 @@ namespace ToolBelt
 
             return this.path.Equals(path.path, StringComparison.InvariantCultureIgnoreCase);
         }
-
 
         /// <summary>
         /// Returns <code>true</code> if two <see cref="ParsedPath"/> objects are equal.
@@ -1304,41 +1290,34 @@ namespace ToolBelt
         }
         
         /// <summary>
-        /// Gets the depth (the number of sub-directories) of the directory part of a path, starting from 0 for the root directory.  Throws
-        /// <exception cref="System.ArgumentException">Thrown when the path has relative directories</exception>
-        /// </summary>
-        public int DirectoryDepth
-        {
-            get
-            {
-                if (IsRelativePath)
-                    throw new ArgumentException("Path has relative directories");
-                
-                int count = 0;
-                string dir = Directory;
-                
-                for (int i = 0; i < dir.Length; i++)
-                    if (dir[i] == Path.DirectorySeparatorChar)
-                        count++;
-                        
-                return count;
-            }
-        }
-        
-        /// <summary>
-        /// Gets the <see cref="Directory"/> part split into its constituent sub-directories. Does not fail if 
-        /// the directory contains relative parts.
+        /// Gets an array containing the sub-directories that make up the full directory name.
         /// </summary>
         public string[] SubDirectories
         {
             get 
             {
-                string[] subDirs = DirectoryNoSeparator.Split(new char[] {Path.DirectorySeparatorChar});
-                
-                // Fix the root directory
-                subDirs[0] = Path.DirectorySeparatorChar.ToString();
-                
-                return subDirs;
+				List<string> subDirs = new List<string>();
+
+				subDirs.Add(Path.DirectorySeparatorChar.ToString());
+
+				string dir = this.Directory;
+				int i = 1;
+
+				for (int j = i; j < dir.Length;)
+				{
+					if (dir[j] != Path.DirectorySeparatorChar)
+					{
+						subDirs.Add(dir.Substring(i, j - i + 1));
+						j++;
+						i = j;
+					}
+					else
+					{
+						j++;
+					}
+				}
+
+                return subDirs.ToArray();
             }
         }
         

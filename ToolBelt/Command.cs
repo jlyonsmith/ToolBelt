@@ -17,10 +17,10 @@ namespace ToolBelt
 		{
 #if WINDOWS
 			string scriptContents = String.Format("@echo off\r\n{0}\r\n", command);
-			ParsedPath scriptFileName = new ParsedPath(Path.GetTempFileName(), PathType.File).SetExtension(".bat");
+			ParsedPath scriptFileName = new ParsedPath(Path.GetTempFileName(), PathType.File).WithExtension(".bat");
 #elif MACOS
 			string scriptContents = command;
-			ParsedPath scriptFileName = new ParsedPath(Path.GetTempFileName(), PathType.File).SetExtension(".sh");
+			ParsedPath scriptFileName = new ParsedPath(Path.GetTempFileName(), PathType.File).WithExtension(".sh");
 #endif
 
 			File.WriteAllText(scriptFileName, scriptContents);

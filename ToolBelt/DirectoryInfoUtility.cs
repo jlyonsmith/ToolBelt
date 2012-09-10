@@ -85,8 +85,9 @@ namespace ToolBelt
 			dirs.AddRange(dirInfos);
 			
 			if (!rootPath.IsRootDirectory)
-                // Because the last directory is actually in the file/ext. we don't need to use MakeParentPath()
+			{
 				RecursiveGetParentDirectories(rootPath.MakeParentPath(), ref dirs);
+			}
 		}
 
 		/// <summary>
@@ -147,10 +148,12 @@ namespace ToolBelt
 			DirectoryInfo dirInfo = new DirectoryInfo(rootPath.VolumeAndDirectory);
 			FileInfo [] fileInfos = dirInfo.GetFiles(rootPath.FileAndExtension);
 					
-            files.AddRange(fileInfos);
+			files.AddRange(fileInfos);
 			
-			if (!rootPath.IsRootDirectory)
-                RecursiveGetParentFiles(rootPath.MakeParentPath().VolumeAndDirectory.Append(rootPath.FileAndExtension), ref files);
+			if (!rootPath.IsRootDirectory) 
+			{
+				RecursiveGetParentFiles(rootPath.MakeParentPath().VolumeAndDirectory.Append(rootPath.FileAndExtension), ref files);
+			}
 		}
 	}
 }

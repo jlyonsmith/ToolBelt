@@ -1,14 +1,14 @@
 using System;
 using System.IO;
-using Toaster;
+using NUnit.Framework;
 using ToolBelt;
 
 namespace ToolBelt.Tests
 {
-    [TestClass] 
+    [TestFixture] 
     public class ParsedPathTests
     {
-        [TestMethod] public void TestOperators()
+        [TestCase] public void TestOperators()
         {
             ParsedPath pp = new ParsedPath("file.txt", PathType.Automatic);
             
@@ -20,12 +20,12 @@ namespace ToolBelt.Tests
             Assert.IsFalse(ParsedPath.Equals(pp, null));
             Assert.IsFalse(ParsedPath.Equals(null, pp));
             
-            int hash = pp.GetHashCode();
+            Assert.AreNotEqual(0, pp.GetHashCode());
             
             Assert.IsFalse(pp == ParsedPath.Empty);
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestCompareTo()
         {
             ParsedPath ppA = new ParsedPath(@"c:\blah\a.txt", PathType.File);
@@ -51,7 +51,7 @@ namespace ToolBelt.Tests
             Assert.AreEqual(0, ppA.CompareTo(p));
         }
 
-        [TestMethod] public void ConstructParsedPath() 
+        [TestCase] public void ConstructParsedPath() 
         {
             // Test some good paths
             AssertPathParts(@"\", PathType.Automatic, "", "", @"", @"\", "", "");
@@ -121,7 +121,7 @@ namespace ToolBelt.Tests
             AssertBadPath(@"\\machine\share\\bad", PathType.Directory);
         }
 
-        [TestMethod] public void MakeFullPath()
+        [TestCase] public void MakeFullPath()
         {
             // Test some good paths
             AssertPathPartsFull(@".txt", 
@@ -150,7 +150,7 @@ namespace ToolBelt.Tests
             AssertBadPathFull(@"test\......\temp\.\abc.txt", @"c:\");  // Too many '....'s
         }
         
-        [TestMethod] public void MakeRelativePath()
+        [TestCase] public void MakeRelativePath()
         {
             AssertPathPartsRelative(@"c:\a\p.q", @"c:\a\", @".\");
             AssertPathPartsRelative(@"c:\a\", @"c:\a\b\c\p.q", @"..\..\"); 
@@ -161,19 +161,19 @@ namespace ToolBelt.Tests
             AssertBadPathPartsRelative(@"a.txt", @"b");
         }
 
-        [TestMethod] public void MakeParentPath()
+        [TestCase] public void MakeParentPath()
         {
             // Test going up one parent
-            AssertParentPath(@"c:\a\b\c\p.q", -1, null, "", "", "c:", @"\a\b\", "p", ".q"); 
-            AssertParentPath(@"c:\a\b\c\", -1, null, "", "", "c:", @"\a\b\", "", ""); 
-            AssertParentPath(@"c:\a\b\..\c\", -1, null, "", "", "c:", @"\a\", "", ""); 
-            AssertParentPath(@"..\c\", -1, @"c:\a\b\", "", "", "c:", @"\a\", "", ""); 
-            AssertParentPath(@"\\machine\share\a\b\c\..\d\foo.bar", -1, null, 
+            AssertParentPath(@"c:\a\b\c\p.q", -1, "", "", "c:", @"\a\b\", "p", ".q"); 
+            AssertParentPath(@"c:\a\b\c\", -1, "", "", "c:", @"\a\b\", "", ""); 
+            AssertParentPath(@"c:\a\b\..\c\", -1, "", "", "c:", @"\a\", "", ""); 
+            AssertParentPath(@"..\c\", -1, "", "", "c:", @"\a\", "", ""); 
+            AssertParentPath(@"\\machine\share\a\b\c\..\d\foo.bar", -1, 
                 @"\\machine", @"\share", "", @"\a\b\", "foo", ".bar"); 
             
             // Test going up multiple parents
-            AssertParentPath(@"c:\a\b\c\d\e\", -3, null, "", "", "c:", @"\a\b\", "", "");
-            AssertParentPath(@"c:\a\b\c\d\e\", -5, null, "", "", "c:", @"\", "", "");
+            AssertParentPath(@"c:\a\b\c\d\e\", -3, "", "", "c:", @"\a\b\", "", "");
+            AssertParentPath(@"c:\a\b\c\d\e\", -5, "", "", "c:", @"\", "", "");
 
             // Test bad stuff
             AssertBadParentPath(@"c:\", -1); // Already root
@@ -209,6 +209,7 @@ namespace ToolBelt.Tests
             try
             {
                 ParsedPath pp = new ParsedPath(path, type);
+				Assert.IsNotNull(pp);
                 Assert.Fail("Badly formed path not caught");
             }
             catch (Exception e)
@@ -252,6 +253,7 @@ namespace ToolBelt.Tests
             {
                 ParsedPath pp = new ParsedPath(path, PathType.Automatic).MakeFullPath(
                     baseDir == null ? null : new ParsedPath(baseDir, PathType.Directory));
+				Assert.IsNotNull(pp);
                 Assert.Fail("Badly formed path not caught");
             }
             catch (Exception e)
@@ -278,7 +280,8 @@ namespace ToolBelt.Tests
             try
             {
                 ParsedPath pp = new ParsedPath(path, PathType.Automatic).MakeRelativePath(new ParsedPath(basePath, PathType.Automatic));
-                Assert.Fail("MakeRelativePath succeeded and should have failed");
+				Assert.IsNotNull(pp);
+				Assert.Fail("MakeRelativePath succeeded and should have failed");
             }
             catch (Exception e)
             {
@@ -291,7 +294,6 @@ namespace ToolBelt.Tests
         private void AssertParentPath(
             string path,
             int level,
-            string baseDir,
             string machine,
             string share,
             string drive,
@@ -304,10 +306,7 @@ namespace ToolBelt.Tests
             // Test out specific entry points based on the values passed in
             if (level < -1)
             {
-                if (baseDir != null)
-                    pp = new ParsedPath(path, PathType.Automatic).MakeParentPath(level, new ParsedPath(baseDir, PathType.Directory));
-                else
-                    pp = new ParsedPath(path, PathType.Automatic).MakeParentPath(level);
+                pp = new ParsedPath(path, PathType.Automatic).MakeParentPath(level);
             
                 if (pp == null)
                 {
@@ -317,10 +316,7 @@ namespace ToolBelt.Tests
             }
             else
             {
-                if (baseDir != null)
-                    pp = new ParsedPath(path, PathType.Automatic).MakeParentPath(new ParsedPath(baseDir, PathType.Directory));
-                else
-                    pp = new ParsedPath(path, PathType.Automatic).MakeParentPath();
+                pp = new ParsedPath(path, PathType.Automatic).MakeParentPath();
 
                 if (pp == null)
                 {
@@ -349,7 +345,8 @@ namespace ToolBelt.Tests
                     pp = new ParsedPath(path, PathType.Automatic).MakeParentPath(level);
                 else
                     pp = new ParsedPath(path, PathType.Automatic).MakeParentPath();
-                    
+                
+				Assert.IsNotNull(pp);
                 Assert.Fail("Get parent succeeded and should have failed");
             }
             catch (Exception e)
@@ -359,7 +356,7 @@ namespace ToolBelt.Tests
         }
         #endregion
 
-        [TestMethod] public void TestPathTypes()
+        [TestCase] public void TestPathTypes()
         {
             Assert.IsTrue(new ParsedPath(@"c:\temp\", PathType.Automatic).IsDirectory);
             Assert.IsFalse(new ParsedPath(@"c:\temp", PathType.Automatic).IsDirectory);
@@ -380,10 +377,10 @@ namespace ToolBelt.Tests
             Assert.IsFalse(new ParsedPath(@"c:\a\..\thing.txt", PathType.Automatic).IsFullPath);
         }
 
-        [TestMethod] public void TestSubDirectories()
+        [TestCase] public void TestSubDirectories()
         {
-            Assert.AreEqual(4, new ParsedPath(@"c:\a\b\c\", PathType.Automatic).DirectoryDepth);
-            Assert.AreEqual(4, new ParsedPath(@"\\machine\share\a\b\c\", PathType.Automatic).DirectoryDepth);
+            Assert.AreEqual(4, new ParsedPath(@"c:\a\b\c\", PathType.Automatic).SubDirectories.Length);
+            Assert.AreEqual(4, new ParsedPath(@"\\machine\share\a\b\c\", PathType.Automatic).SubDirectories.Length);
             
             string[] subDirs;
             
@@ -399,7 +396,7 @@ namespace ToolBelt.Tests
             Assert.AreEqual(Path.DirectorySeparatorChar.ToString(), subDirs[0]);
         }
 
-		[TestMethod] public void TestAppend()
+		[TestCase] public void TestAppend()
 		{
             ParsedPath pp1 = new ParsedPath(@"c:\blah\blah", PathType.Directory);
             ParsedPath ppCombine = pp1.Append("file.txt", PathType.File);
@@ -407,7 +404,7 @@ namespace ToolBelt.Tests
             Assert.AreEqual(@"c:\blah\blah\file.txt", ppCombine);
 
             pp1 = new ParsedPath(@"c:\blah\blah", PathType.Directory);
-            Assert.Throws(delegate { ppCombine = pp1.Append(@"\blah\file.txt", PathType.File); }, typeof(ArgumentException));
+			Assert.Throws(typeof(ArgumentException), delegate { ppCombine = pp1.Append(@"\blah\file.txt", PathType.File); });
 
             pp1 = new ParsedPath(@"c:\blah\blah", PathType.Directory);
             ppCombine = pp1.Append(@"blah\file.txt", PathType.File);

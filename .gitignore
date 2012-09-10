@@ -13,6 +13,7 @@ ipch/
 Scratch/
 TestDeployment/
 TestResults/
+test-results/
 Debug/
 Release/
 _UpgradeReport_Files/
