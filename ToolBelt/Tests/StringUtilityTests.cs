@@ -2,16 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using Toaster;
 using ToolBelt;
+using NUnit.Framework;
 
 namespace ToolBelt.Tests
 {
-
-	[TestClass]
+	[TestFixture]
 	public class StringUtilsTests 
 	{
-		[TestMethod]
+		[TestCase]
 		public void TestWordWrap() 
 		{
 						  //1234567890123456789012345678901234567890123456789012345678901234567890
@@ -40,7 +39,7 @@ namespace ToolBelt.Tests
             Assert.IsTrue(Array.TrueForAll<string>(lines, delegate(string s) { return s.Length <= 80; }));
         }
 
-        [TestMethod]
+        [TestCase]
         public void TestReplaceTags()
         {
             var tagsCaseSensitive = new Dictionary<string, string>(StringComparer.InvariantCulture);

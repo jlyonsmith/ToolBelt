@@ -3,6 +3,7 @@ using System.Xml;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Chalk
 {
@@ -21,15 +22,22 @@ namespace Chalk
 		{
 			if (!NoLogo)
 			{
-				WriteMessage("Chalk Version Number Maintainer. Copyright (c) 2012, John Lyon-Smith." + Environment.NewLine);
+				string version = ((AssemblyFileVersionAttribute)Assembly.GetExecutingAssembly()
+				                  .GetCustomAttributes(typeof(AssemblyFileVersionAttribute), true)[0]).Version;
+				
+				WriteMessage("Chalk Version Number Maintainer. Version {0}", version);
+				WriteMessage("Copyright (c) 2012, John Lyon-Smith." + Environment.NewLine);
 			}
 			
 			if (ShowUsage)
 			{
 				WriteMessage(@"Creates and increments version information in .version file in .sln directory.
 	
-Usage: Chalk      [-q]                    Suppress logo
-                  [-h] or [-?]            Show help
+Usage: mono Chalk.exe ...
+
+Arguments:
+          [-q]                    Suppress logo
+          [-h] or [-?]            Show help
 ");
 				return;
 			}
@@ -207,7 +215,7 @@ Usage: Chalk      [-q]                    Suppress logo
 			XmlWriterSettings settings = new XmlWriterSettings();
 			
 			settings.Indent = true;
-			settings.IndentChars = "\t";
+			settings.IndentChars = "  ";
 			
 			using (XmlWriter writer = XmlWriter.Create(versionFile, settings))
 			{
@@ -233,7 +241,7 @@ Usage: Chalk      [-q]                    Suppress logo
 			
 			contents = Regex.Replace(
 				contents,
-				@"(?'before'VERSION )([0-9]+\.[0-9]+\.[0-9]+)",
+				@"(?'before'VERSION )([0-9]+\.[0-9]+\(.[0-9]+)){1,2}",
 				"${before}" + versionMajorMinorBuild);
 			
 			File.WriteAllText(file, contents);

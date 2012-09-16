@@ -63,12 +63,12 @@ namespace ToolBelt
     /// specific purpose.  This class makes both of these tasks significantly easier and more efficient 
     /// than working with the path as a string.  
     /// </para>  
-    /// <para>Parsing a Windows file system path correctly is a tricky task. Paths can contain 
+    /// <para>Parsing a file system path correctly is a tricky task. Paths can contain 
     /// Universal Naming Convention (UNC) components, they can contain relative directories, they
     /// might contain invalid characters, they can be quoted, they can contain wildcard characters, 
     /// they may refer to files, directories, or just a drive or UNC share. This class can handle all these 
     /// path components.</para>
-    /// <para>This path also extends the normal Windows relative path syntax by allowing more than two 
+    /// <para>This path also extends the normal relative path syntax by allowing more than two 
     /// <code>.</code>'s to signify parents directories further up the directory tree.  This is perhaps syntactically
     /// neater that using the <code>..\..</code> syntax.</para>
     /// <para>
@@ -646,23 +646,13 @@ namespace ToolBelt
 		/// <param name='newDirectory'>
 		/// New directory.
 		/// </param>
-		public ParsedPath WithDirectory(IEnumerable<string> newDirectoryParts)
+		public ParsedPath WithDirectory(IEnumerable<ParsedPath> newDirectoryParts)
 		{
 			StringBuilder sb = new StringBuilder();
 
 			foreach (var newDirectoryPart in newDirectoryParts)
 			{
-				string dirPart = newDirectoryPart; 
-
-				ValidateAndNormalizePath(ref dirPart);
-
-				int i = dirPart.IndexOf(PathUtility.DirectorySeparatorChar);
-
-				if (i != dirPart.Length - 1)
-					throw new ArgumentException(
-						"Directory part '{0}' must contain a single {1} at the end".CultureFormat(dirPart, PathUtility.DirectorySeparatorChar));
-
-				sb.Append(dirPart);
+				sb.Append(newDirectoryPart.Directory.ToString());
 			}
 	
 			string newDir = sb.ToString();
@@ -676,6 +666,11 @@ namespace ToolBelt
 				newDir.Length,
 				fileLength,
 				extLength);
+		}
+
+		public ParsedPath WithDirectory(ParsedPath directory)
+		{
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -876,9 +871,9 @@ namespace ToolBelt
             string ext = this.Extension;
             
             // Get the directory portions of both paths as arrays
-            string[] dirs = this.SubDirectories;
-            string[] baseDirs = basePath.SubDirectories;
-            int min = Math.Min(dirs.Length, baseDirs.Length);
+            IList<ParsedPath> dirs = this.SubDirectories;
+            IList<ParsedPath> baseDirs = basePath.SubDirectories;
+            int min = Math.Min(dirs.Count, baseDirs.Count);
             
             // Skip over any directory names that are the same
             int n = 0;
@@ -894,12 +889,12 @@ namespace ToolBelt
             StringBuilder sb = new StringBuilder(dirLength);
 
             // If there is nothing left of the base directory, add a '.' then the rest of the directories in this path
-            if (baseDirs.Length - n == 0)
+            if (baseDirs.Count - n == 0)
             {
                 sb.Append(PathUtility.ExtensionSeparatorChar);
                 sb.Append(Path.DirectorySeparatorChar);
                 
-                for (; n < dirs.Length; n++)
+                for (; n < dirs.Count; n++)
                 {
                     sb.Append(dirs[n]);
                     sb.Append(Path.DirectorySeparatorChar);
@@ -910,14 +905,14 @@ namespace ToolBelt
                 // Otherwise add ..'s for number of remaining directories in base then the rest of the directories in this path
                 int m = n;
                 
-                for (; n < baseDirs.Length; n++)
+                for (; n < baseDirs.Count; n++)
                 {
                     sb.Append(PathUtility.ExtensionSeparatorChar);
                     sb.Append(PathUtility.ExtensionSeparatorChar);
                     sb.Append(Path.DirectorySeparatorChar);
                 }
 
-                for (n = m; n < dirs.Length; n++)
+                for (n = m; n < dirs.Count; n++)
                 {
                     sb.Append(dirs[n]);
                     sb.Append(Path.DirectorySeparatorChar);
@@ -949,14 +944,14 @@ namespace ToolBelt
 		/// </param>
 		public ParsedPath MakeParentPath(int level)
 		{
-			string[] subDirs = this.SubDirectories;
-			int n = subDirs.Length + level;
+			IList<ParsedPath> subDirs = this.SubDirectories;
+			int n = subDirs.Count + level;
 
 			if (n == 0)
 				throw new InvalidOperationException(
 					"Insufficient directories to make parent path {0} levels down".CultureFormat(-level));
 
-			return this.WithDirectory(new ArrayRange<string>(subDirs, 0, n));
+			return this.WithDirectory(new ListRange<ParsedPath>(subDirs, 0, n));
 		}
 
 		public ParsedPath MakeParentPath()
@@ -1292,13 +1287,13 @@ namespace ToolBelt
         /// <summary>
         /// Gets an array containing the sub-directories that make up the full directory name.
         /// </summary>
-        public string[] SubDirectories
+        public IList<ParsedPath> SubDirectories
         {
             get 
             {
-				List<string> subDirs = new List<string>();
+				List<ParsedPath> subDirs = new List<ParsedPath>();
 
-				subDirs.Add(Path.DirectorySeparatorChar.ToString());
+				subDirs.Add(new ParsedPath(Path.DirectorySeparatorChar.ToString(), PathType.Directory));
 
 				string dir = this.Directory;
 				int i = 1;
@@ -1307,7 +1302,7 @@ namespace ToolBelt
 				{
 					if (dir[j] != Path.DirectorySeparatorChar)
 					{
-						subDirs.Add(dir.Substring(i, j - i + 1));
+						subDirs.Add(new ParsedPath(dir.Substring(i, j - i + 1), PathType.Directory));
 						j++;
 						i = j;
 					}
@@ -1317,7 +1312,7 @@ namespace ToolBelt
 					}
 				}
 
-                return subDirs.ToArray();
+                return subDirs;
             }
         }
         

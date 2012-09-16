@@ -1,21 +1,22 @@
 using System;
 using System.IO;
-using Toaster;
 using ToolBelt;
+using NUnit.Framework;
 
 namespace ToolBelt.Tests
 {
-	[TestClass]
-    [DeploymentItem(@"$(SolutionRoot)\ToolBelt\Tests\CommandTestProgram\bin\$(Configuration)\CommandTestProgram.exe")]
+	[TestFixture]
+    // TODO: How to do in NUnit
+	//[(@"$(SolutionRoot)\ToolBelt\Tests\CommandTestProgram\bin\$(Configuration)\CommandTestProgram.exe")]
 	public class CommandTests 
 	{
-		[TestMethod]
+		[TestCase]
 		public void TestNoCapture() 
 		{
 			Assert.IsTrue(Command.Run("dir /b") == 0);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void TestCaptureOutput() 
 		{
 			string output;
@@ -24,7 +25,7 @@ namespace ToolBelt.Tests
 			Assert.IsTrue(output == "one arguments\r\n");
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void TestCaptureOutputAndError() 
 		{
 			string output;
@@ -35,7 +36,7 @@ namespace ToolBelt.Tests
 			Assert.IsTrue(error == "error text\r\n");
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void TestQuotedContent() 
 		{
 			string output;
@@ -44,7 +45,7 @@ namespace ToolBelt.Tests
 			Assert.IsTrue(output == "two arguments plus quoted string\r\n");
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void TestNonZeroExitCode()
 		{
 			string output;
@@ -52,18 +53,18 @@ namespace ToolBelt.Tests
 			Assert.IsTrue(Command.Run("CommandTestProgram.exe /1 /2 /3 /4 /5", out output) != 0);
 		}
 
-		[TestMethod]
+		[TestCase]
 		public void TestDebugMode()
 		{
 			string output;
 
 			Command.DebugMode = true;
 			Assert.IsTrue(Command.DebugMode);
-			Assert.AreEqual<int>(Command.Run("CommandTestProgram.exe", out output), 0);
-			Assert.AreEqual(output, "CommandTestProgram.exe\r\n");
+			Assert.AreEqual(0, Command.Run("CommandTestProgram.exe", out output));
+			Assert.AreEqual("CommandTestProgram.exe\r\n", output);
 		}
 		
-		[TestCleanup]
+		[TestFixtureTearDown]
 		public void TestCleanup()
 		{
 			Command.DebugMode = false;

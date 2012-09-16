@@ -1,5 +1,5 @@
 //
-// This file genenerated by the Buckle tool on 6/15/2012 at 9:56 AM. 
+// This file genenerated by the Buckle tool on 9/16/2012 at 12:51 PM. 
 //
 // Contains strongly typed wrappers for resources in ConsoleUtilityResources.resx
 //
@@ -22,33 +22,33 @@ public class ConsoleUtilityResources
     /// <summary>
     /// debug: 
     /// </summary>
-    public static Message Debug
+    public static ToolBelt.Message Debug
     {
         get
         {
-            return new Message("Debug", typeof(ConsoleUtilityResources), ResourceManager, null);
+            return new ToolBelt.Message("Debug", typeof(ConsoleUtilityResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// error: 
     /// </summary>
-    public static Message Error
+    public static ToolBelt.Message Error
     {
         get
         {
-            return new Message("Error", typeof(ConsoleUtilityResources), ResourceManager, null);
+            return new ToolBelt.Message("Error", typeof(ConsoleUtilityResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// warning: 
     /// </summary>
-    public static Message Warning
+    public static ToolBelt.Message Warning
     {
         get
         {
-            return new Message("Warning", typeof(ConsoleUtilityResources), ResourceManager, null);
+            return new ToolBelt.Message("Warning", typeof(ConsoleUtilityResources), ResourceManager, null);
         }
     }
 }

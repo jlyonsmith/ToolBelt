@@ -110,7 +110,7 @@ namespace Buckle
 			{
 				WriteMessage(@"Generates strongly typed wrappers for string and bitmap .resx resources
 	
-Usage: mono Buckle.exe <args>
+Usage: mono Buckle.exe ...
 
 Arguments:
           <resx-file>              Input .resx file.

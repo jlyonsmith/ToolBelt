@@ -1,11 +1,13 @@
 using System;
 using System.IO;
-using Toaster;
 using ToolBelt;
+using NUnit.Framework;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ToolBelt.Tests
 {
-	[TestClass] 
+	[TestFixture] 
 	public class DirectoryUtilityTests
 	{
         // Each test directory should end in '\'
@@ -26,8 +28,8 @@ namespace ToolBelt.Tests
 		// Let's hope this file never appears in any of your parent directories!
 		static string testFile = @"~GetFilesTestFile.txt";
 		
-		[ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+		[TestFixtureSetUp]
+        public static void TestFixtureSetUp()
 		{
 			try
 			{			
@@ -54,35 +56,35 @@ namespace ToolBelt.Tests
 			}
 		}
 		
-		[TestMethod] 
+		[TestCase] 
 		public void GetFilesDirOnly() 
 		{
-			string[] files = DirectoryUtility.GetFiles(Environment.CurrentDirectory,
-				testDirs[1] + "*.txt", SearchScope.DirectoryOnly);
+			IList<ParsedPath> files = DirectoryUtility.GetFiles(
+				new ParsedPath(testDirs[1] + "*.txt", PathType.File), SearchScope.DirectoryOnly);
 
-			Assert.IsTrue(files.Length == 1);
-			Assert.IsTrue(files[0].EndsWith(testFile));
+			Assert.AreEqual(1, files.Count);
+			Assert.AreEqual(files[0].FileAndExtension, testFile);
 		}
 		
-		[TestMethod] 
+		[TestCase] 
 		public void GetFilesSubDir() 
 		{
-            string[] files = DirectoryUtility.GetFiles(Environment.CurrentDirectory, 
-                testDirs[0] + "*.*", SearchScope.RecurseSubDirectoriesBreadthFirst);
+            IList<ParsedPath> files = DirectoryUtility.GetFiles( 
+                new ParsedPath(testDirs[0] + "*.*", PathType.File), SearchScope.RecurseSubDirectoriesBreadthFirst);
 
-            Assert.IsTrue(files.Length == 10);
-            Assert.IsTrue(Path.GetDirectoryName(files[files.Length - 1]).EndsWith("child221"));
+            Assert.AreEqual(10, files.Count);
+            Assert.AreEqual(files[files.Count - 1].SubDirectories.Last(), "child221");
 
             foreach (string file in files)
             {
                 Assert.IsTrue(file.EndsWith(testFile));
             }
 
-            files = DirectoryUtility.GetFiles(Environment.CurrentDirectory, 
-                testDirs[0] + "*.*", SearchScope.RecurseSubDirectoriesDepthFirst);
+            files = DirectoryUtility.GetFiles(
+                new ParsedPath(testDirs[0] + "*.*", PathType.File), SearchScope.RecurseSubDirectoriesDepthFirst);
 
-            Assert.IsTrue(files.Length == 10);
-            Assert.IsTrue(Path.GetDirectoryName(files[files.Length - 1]).EndsWith("root"));
+            Assert.AreEqual(10, files.Count);
+            Assert.IsTrue(Path.GetDirectoryName(files[files.Count - 1]).EndsWith("root"));
 
             foreach (string file in files)
             {
@@ -90,61 +92,65 @@ namespace ToolBelt.Tests
             }
         }
 
-		[TestMethod] 
+		[TestCase] 
 		public void GetFilesParentDirs() 
 		{
-            FileInfo[] fileInfos = DirectoryInfoUtility.GetFiles(Environment.CurrentDirectory, 
-				testDirs[7] + testFile, SearchScope.RecurseParentDirectories);
+            IList<FileInfo> fileInfos = DirectoryInfoUtility.GetFiles( 
+				new ParsedPath(testDirs[7] + testFile, PathType.File), SearchScope.RecurseParentDirectories);
 
-			Assert.IsTrue(fileInfos.Length == 4);
-			Assert.IsTrue(fileInfos[0].FullName.EndsWith(testFile));
+			Assert.AreEqual(4, fileInfos.Count);
+			Assert.AreEqual(testFile, fileInfos[0].FullName);
 		}
 		
-		[TestMethod] 
+		[TestCase] 
 		public void GetDirectoriesDirOnly()
 		{
-            DirectoryInfo[] dirInfos = DirectoryInfoUtility.GetDirectories(Environment.CurrentDirectory, testDirs[0] + "child*", 
+            IList<DirectoryInfo> dirInfos = DirectoryInfoUtility.GetDirectories(
+				new ParsedPath(testDirs[0] + "child*", PathType.Directory), 
 				SearchScope.DirectoryOnly);
 				
-			Assert.IsTrue(dirInfos.Length == 2);
+			Assert.AreEqual(2, dirInfos.Count);
 			Assert.IsTrue(dirInfos[0].FullName.EndsWith("child1"));
 		}
 		
-		[TestMethod] 
+		[TestCase] 
 		public void GetDirectoriesSubDirs()
 		{
 			// First check breadth first.  Also test the base directory parameter
-            DirectoryInfo[] dirInfos = DirectoryInfoUtility.GetDirectories(Path.GetFullPath(testDirs[0] + "child1"), "child*", 
+            IList<DirectoryInfo> dirInfos = DirectoryInfoUtility.GetDirectories(
+				new ParsedPath(testDirs[0] + "child*", PathType.Directory).MakeFullPath(), 
 				SearchScope.RecurseSubDirectoriesBreadthFirst);
 				
-			Assert.IsTrue(dirInfos.Length == 4);
+			Assert.AreEqual(4, dirInfos.Count);
 			Assert.IsTrue(dirInfos[0].FullName.EndsWith("child11"));
             Assert.IsTrue(dirInfos[1].FullName.EndsWith("child12"));
             Assert.IsTrue(dirInfos[2].FullName.EndsWith("child111"));
             Assert.IsTrue(dirInfos[3].FullName.EndsWith("child121"));
 
             // Now check depth first.
-            dirInfos = DirectoryInfoUtility.GetDirectories(Path.GetFullPath(testDirs[0] + "child1"), "child*", 
+            dirInfos = DirectoryInfoUtility.GetDirectories(
+				new ParsedPath(testDirs[0] + "child*", PathType.Directory).MakeFullPath(), 
                 SearchScope.RecurseSubDirectoriesDepthFirst);
 
-            Assert.IsTrue(dirInfos.Length == 4);
+            Assert.AreEqual(4, dirInfos.Count);
             Assert.IsTrue(dirInfos[0].FullName.EndsWith("child11"));
             Assert.IsTrue(dirInfos[1].FullName.EndsWith("child111"));
             Assert.IsTrue(dirInfos[2].FullName.EndsWith("child12"));
             Assert.IsTrue(dirInfos[3].FullName.EndsWith("child121"));
         }
 
-		[TestMethod] 
+		[TestCase] 
 		public void GetDirectoriesParentDirs() 
 		{
-			DirectoryInfo[] dirInfos = DirectoryInfoUtility.GetDirectories(Environment.CurrentDirectory,
-				testDirs[7] + "child2", SearchScope.RecurseParentDirectories);
+			IList<DirectoryInfo> dirInfos = DirectoryInfoUtility.GetDirectories(
+				new ParsedPath(testDirs[7] + "child2", PathType.Directory), 
+				SearchScope.RecurseParentDirectories);
 
-			Assert.IsTrue(dirInfos.Length == 1);
+			Assert.AreEqual(1, dirInfos.Count);
 			Assert.IsTrue(dirInfos[0].FullName.EndsWith("child2"));
 		}
 
-		[ClassCleanup] 
+		[TestFixtureTearDown] 
 		public static void ClassCleanup()
 		{
 			try 

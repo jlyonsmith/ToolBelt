@@ -1,5 +1,5 @@
 //
-// This file genenerated by the Buckle tool on 6/15/2012 at 9:56 AM. 
+// This file genenerated by the Buckle tool on 9/16/2012 at 12:51 PM. 
 //
 // Contains strongly typed wrappers for resources in CommandLineParserResources.resx
 //
@@ -22,375 +22,375 @@ public class CommandLineParserResources
     /// <summary>
     /// command
     /// </summary>
-    public static Message Command_Lowercase
+    public static ToolBelt.Message Command_Lowercase
     {
         get
         {
-            return new Message("Command_Lowercase", typeof(CommandLineParserResources), ResourceManager, null);
+            return new ToolBelt.Message("Command_Lowercase", typeof(CommandLineParserResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// Command argument already defined
     /// </summary>
-    public static Message CommandArgumentAlreadyDefined
+    public static ToolBelt.Message CommandArgumentAlreadyDefined
     {
         get
         {
-            return new Message("CommandArgumentAlreadyDefined", typeof(CommandLineParserResources), ResourceManager, null);
+            return new ToolBelt.Message("CommandArgumentAlreadyDefined", typeof(CommandLineParserResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// CommandLineCopyrightAttribute or AssemblyCopyrightAttribute not found.
     /// </summary>
-    public static Message CopyrightAttributesNotFound
+    public static ToolBelt.Message CopyrightAttributesNotFound
     {
         get
         {
-            return new Message("CopyrightAttributesNotFound", typeof(CommandLineParserResources), ResourceManager, null);
+            return new ToolBelt.Message("CopyrightAttributesNotFound", typeof(CommandLineParserResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// Default argument already defined
     /// </summary>
-    public static Message DefaultArgumentAlreadyDefined
+    public static ToolBelt.Message DefaultArgumentAlreadyDefined
     {
         get
         {
-            return new Message("DefaultArgumentAlreadyDefined", typeof(CommandLineParserResources), ResourceManager, null);
+            return new ToolBelt.Message("DefaultArgumentAlreadyDefined", typeof(CommandLineParserResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// CommandLineDescriptionAttribute or AssemblyDescriptionAttribute not found
     /// </summary>
-    public static Message DescriptionAttributesNotFound
+    public static ToolBelt.Message DescriptionAttributesNotFound
     {
         get
         {
-            return new Message("DescriptionAttributesNotFound", typeof(CommandLineParserResources), ResourceManager, null);
+            return new ToolBelt.Message("DescriptionAttributesNotFound", typeof(CommandLineParserResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// Duplicate command line argument '{0}'
     /// </summary>
-    public static Message DuplicateCommandLineArgument(object param0)
+    public static ToolBelt.Message DuplicateCommandLineArgument(object param0)
     {
         Object[] o = { param0 };
-        return new Message("DuplicateCommandLineArgument", typeof(CommandLineParserResources), ResourceManager, o);
+        return new ToolBelt.Message("DuplicateCommandLineArgument", typeof(CommandLineParserResources), ResourceManager, o);
     }
 
     /// <summary>
     /// file-name
     /// </summary>
-    public static Message FileName_Lowercase
+    public static ToolBelt.Message FileName_Lowercase
     {
         get
         {
-            return new Message("FileName_Lowercase", typeof(CommandLineParserResources), ResourceManager, null);
+            return new ToolBelt.Message("FileName_Lowercase", typeof(CommandLineParserResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// Invalid Initializer class '{0}' for command line argument '{1}'
     /// </summary>
-    public static Message InvalidInitializerClassForCommandLineArgument(object param0, object param1)
+    public static ToolBelt.Message InvalidInitializerClassForCommandLineArgument(object param0, object param1)
     {
         Object[] o = { param0, param1 };
-        return new Message("InvalidInitializerClassForCommandLineArgument", typeof(CommandLineParserResources), ResourceManager, o);
+        return new ToolBelt.Message("InvalidInitializerClassForCommandLineArgument", typeof(CommandLineParserResources), ResourceManager, o);
     }
 
     /// <summary>
     /// Invalid value '{0}' for command line argument '{1}'.
     /// </summary>
-    public static Message InvalidValueForCommandLineArgument(object param0, object param1)
+    public static ToolBelt.Message InvalidValueForCommandLineArgument(object param0, object param1)
     {
         Object[] o = { param0, param1 };
-        return new Message("InvalidValueForCommandLineArgument", typeof(CommandLineParserResources), ResourceManager, o);
+        return new ToolBelt.Message("InvalidValueForCommandLineArgument", typeof(CommandLineParserResources), ResourceManager, o);
     }
 
     /// <summary>
     /// Invalid value {0} for command line argument '{1}'. Valid values are: {2}
     /// </summary>
-    public static Message InvalidValueForCommandLineArgumentWithValid(object param0, object param1, object param2)
+    public static ToolBelt.Message InvalidValueForCommandLineArgumentWithValid(object param0, object param1, object param2)
     {
         Object[] o = { param0, param1, param2 };
-        return new Message("InvalidValueForCommandLineArgumentWithValid", typeof(CommandLineParserResources), ResourceManager, o);
+        return new ToolBelt.Message("InvalidValueForCommandLineArgumentWithValid", typeof(CommandLineParserResources), ResourceManager, o);
     }
 
     /// <summary>
     /// No way found to initialize type '{0}' for argument '{1}' from a string
     /// </summary>
-    public static Message NoWayToInitializeTypeFromString(object param0, object param1)
+    public static ToolBelt.Message NoWayToInitializeTypeFromString(object param0, object param1)
     {
         Object[] o = { param0, param1 };
-        return new Message("NoWayToInitializeTypeFromString", typeof(CommandLineParserResources), ResourceManager, o);
+        return new ToolBelt.Message("NoWayToInitializeTypeFromString", typeof(CommandLineParserResources), ResourceManager, o);
     }
 
     /// <summary>
     /// number
     /// </summary>
-    public static Message Number_Lowercase
+    public static ToolBelt.Message Number_Lowercase
     {
         get
         {
-            return new Message("Number_Lowercase", typeof(CommandLineParserResources), ResourceManager, null);
+            return new ToolBelt.Message("Number_Lowercase", typeof(CommandLineParserResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// switches
     /// </summary>
-    public static Message Switches_Lowercase
+    public static ToolBelt.Message Switches_Lowercase
     {
         get
         {
-            return new Message("Switches_Lowercase", typeof(CommandLineParserResources), ResourceManager, null);
+            return new ToolBelt.Message("Switches_Lowercase", typeof(CommandLineParserResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// Switches:
     /// </summary>
-    public static Message Switches_Propercase
+    public static ToolBelt.Message Switches_Propercase
     {
         get
         {
-            return new Message("Switches_Propercase", typeof(CommandLineParserResources), ResourceManager, null);
+            return new ToolBelt.Message("Switches_Propercase", typeof(CommandLineParserResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// Problem invoking the Add method for argument '{0}'
     /// </summary>
-    public static Message ProblemInvokingAddMethod(object param0)
+    public static ToolBelt.Message ProblemInvokingAddMethod(object param0)
     {
         Object[] o = { param0 };
-        return new Message("ProblemInvokingAddMethod", typeof(CommandLineParserResources), ResourceManager, o);
+        return new ToolBelt.Message("ProblemInvokingAddMethod", typeof(CommandLineParserResources), ResourceManager, o);
     }
 
     /// <summary>
     /// Property {0} does not have a value for Description
     /// </summary>
-    public static Message PropertyDoesNotHaveAValueForDescription(object param0)
+    public static ToolBelt.Message PropertyDoesNotHaveAValueForDescription(object param0)
     {
         Object[] o = { param0 };
-        return new Message("PropertyDoesNotHaveAValueForDescription", typeof(CommandLineParserResources), ResourceManager, o);
+        return new ToolBelt.Message("PropertyDoesNotHaveAValueForDescription", typeof(CommandLineParserResources), ResourceManager, o);
     }
 
     /// <summary>
     /// Property '{0}' has no Add method with non-object parameter type.
     /// </summary>
-    public static Message PropertyHasNoAddMethodWithNonObjectParameter(object param0)
+    public static ToolBelt.Message PropertyHasNoAddMethodWithNonObjectParameter(object param0)
     {
         Object[] o = { param0 };
-        return new Message("PropertyHasNoAddMethodWithNonObjectParameter", typeof(CommandLineParserResources), ResourceManager, o);
+        return new ToolBelt.Message("PropertyHasNoAddMethodWithNonObjectParameter", typeof(CommandLineParserResources), ResourceManager, o);
     }
 
     /// <summary>
     /// Property '{0}' is not a strongly typed array
     /// </summary>
-    public static Message PropertyIsNotAStronglyTypedArray(object param0)
+    public static ToolBelt.Message PropertyIsNotAStronglyTypedArray(object param0)
     {
         Object[] o = { param0 };
-        return new Message("PropertyIsNotAStronglyTypedArray", typeof(CommandLineParserResources), ResourceManager, o);
+        return new ToolBelt.Message("PropertyIsNotAStronglyTypedArray", typeof(CommandLineParserResources), ResourceManager, o);
     }
 
     /// <summary>
     /// Property '{0}' should be readable and writeable
     /// </summary>
-    public static Message PropertyShouldBeReadableAndWriteable(object param0)
+    public static ToolBelt.Message PropertyShouldBeReadableAndWriteable(object param0)
     {
         Object[] o = { param0 };
-        return new Message("PropertyShouldBeReadableAndWriteable", typeof(CommandLineParserResources), ResourceManager, o);
+        return new ToolBelt.Message("PropertyShouldBeReadableAndWriteable", typeof(CommandLineParserResources), ResourceManager, o);
     }
 
     /// <summary>
     /// Resource reader '{0}' does not contain a property '{1}'
     /// </summary>
-    public static Message ResourceReaderDoesNotContainString(object param0, object param1)
+    public static ToolBelt.Message ResourceReaderDoesNotContainString(object param0, object param1)
     {
         Object[] o = { param0, param1 };
-        return new Message("ResourceReaderDoesNotContainString", typeof(CommandLineParserResources), ResourceManager, o);
+        return new ToolBelt.Message("ResourceReaderDoesNotContainString", typeof(CommandLineParserResources), ResourceManager, o);
     }
 
     /// <summary>
-    /// (Short format: /{0})
+    /// (Short format: -{0})
     /// </summary>
-    public static Message ShortFormat(object param0)
+    public static ToolBelt.Message ShortFormat(object param0)
     {
         Object[] o = { param0 };
-        return new Message("ShortFormat", typeof(CommandLineParserResources), ResourceManager, o);
+        return new ToolBelt.Message("ShortFormat", typeof(CommandLineParserResources), ResourceManager, o);
     }
 
     /// <summary>
     /// text
     /// </summary>
-    public static Message Text_LowerCase
+    public static ToolBelt.Message Text_LowerCase
     {
         get
         {
-            return new Message("Text_LowerCase", typeof(CommandLineParserResources), ResourceManager, null);
+            return new ToolBelt.Message("Text_LowerCase", typeof(CommandLineParserResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// Type '{0}' is not derived from type '{1}'
     /// </summary>
-    public static Message TypeNotDerivedFromType(object param0, object param1)
+    public static ToolBelt.Message TypeNotDerivedFromType(object param0, object param1)
     {
         Object[] o = { param0, param1 };
-        return new Message("TypeNotDerivedFromType", typeof(CommandLineParserResources), ResourceManager, o);
+        return new ToolBelt.Message("TypeNotDerivedFromType", typeof(CommandLineParserResources), ResourceManager, o);
     }
 
     /// <summary>
     /// Unknown or invalid argument '{0}'
     /// </summary>
-    public static Message UnknownArgument(object param0)
+    public static ToolBelt.Message UnknownArgument(object param0)
     {
         Object[] o = { param0 };
-        return new Message("UnknownArgument", typeof(CommandLineParserResources), ResourceManager, o);
+        return new ToolBelt.Message("UnknownArgument", typeof(CommandLineParserResources), ResourceManager, o);
     }
 
     /// <summary>
     /// Unknown command '{0}'
     /// </summary>
-    public static Message UnknownCommandArgument(object param0)
+    public static ToolBelt.Message UnknownCommandArgument(object param0)
     {
         Object[] o = { param0 };
-        return new Message("UnknownCommandArgument", typeof(CommandLineParserResources), ResourceManager, o);
+        return new ToolBelt.Message("UnknownCommandArgument", typeof(CommandLineParserResources), ResourceManager, o);
     }
 
     /// <summary>
     /// Unprocessed argument already defined
     /// </summary>
-    public static Message UnprocessedArgumentAlreadyDefined
+    public static ToolBelt.Message UnprocessedArgumentAlreadyDefined
     {
         get
         {
-            return new Message("UnprocessedArgumentAlreadyDefined", typeof(CommandLineParserResources), ResourceManager, null);
+            return new ToolBelt.Message("UnprocessedArgumentAlreadyDefined", typeof(CommandLineParserResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// Unprocessed argument must be array or collection
     /// </summary>
-    public static Message UnprocessedArgumentMustBeArrayOrCollection
+    public static ToolBelt.Message UnprocessedArgumentMustBeArrayOrCollection
     {
         get
         {
-            return new Message("UnprocessedArgumentMustBeArrayOrCollection", typeof(CommandLineParserResources), ResourceManager, null);
+            return new ToolBelt.Message("UnprocessedArgumentMustBeArrayOrCollection", typeof(CommandLineParserResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// A target for unprocessed arguments cannot be specified without a default argument target
     /// </summary>
-    public static Message UnprocessedRequiresDefaultArguments
+    public static ToolBelt.Message UnprocessedRequiresDefaultArguments
     {
         get
         {
-            return new Message("UnprocessedRequiresDefaultArguments", typeof(CommandLineParserResources), ResourceManager, null);
+            return new ToolBelt.Message("UnprocessedRequiresDefaultArguments", typeof(CommandLineParserResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// Syntax:
     /// </summary>
-    public static Message Syntax_Propercase
+    public static ToolBelt.Message Syntax_Propercase
     {
         get
         {
-            return new Message("Syntax_Propercase", typeof(CommandLineParserResources), ResourceManager, null);
+            return new ToolBelt.Message("Syntax_Propercase", typeof(CommandLineParserResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// value
     /// </summary>
-    public static Message Value_Lowercase
+    public static ToolBelt.Message Value_Lowercase
     {
         get
         {
-            return new Message("Value_Lowercase", typeof(CommandLineParserResources), ResourceManager, null);
+            return new ToolBelt.Message("Value_Lowercase", typeof(CommandLineParserResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// AssemblyFileVersionAttribute not found.
     /// </summary>
-    public static Message VersionAttributesNotFound
+    public static ToolBelt.Message VersionAttributesNotFound
     {
         get
         {
-            return new Message("VersionAttributesNotFound", typeof(CommandLineParserResources), ResourceManager, null);
+            return new ToolBelt.Message("VersionAttributesNotFound", typeof(CommandLineParserResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// Commands:
     /// </summary>
-    public static Message Commands_Propercase
+    public static ToolBelt.Message Commands_Propercase
     {
         get
         {
-            return new Message("Commands_Propercase", typeof(CommandLineParserResources), ResourceManager, null);
+            return new ToolBelt.Message("Commands_Propercase", typeof(CommandLineParserResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// Description:
     /// </summary>
-    public static Message Description_Propercase
+    public static ToolBelt.Message Description_Propercase
     {
         get
         {
-            return new Message("Description_Propercase", typeof(CommandLineParserResources), ResourceManager, null);
+            return new ToolBelt.Message("Description_Propercase", typeof(CommandLineParserResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// Examples:
     /// </summary>
-    public static Message Examples_Propercase
+    public static ToolBelt.Message Examples_Propercase
     {
         get
         {
-            return new Message("Examples_Propercase", typeof(CommandLineParserResources), ResourceManager, null);
+            return new ToolBelt.Message("Examples_Propercase", typeof(CommandLineParserResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// Response files nested too deeply:
     /// </summary>
-    public static Message ResponseFilesTooDeep
+    public static ToolBelt.Message ResponseFilesTooDeep
     {
         get
         {
-            return new Message("ResponseFilesTooDeep", typeof(CommandLineParserResources), ResourceManager, null);
+            return new ToolBelt.Message("ResponseFilesTooDeep", typeof(CommandLineParserResources), ResourceManager, null);
         }
     }
 
     /// <summary>
     /// Could not open response file '{0}'
     /// </summary>
-    public static Message ResponseFileUnopened(object param0)
+    public static ToolBelt.Message ResponseFileUnopened(object param0)
     {
         Object[] o = { param0 };
-        return new Message("ResponseFileUnopened", typeof(CommandLineParserResources), ResourceManager, o);
+        return new ToolBelt.Message("ResponseFileUnopened", typeof(CommandLineParserResources), ResourceManager, o);
     }
 
     /// <summary>
     /// CommandLineTitleAttribute or AssemblyTitleAttribute not found
     /// </summary>
-    public static Message TitleAttributesNotFound
+    public static ToolBelt.Message TitleAttributesNotFound
     {
         get
         {
-            return new Message("TitleAttributesNotFound", typeof(CommandLineParserResources), ResourceManager, null);
+            return new ToolBelt.Message("TitleAttributesNotFound", typeof(CommandLineParserResources), ResourceManager, null);
         }
     }
 }

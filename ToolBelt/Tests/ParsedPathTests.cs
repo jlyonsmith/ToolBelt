@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using NUnit.Framework;
 using ToolBelt;
+using System.Collections.Generic;
 
 namespace ToolBelt.Tests
 {
@@ -379,20 +380,20 @@ namespace ToolBelt.Tests
 
         [TestCase] public void TestSubDirectories()
         {
-            Assert.AreEqual(4, new ParsedPath(@"c:\a\b\c\", PathType.Automatic).SubDirectories.Length);
-            Assert.AreEqual(4, new ParsedPath(@"\\machine\share\a\b\c\", PathType.Automatic).SubDirectories.Length);
+            Assert.AreEqual(4, new ParsedPath(@"c:\a\b\c\", PathType.Automatic).SubDirectories.Count);
+            Assert.AreEqual(4, new ParsedPath(@"\\machine\share\a\b\c\", PathType.Automatic).SubDirectories.Count);
             
-            string[] subDirs;
+            IList<ParsedPath> subDirs;
             
             subDirs = new ParsedPath(@"c:\a\b\c\", PathType.Directory).SubDirectories;
             
-            Assert.AreEqual(4, subDirs.Length);
-            Assert.AreEqual(Path.DirectorySeparatorChar.ToString(), subDirs[0]);
-            Assert.AreEqual("c", subDirs[3]);
+            Assert.AreEqual(4, subDirs.Count);
+            Assert.AreEqual(Path.DirectorySeparatorChar.ToString(), subDirs[0].ToString());
+            Assert.AreEqual("c", subDirs[3].ToString());
             
             subDirs = new ParsedPath(@"c:\", PathType.Directory).SubDirectories;
             
-            Assert.AreEqual(1, subDirs.Length);
+            Assert.AreEqual(1, subDirs.Count);
             Assert.AreEqual(Path.DirectorySeparatorChar.ToString(), subDirs[0]);
         }
 

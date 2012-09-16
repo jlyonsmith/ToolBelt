@@ -5,33 +5,34 @@ using System.Collections;
 namespace ToolBelt
 {
 	// TODO: An implicit conversion to T[] would be good to add 
-	public class ArrayRange<T> : IEnumerable<T>
+	public class ListRange<T> : IEnumerable<T>
 	{
-		private T[] original;
+		private IList<T> original;
 		private int start;
-		
-		public ArrayRange(T[] original, int start, int len)
+
+
+		public ListRange(IList<T> original, int start, int count)
 		{
 			this.original = original;
 			this.start = start;
-			Length = len;
+			Count = count;
 		}
 		
 		public T this[int index] 
 		{
 			get 
 			{
-				if (index < 0 || index >= Length)
+				if (index < 0 || index >= Count)
 					throw new IndexOutOfRangeException();
 				return original[start + index];
 			}
 		}
 		
-		public int Length { get; private set; }
+		public int Count { get; private set; }
 		
 		public IEnumerator<T> GetEnumerator()
 		{
-			for (int i = 0; i < Length; i++) 
+			for (int i = 0; i < Count; i++) 
 			{
 				yield return original[start + i];
 			}

@@ -22,6 +22,11 @@
     <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>True</DebugSymbols>
     <DefineConstants>DEBUG;MACOS</DefineConstants>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="BeforeBuild" command="/bin/bash BuildResources.sh" workingdir="${ProjectDir}" />
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>none</DebugType>
@@ -31,6 +36,11 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <PlatformTarget>x86</PlatformTarget>
     <DefineConstants>MACOS</DefineConstants>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="BeforeBuild" command="/bin/bash BuildResources.sh" workingdir="${ProjectDir}" />
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BigEndianBitConverter.cs" />
@@ -72,15 +82,13 @@
     <Compile Include="CommandLineParserResources.cs" />
     <Compile Include="ConsoleUtilityResources.cs" />
     <Compile Include="OutputterResources.cs" />
-    <Compile Include="ArrayRange.cs" />
+    <Compile Include="ListRange.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Buckle Include="CommandLineParserResources.resx" />
-    <Buckle Include="OutputterResources.resx" />
-    <Buckle Include="ConsoleUtilityResources.resx" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ToolBelt.targets" />
+    <None Include="BuildResources.sh" />
+    <None Include="OutputterResources.resx" />
+    <None Include="ConsoleUtilityResources.resx" />
+    <None Include="CommandLineParserResources.resx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build.Framework" />

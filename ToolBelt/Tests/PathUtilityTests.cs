@@ -1,14 +1,14 @@
 using System;
 using System.IO;
-using Toaster;
 using ToolBelt;
+using NUnit.Framework;
 
 namespace ToolBelt.Tests
 {
-	[TestClass] 
+	[TestFixture] 
 	public class PathExTests
 	{
-		[TestMethod] public void TestFindFileInPaths()
+		[TestCase] public void TestFindFileInPaths()
 		{
 			// TODO: Test FindFileInPaths
 		}
