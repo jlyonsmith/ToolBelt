@@ -3,11 +3,12 @@
   <Major>1</Major>
   <Minor>7</Minor>
   <Build>10916</Build>
-  <Revision>0</Revision>
+  <Revision>1</Revision>
   <StartYear>2012</StartYear>
   <Files>
     <File>Chalk/Properties/AssemblyInfo.cs</File>
     <File>Buckle/Properties/AssemblyInfo.cs</File>
+    <File>Hammer/Properties/AssemblyInfo.cs</File>
     <File>ToolBelt/Properties/AssemblyInfo.cs</File>
   </Files>
 </Version>

@@ -18,7 +18,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buckle.MacOS", "Buckle\Buck
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chalk.MacOS", "Chalk\Chalk.MacOS.csproj", "{92B08CD8-A9A8-4970-BFEF-DC3C2C49B73D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.Tests.MacOS", "ToolBelt\Tests\ToolBelt.Tests.MacOS.csproj", "{D048020A-7EAB-472D-96C0-1270297D3D21}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.Tests.MacOS", "ToolBelt\Tests\ToolBelt.Tests.MacOS.csproj", "{B394705D-6015-4FF9-9EE5-E1D25F514DA1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hammer.MacOS", "Hammer\Hammer.MacOS.csproj", "{AC21794C-3783-4048-913C-A9A4CEEC23B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,17 +41,23 @@ Global
 		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Debug|x86.Build.0 = Debug|x86
 		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Release|x86.ActiveCfg = Release|x86
 		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Release|x86.Build.0 = Release|x86
-		{D048020A-7EAB-472D-96C0-1270297D3D21}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D048020A-7EAB-472D-96C0-1270297D3D21}.Debug|x86.Build.0 = Debug|Any CPU
-		{D048020A-7EAB-472D-96C0-1270297D3D21}.Default|Any CPU.ActiveCfg = Debug|Any CPU
-		{D048020A-7EAB-472D-96C0-1270297D3D21}.Default|Any CPU.Build.0 = Debug|Any CPU
-		{D048020A-7EAB-472D-96C0-1270297D3D21}.Release|x86.ActiveCfg = Release|Any CPU
-		{D048020A-7EAB-472D-96C0-1270297D3D21}.Release|x86.Build.0 = Release|Any CPU
+		{AC21794C-3783-4048-913C-A9A4CEEC23B2}.Debug|x86.ActiveCfg = Debug|x86
+		{AC21794C-3783-4048-913C-A9A4CEEC23B2}.Debug|x86.Build.0 = Debug|x86
+		{AC21794C-3783-4048-913C-A9A4CEEC23B2}.Default|Any CPU.ActiveCfg = Debug|x86
+		{AC21794C-3783-4048-913C-A9A4CEEC23B2}.Default|Any CPU.Build.0 = Debug|x86
+		{AC21794C-3783-4048-913C-A9A4CEEC23B2}.Release|x86.ActiveCfg = Release|x86
+		{AC21794C-3783-4048-913C-A9A4CEEC23B2}.Release|x86.Build.0 = Release|x86
+		{B394705D-6015-4FF9-9EE5-E1D25F514DA1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B394705D-6015-4FF9-9EE5-E1D25F514DA1}.Debug|x86.Build.0 = Debug|Any CPU
+		{B394705D-6015-4FF9-9EE5-E1D25F514DA1}.Default|Any CPU.ActiveCfg = Debug|Any CPU
+		{B394705D-6015-4FF9-9EE5-E1D25F514DA1}.Default|Any CPU.Build.0 = Debug|Any CPU
+		{B394705D-6015-4FF9-9EE5-E1D25F514DA1}.Release|x86.ActiveCfg = Release|Any CPU
+		{B394705D-6015-4FF9-9EE5-E1D25F514DA1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Chalk\Chalk.MacOS.csproj
+		StartupItem = Hammer\Hammer.MacOS.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1
 		$1.FileWidth = 120
@@ -78,19 +86,37 @@ Global
 		$7.inheritsSet = null
 		$7.scope = application/config+xml
 		$0.TextStylePolicy = $8
-		$8.inheritsSet = null
+		$8.EolMarker = Unix
+		$8.inheritsSet = VisualStudio
+		$8.inheritsScope = text/plain
 		$8.scope = text/x-csharp
 		$0.CSharpFormattingPolicy = $9
+		$9.IndentSwitchBody = True
+		$9.AnonymousMethodBraceStyle = NextLine
+		$9.PropertyBraceStyle = NextLine
+		$9.PropertyGetBraceStyle = NextLine
+		$9.PropertySetBraceStyle = NextLine
+		$9.EventBraceStyle = NextLine
+		$9.EventAddBraceStyle = NextLine
+		$9.EventRemoveBraceStyle = NextLine
+		$9.StatementBraceStyle = NextLine
+		$9.ElseNewLinePlacement = NewLine
+		$9.ElseIfNewLinePlacement = SameLine
+		$9.CatchNewLinePlacement = NewLine
+		$9.FinallyNewLinePlacement = NewLine
+		$9.WhileNewLinePlacement = NewLine
+		$9.ArrayInitializerBraceStyle = NextLine
 		$9.BeforeMethodDeclarationParentheses = False
 		$9.BeforeMethodCallParentheses = False
 		$9.BeforeConstructorDeclarationParentheses = False
-		$9.BeforeIndexerDeclarationBracket = False
 		$9.BeforeDelegateDeclarationParentheses = False
 		$9.NewParentheses = False
-		$9.SpacesBeforeBrackets = False
 		$9.inheritsSet = Mono
 		$9.inheritsScope = text/x-csharp
 		$9.scope = text/x-csharp
+		$0.DotNetNamingPolicy = $10
+		$10.DirectoryNamespaceAssociation = None
+		$10.ResourceNamePolicy = FileFormatDefault
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
