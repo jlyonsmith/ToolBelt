@@ -84,12 +84,12 @@ Arguments:
             int numCr = 0;
             int numLf = 0;
             int numCrLf = 0;
-            int numLines = 0;
+            int numLines = 1;
 
             for (int i = 0; i < fileContents.Length; i++)
             {
                 char c = fileContents [i];
-                char c1 = (i < fileContents.Length - 2 ? fileContents [i + 1] : '\0');
+                char c1 = (i < fileContents.Length - 1 ? fileContents [i + 1] : '\0');
 
                 if (c == '\r')
                 {
@@ -112,17 +112,28 @@ Arguments:
                 }
             }
 
-            WriteMessage("\"{0}\", lines={1}, cr={2}, lf={2}, crlf={3}", this.InputFileName, numLines, numCr, numLf, numCrLf);
+            WriteMessage("\"{0}\", lines={1}, cr={2}, lf={3}, crlf={4}", this.InputFileName, numLines, numCr, numLf, numCrLf);
 
+            if (!FixedEndings.HasValue)
+                return;
+            
             LineEnding autoLineEnding = LineEnding.Auto;
             int n = 0;
 
-            if (numCrLf > n)
-                autoLineEnding = LineEnding.CrLf;
             if (numLf > n)
+            {
                 autoLineEnding = LineEnding.Lf;
+                n = numLf;
+            }
+            if (numCrLf > n)
+            {
+                autoLineEnding = LineEnding.CrLf;
+                n = numCrLf;
+            }
             if (numCr > n)
+            {
                 autoLineEnding = LineEnding.Cr;
+            }
 
             if (this.FixedEndings == LineEnding.Auto)
                 this.FixedEndings = autoLineEnding;
@@ -132,8 +143,7 @@ Arguments:
                 this.FixedEndings == LineEnding.Lf ? "\n" :
                 "\r\n";
 
-            if (!FixedEndings.HasValue)
-                return;
+            n = 0;
 
             using (StreamWriter writer = new StreamWriter(OutputFileName))
             {
@@ -149,10 +159,12 @@ Arguments:
                             i++;
                         }
 
+                        n++;
                         writer.Write(newLineChars);
                     }
                     else if (c == '\n')
                     {
+                        n++;
                         writer.Write(newLineChars);
                     }
                     else
@@ -161,6 +173,14 @@ Arguments:
                     }
                 }
             }
+
+            WriteMessage(
+                "->\"{0}\", lines={1}, {2}={3}", 
+                OutputFileName, 
+                n + 1,
+                FixedEndings.Value == LineEnding.Cr ? "cr" : 
+                FixedEndings.Value == LineEnding.Lf ? "lf" : "crlf",
+                n);
         }
 
         public void ProcessCommandLine(string[] args)
@@ -181,10 +201,10 @@ Arguments:
                         case 'o':
                             CheckAndSetArgument(arg, ref OutputFileName); 
                             continue;
-                        case 'e':
-                            string lineEnding = "Auto";
-                            CheckAndSetArgument(arg, ref lineEnding); 
-                            FixedEndings = (LineEnding)Enum.Parse(FixedEndings.GetType(), lineEnding, true);
+                        case 'f':
+                            string lineEndings = (FixedEndings.HasValue ? FixedEndings.Value.ToString() : null);
+                            CheckAndSetArgument(arg, ref lineEndings); 
+                            FixedEndings = (LineEnding)Enum.Parse(typeof(LineEnding), lineEndings, true);
                             break;
                         default:
                             throw new ApplicationException(string.Format("Unknown argument '{0}'", arg [1]));

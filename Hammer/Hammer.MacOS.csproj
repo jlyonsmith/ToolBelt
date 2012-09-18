@@ -19,7 +19,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <Externalconsole>True</Externalconsole>
+    <ConsolePause>False</ConsolePause>
+    <Commandlineparameters>../../Test/mixed1.txt -f:auto</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>none</DebugType>
@@ -41,5 +42,10 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Properties\" />
+    <Folder Include="Test\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Test\GenTestFiles.sh" />
+    <None Include="Test\GenTestFiles.cs" />
   </ItemGroup>
 </Project>

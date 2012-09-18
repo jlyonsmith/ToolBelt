@@ -19,7 +19,7 @@ namespace Hammer
 			}
 			catch (Exception exception)
 			{
-				Console.WriteLine("Error: Exception: {0}", exception);
+				Console.WriteLine("Error: Exception: {0}", exception.Message);
 				return 1;
 			}
 		}
