@@ -241,7 +241,7 @@ Arguments:
 			
 			contents = Regex.Replace(
 				contents,
-				@"(?'before'VERSION )([0-9]+\.[0-9]+\(.[0-9]+)){1,2}",
+				@"(?'before'VERSION )([0-9]+\.[0-9]+\.[0-9]+)",
 				"${before}" + versionMajorMinorBuild);
 			
 			File.WriteAllText(file, contents);
