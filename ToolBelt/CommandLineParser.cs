@@ -351,7 +351,7 @@ namespace ToolBelt
 				{
 					// Look for a public static Parse method on the initializer class
 					System.Reflection.MethodInfo parseMethod = attribute.Initializer.GetMethod(
-                        this.attribute.MethodName, BindingFlags.Public | BindingFlags.Static, null,
+                        this.attribute.MethodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static, null,
 						CallingConventions.Standard, new Type[] { typeof(string) }, null);
 
 					if (parseMethod != null)
