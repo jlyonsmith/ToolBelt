@@ -1,5 +1,5 @@
 //
-// This file genenerated by the Buckle tool on 10/12/2012 at 3:32 PM. 
+// This file genenerated by the Buckle tool on 10/18/2012 at 6:46 PM. 
 //
 // Contains strongly typed wrappers for resources in OutputterResources.resx
 //

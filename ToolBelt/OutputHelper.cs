@@ -20,13 +20,6 @@ namespace ToolBelt
             this.hasOutputErrors = false;
         }
 
-        public OutputHelper(IOutputter outputter, ResourceManager resourceManager)
-        {
-            this.outputter = outputter;
-            this.hasOutputErrors = false;
-            this.warningsAsErrors = false;
-        }
-
         #endregion
 
         #region Public Properties
