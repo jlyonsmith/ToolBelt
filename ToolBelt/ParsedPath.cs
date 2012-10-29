@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -10,7 +9,7 @@ using System.Collections.Generic;
 namespace ToolBelt
 {
     /// <summary>
-    /// Parsing typeHint for paths supplied to <see cref="ParsedPath"/> constructor.
+    /// Parsing hint for paths supplied to <see cref="ParsedPath"/> constructor.
     /// </summary>
     public enum PathType
     {
@@ -23,14 +22,19 @@ namespace ToolBelt
         /// </summary>
         Directory,
         /// <summary>
-        /// The path is just a volume (drive or share)
+        /// The path is just a Windows style "volume" (drive or share)
         /// </summary>
         Volume,
+		/// <summary>
+		/// A file or directory with wildcards
+		/// </summary>
+		Wildcard,
         /// <summary>
-        /// Try to automatically detect type of path.  Will assume path is a directory if 
-        /// it has a trailing <see cref="Path.DirectorySeparatorChar"/> 
+        /// The type of path is unknown.  This.  Will assume path is a directory if 
+        /// it has a trailing <see cref="Path.DirectorySeparatorChar"/>, or a wildcard
+		/// if there is a wildcard in the file name.
         /// </summary>
-        Automatic,
+        Unknown,
     };
 
     public enum PathParts
@@ -163,76 +167,78 @@ namespace ToolBelt
         /// <param name="path">The file path to parse.</param>
         /// <param name="typeHint">See <see cref="T:PathType"/> for a list of path type hints</param>
         public ParsedPath(string path, PathType typeHint)
-        {
-            string machine = String.Empty;
-            string share = String.Empty;
-            string drive = String.Empty;
-            string dir = String.Empty;
-            string file = String.Empty;
-            string ext = String.Empty;
+		{
+			string machine = String.Empty;
+			string share = String.Empty;
+			string drive = String.Empty;
+			string dir = String.Empty;
+			string file = String.Empty;
+			string ext = String.Empty;
 
 			ValidateAndNormalizePath(ref path);
 
-            int i; // Always the beginning index
-            int j; // Always the ending index
+			int i; // Always the beginning index
+			int j; // Always the ending index
 
-            bool autoTypeHint = (typeHint == PathType.Automatic);
-
-            if (path.StartsWith(PathUtility.UncPrefixChars, StringComparison.InvariantCultureIgnoreCase))
-            {
-                i = 0;
+			if (path.StartsWith(PathUtility.UncPrefixChars, StringComparison.InvariantCultureIgnoreCase))
+			{
+				i = 0;
                 
-                if (i + PathUtility.UncPrefixChars.Length >= path.Length)
-                    throw new ArgumentException("Badly formed UNC name");
+				if (i + PathUtility.UncPrefixChars.Length >= path.Length)
+					throw new ArgumentException("Badly formed UNC name");
                     
-                // Find the '\' after the '\\'
-                j = path.IndexOf(Path.DirectorySeparatorChar, PathUtility.UncPrefixChars.Length);			
+				// Find the '\' after the '\\'
+				j = path.IndexOf(Path.DirectorySeparatorChar, PathUtility.UncPrefixChars.Length);			
                 
-                if (j == -1 || j - i == 0)
-                    throw new ArgumentException("Badly formed UNC name");
+				if (j == -1 || j - i == 0)
+					throw new ArgumentException("Badly formed UNC name");
                     
-                machine = path.Substring(0, j);
+				machine = path.Substring(0, j);
 
-                i = j;
+				i = j;
                 
-                // Find the '\' after the share name, if there is one and it's not bang up
-                // against the next one
-                if (i + 1 >= path.Length || path[i + 1] == Path.DirectorySeparatorChar)
-                    throw new ArgumentException("Badly formed UNC name");
+				// Find the '\' after the share name, if there is one and it's not bang up
+				// against the next one
+				if (i + 1 >= path.Length || path[i + 1] == Path.DirectorySeparatorChar)
+					throw new ArgumentException("Badly formed UNC name");
                 
-                j = path.IndexOf(Path.DirectorySeparatorChar, i + 1);
+				j = path.IndexOf(Path.DirectorySeparatorChar, i + 1);
 
-                // Either it wasn't found or the string ended
-                if (j == -1)
-                    j = path.Length;
+				// Either it wasn't found or the string ended
+				if (j == -1)
+					j = path.Length;
                 
-                if (j - i == 0)
-                    throw new ArgumentException("Badly formed UNC name");
+				if (j - i == 0)
+					throw new ArgumentException("Badly formed UNC name");
 
-                share = path.Substring(i, j - i);
+				share = path.Substring(i, j - i);
 
-                if (typeHint == PathType.Automatic && path.Length == machine.Length + share.Length)
-                    typeHint = PathType.Volume;
-            }
-            else if (path.Length >= 2 && path[1] == PathUtility.VolumeSeparatorChar)
-            {
-                drive = path.Substring(0, 2);
+				if (typeHint == PathType.Unknown && path.Length == machine.Length + share.Length)
+					typeHint = PathType.Volume;
+			}
+			else if (path.Length >= 2 && path[1] == PathUtility.VolumeSeparatorChar)
+			{
+				drive = path.Substring(0, 2);
                 
-                if (typeHint == PathType.Automatic && path.Length == 2)
-                    typeHint = PathType.Volume;
-            }
+				if (typeHint == PathType.Unknown && path.Length == 2)
+					typeHint = PathType.Volume;
+			}
 
-            if (typeHint == PathType.Automatic)
-            {
-                if (path[path.Length - 1] == Path.DirectorySeparatorChar)
-                {
-                    typeHint = PathType.Directory;
-                }
-                else
-                {			
-                    typeHint = PathType.File;
-                }
-            }
+			if (typeHint == PathType.Unknown)
+			{
+				if (path[path.Length - 1] == Path.DirectorySeparatorChar)
+				{
+					typeHint = PathType.Directory;
+				}
+				else
+				{			
+					typeHint = PathType.File;
+				}
+			}
+			else if (typeHint == PathType.Wildcard)
+			{
+				typeHint = PathType.File;
+			}
             
             if (typeHint == PathType.File)	
             {
@@ -248,7 +254,7 @@ namespace ToolBelt
                 else 	
                 {
                     if (i + 1 >= path.Length)
-                        throw new ArgumentException("Path is badly formed");
+                        throw new ArgumentException("Path is badly formed.  It does not contain a file name.");
 
                     // Move past the separator; that's part of the directory
                     i++;
@@ -284,10 +290,10 @@ namespace ToolBelt
 
             // You can't have wildcards in the directory part
             if (dir.IndexOfAny(PathUtility.WildcardChars) != -1)
-                throw new ArgumentException("Invalid characters in path");
+                throw new ArgumentException("Invalid characters in path. Directory cannot contain wildcards.");
             
             // If user wanted a VolumeOnly, validate that we have no directory, file or extension
-            if (!autoTypeHint && typeHint == PathType.Volume && 
+            if (typeHint == PathType.Volume && 
                 (dir != String.Empty || file != String.Empty || ext != String.Empty))
                 throw new ArgumentException("Path contains more than just a volume");
 
@@ -969,7 +975,7 @@ namespace ToolBelt
         /// <returns></returns>
         public static ParsedPath Parse(string value)
         {
-            return new ParsedPath(value, PathType.Automatic);
+            return new ParsedPath(value, PathType.Unknown);
         }
 
         #endregion
