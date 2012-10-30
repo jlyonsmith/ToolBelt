@@ -143,7 +143,13 @@ namespace ToolBelt
             get
             {
                 if (relativePathPartSingleLineRegex == null)
-                    relativePathPartSingleLineRegex = new Regex(@"[.]+" + Path.DirectorySeparatorChar, RegexOptions.Singleline);
+                {
+#if WINDOWS
+                    relativePathPartSingleLineRegex = new Regex(@"[.]+\\");
+#else
+                    relativePathPartSingleLineRegex = new Regex(@"[.]+/");
+#endif
+                }
                 
                 return relativePathPartSingleLineRegex;
             }
