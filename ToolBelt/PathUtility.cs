@@ -119,7 +119,7 @@ namespace ToolBelt
 		/// Alternate character used to separate the directories ('\' on Unix, '/' on Windows)
 		/// </summary>
 #if WINDOWS
-		public static readonly char AltDirectorySeparatorChar = '//';
+		public static readonly char AltDirectorySeparatorChar = '/';
 #else
 		public static readonly char AltDirectorySeparatorChar = '\\';
 #endif

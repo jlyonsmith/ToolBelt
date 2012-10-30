@@ -5,54 +5,100 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{775B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EF60F8C0-BCDF-484C-9F81-1262C02A4315}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt", "ToolBelt\ToolBelt.Windows.csproj", "{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.Windows", "ToolBelt\ToolBelt.Windows.csproj", "{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A7D06A02-DE03-4548-AA5D-51A1338F01A3} = {A7D06A02-DE03-4548-AA5D-51A1338F01A3}
+		{3A6F9F10-B41F-4F29-AA34-4CAB6E468FC6} = {3A6F9F10-B41F-4F29-AA34-4CAB6E468FC6}
+		{3F580F82-2C10-4360-B648-431162383731} = {3F580F82-2C10-4360-B648-431162383731}
+		{C7B690C6-A33B-4F00-979E-1D89923D94CC} = {C7B690C6-A33B-4F00-979E-1D89923D94CC}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buckle", "Buckle\Buckle.Windows.csproj", "{A7D06A02-DE03-4548-AA5D-51A1338F01A3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buckle.Windows", "Buckle\Buckle.Windows.csproj", "{A7D06A02-DE03-4548-AA5D-51A1338F01A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.Tests", "ToolBelt\Tests\ToolBelt.Tests.Windows.csproj", "{DD431EDF-A479-4788-AD84-966E1CD3C3A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.Tests.Windows", "ToolBelt\Tests\ToolBelt.Tests.Windows.csproj", "{DD431EDF-A479-4788-AD84-966E1CD3C3A8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A7D06A02-DE03-4548-AA5D-51A1338F01A3} = {A7D06A02-DE03-4548-AA5D-51A1338F01A3}
+		{3A6F9F10-B41F-4F29-AA34-4CAB6E468FC6} = {3A6F9F10-B41F-4F29-AA34-4CAB6E468FC6}
+		{3F580F82-2C10-4360-B648-431162383731} = {3F580F82-2C10-4360-B648-431162383731}
+		{C7B690C6-A33B-4F00-979E-1D89923D94CC} = {C7B690C6-A33B-4F00-979E-1D89923D94CC}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandTestProgram", "ToolBelt\Tests\CommandTestProgram\CommandTestProgram.Windows.csproj", "{3F580F82-2C10-4360-B648-431162383731}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandTestProgram.Windows", "ToolBelt\Tests\CommandTestProgram\CommandTestProgram.Windows.csproj", "{3F580F82-2C10-4360-B648-431162383731}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chalk.Windows", "Chalk\Chalk.Windows.csproj", "{C7B690C6-A33B-4F00-979E-1D89923D94CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hammer.Windows", "Hammer\Hammer.Windows.csproj", "{3A6F9F10-B41F-4F29-AA34-4CAB6E468FC6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
 		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}.Release|x86.ActiveCfg = Release|Any CPU
 		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{A7D06A02-DE03-4548-AA5D-51A1338F01A3}.Release|x86.ActiveCfg = Release|Any CPU
 		{DD431EDF-A479-4788-AD84-966E1CD3C3A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DD431EDF-A479-4788-AD84-966E1CD3C3A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD431EDF-A479-4788-AD84-966E1CD3C3A8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{DD431EDF-A479-4788-AD84-966E1CD3C3A8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{DD431EDF-A479-4788-AD84-966E1CD3C3A8}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{DD431EDF-A479-4788-AD84-966E1CD3C3A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD431EDF-A479-4788-AD84-966E1CD3C3A8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DD431EDF-A479-4788-AD84-966E1CD3C3A8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{DD431EDF-A479-4788-AD84-966E1CD3C3A8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{DD431EDF-A479-4788-AD84-966E1CD3C3A8}.Release|x86.ActiveCfg = Release|Any CPU
 		{3F580F82-2C10-4360-B648-431162383731}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3F580F82-2C10-4360-B648-431162383731}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F580F82-2C10-4360-B648-431162383731}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{3F580F82-2C10-4360-B648-431162383731}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3F580F82-2C10-4360-B648-431162383731}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{3F580F82-2C10-4360-B648-431162383731}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F580F82-2C10-4360-B648-431162383731}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3F580F82-2C10-4360-B648-431162383731}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{3F580F82-2C10-4360-B648-431162383731}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3F580F82-2C10-4360-B648-431162383731}.Release|x86.ActiveCfg = Release|Any CPU
+		{C7B690C6-A33B-4F00-979E-1D89923D94CC}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{C7B690C6-A33B-4F00-979E-1D89923D94CC}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{C7B690C6-A33B-4F00-979E-1D89923D94CC}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{C7B690C6-A33B-4F00-979E-1D89923D94CC}.Debug|x86.ActiveCfg = Debug|x86
+		{C7B690C6-A33B-4F00-979E-1D89923D94CC}.Debug|x86.Build.0 = Debug|x86
+		{C7B690C6-A33B-4F00-979E-1D89923D94CC}.Release|Any CPU.ActiveCfg = Release|x86
+		{C7B690C6-A33B-4F00-979E-1D89923D94CC}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{C7B690C6-A33B-4F00-979E-1D89923D94CC}.Release|Mixed Platforms.Build.0 = Release|x86
+		{C7B690C6-A33B-4F00-979E-1D89923D94CC}.Release|x86.ActiveCfg = Release|x86
+		{C7B690C6-A33B-4F00-979E-1D89923D94CC}.Release|x86.Build.0 = Release|x86
+		{3A6F9F10-B41F-4F29-AA34-4CAB6E468FC6}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{3A6F9F10-B41F-4F29-AA34-4CAB6E468FC6}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{3A6F9F10-B41F-4F29-AA34-4CAB6E468FC6}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{3A6F9F10-B41F-4F29-AA34-4CAB6E468FC6}.Debug|x86.ActiveCfg = Debug|x86
+		{3A6F9F10-B41F-4F29-AA34-4CAB6E468FC6}.Debug|x86.Build.0 = Debug|x86
+		{3A6F9F10-B41F-4F29-AA34-4CAB6E468FC6}.Release|Any CPU.ActiveCfg = Release|x86
+		{3A6F9F10-B41F-4F29-AA34-4CAB6E468FC6}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{3A6F9F10-B41F-4F29-AA34-4CAB6E468FC6}.Release|Mixed Platforms.Build.0 = Release|x86
+		{3A6F9F10-B41F-4F29-AA34-4CAB6E468FC6}.Release|x86.ActiveCfg = Release|x86
+		{3A6F9F10-B41F-4F29-AA34-4CAB6E468FC6}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

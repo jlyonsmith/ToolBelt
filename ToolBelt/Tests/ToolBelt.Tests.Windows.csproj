@@ -39,9 +39,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Toaster">
-      <HintPath>..\..\..\..\Program Files (x86)\MSBuild\Toaster\Toaster.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandLineParserTests.cs" />
@@ -56,9 +53,9 @@
     <Buckle Include="CommandLineParserTestsResources.resx" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ToolBelt.csproj">
+    <ProjectReference Include="..\ToolBelt.Windows.csproj">
       <Project>{52B1B4C0-34D2-4867-AD1F-0EE565F89DC5}</Project>
-      <Name>ToolBelt</Name>
+      <Name>ToolBelt.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

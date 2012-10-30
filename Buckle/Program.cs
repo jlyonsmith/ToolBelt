@@ -19,7 +19,7 @@ namespace Buckle
 			}
 			catch (Exception exception)
 			{
-				Console.WriteLine("Error: Exception: {0}", exception);
+				Console.WriteLine("error: {0}", exception.Message);
 				return 1;
 			}
 		}
