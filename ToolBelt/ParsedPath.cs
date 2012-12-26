@@ -1026,6 +1026,7 @@ namespace ToolBelt
         /// <returns></returns>
         public override int GetHashCode()
         {
+			// TODO: This needs to be case insensitive on Windows!
             return this.ToString().GetHashCode();
         }
 

@@ -73,6 +73,7 @@
     <Compile Include="ConsoleUtilityResources.cs" />
     <Compile Include="OutputterResources.cs" />
     <Compile Include="ArrayRange.cs" />
+    <Compile Include="ForEach.cs" />
   </ItemGroup>
   <ItemGroup>
     <Buckle Include="CommandLineParserResources.resx" />
