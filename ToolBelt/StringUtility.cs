@@ -237,7 +237,6 @@ namespace ToolBelt
                 }
                 else
                 {
-					Console.WriteLine ("  not found");
                     if ((flags & TaggedStringOptions.RemoveUnknownTags) == TaggedStringOptions.RemoveUnknownTags)
                     {
                         sb.Remove(tagStart, tagEnd + tagSuffix.Length - tagStart);

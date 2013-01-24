@@ -18,9 +18,11 @@ namespace ToolBelt
 #if WINDOWS
 			string scriptContents = String.Format("@echo off\r\n{0}\r\n", command);
 			ParsedPath scriptFileName = new ParsedPath(Path.GetTempFileName(), PathType.File).WithExtension(".bat");
-#elif MACOS
+#elif OSX
 			string scriptContents = command;
 			ParsedPath scriptFileName = new ParsedPath(Path.GetTempFileName(), PathType.File).WithExtension(".sh");
+#else
+			throw new NotImplementedException();
 #endif
 
 			File.WriteAllText(scriptFileName, scriptContents);
@@ -121,9 +123,11 @@ namespace ToolBelt
 #if WINDOWS
 				string shell = System.Environment.GetEnvironmentVariable("COMSPEC");
 				string argString = "/c \"" + scriptFileName + "\"";
-#elif MACOS
+#elif OSX
 				string shell = "/bin/bash";
 				string argString = "\"" + scriptFileName + "\"";
+#else 
+				throw new NotImplementedException();
 #endif
 
 				Process p = new Process();

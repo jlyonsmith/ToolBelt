@@ -47,7 +47,7 @@ namespace ToolBelt
 
                 if (!String.IsNullOrEmpty(e.File))
                 {
-                    writer.Write("{0}({1}): ", e.File, e.LineNumber);
+					writer.Write("{0}({1},{2}): ", e.File, e.LineNumber, e.ColumnNumber);
                 }
 
                 writer.Write(OutputterResources.Error, e.Code);
@@ -71,7 +71,7 @@ namespace ToolBelt
 
                 if (!String.IsNullOrEmpty(e.File))
                 {
-                    writer.Write("{0}({1}): ", e.File, e.LineNumber);
+					writer.Write("{0}({1},{2}): ", e.File, e.LineNumber, e.ColumnNumber);
                 }
 
                 writer.Write(OutputterResources.Warning, e.Code);
