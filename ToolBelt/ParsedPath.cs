@@ -186,17 +186,15 @@ namespace ToolBelt
             int i; // Always the beginning index
             int j; // Always the ending index
 
-            bool autoTypeHint = (typeHint == PathType.Automatic);
-
-            if (path.StartsWith(PathUtility.UncPrefixChars, StringComparison.InvariantCultureIgnoreCase))
+            if (path.StartsWith(PathUtility.UncPrefix, StringComparison.InvariantCultureIgnoreCase))
             {
                 i = 0;
                 
-                if (i + PathUtility.UncPrefixChars.Length >= path.Length)
+                if (i + PathUtility.UncPrefix.Length >= path.Length)
                     throw new ArgumentException("Badly formed UNC name");
                     
                 // Find the '\' after the '\\'
-                j = path.IndexOf(Path.DirectorySeparatorChar, PathUtility.UncPrefixChars.Length);			
+                j = path.IndexOf(Path.DirectorySeparatorChar, PathUtility.UncPrefix.Length);			
                 
 				if (j == -1 || j - i == 0)
 					throw new ArgumentException("Badly formed UNC name");
@@ -977,7 +975,7 @@ namespace ToolBelt
 
         #region Static Methods
         /// <summary>
-        /// Parse a string and return a <see cref="ParsedPath"/> object.  Use <see cref="PathType.Automatic"/> to determine path type.
+        /// Parse a string and return a <see cref="ParsedPath"/> object.  Use <see cref="PathType.Unknown"/> to determine path type.
         /// </summary>
         /// <param name="value">String value to parse.</param>
         /// <returns></returns>
