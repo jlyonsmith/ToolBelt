@@ -501,7 +501,7 @@ namespace ToolBelt
 		/// </summary>
 		/// <param name="command"></param>
 		/// <returns></returns>
-		public bool IsValidCommand(string command)
+		public bool IsValidForCommand(string command)
 		{
 			if (String.IsNullOrEmpty(command))
 				return true;
@@ -1024,7 +1024,7 @@ namespace ToolBelt
 				while (enumerator.MoveNext())
 				{
 					CommandLineArgument argument = enumerator.Current;
-					if (!HasCommandArgument || argument.IsValidCommand(commandArgument.ToString()))
+					if (!HasCommandArgument || argument.IsValidForCommand(commandArgument.ToString()))
 					{
 						string s = argument.ToString();
 	
@@ -1033,7 +1033,7 @@ namespace ToolBelt
 					}
 				}
 				
-				if (HasDefaultArgument && (!HasCommandArgument || defaultArgument.IsValidCommand(commandArgument.ToString())))
+				if (HasDefaultArgument && (!HasCommandArgument || defaultArgument.IsValidForCommand(commandArgument.ToString())))
 				{
 					string s = defaultArgument.ToString();
 					
@@ -1041,7 +1041,7 @@ namespace ToolBelt
 						sb.Append(" " + s);
 				}
 
-				if (HasUnprocessedArgument && (!HasCommandArgument || unprocessedArgument.IsValidCommand(commandArgument.ToString())))
+				if (HasUnprocessedArgument && (!HasCommandArgument || unprocessedArgument.IsValidForCommand(commandArgument.ToString())))
 				{
 					string s = unprocessedArgument.ToString();
 					
@@ -1222,7 +1222,7 @@ namespace ToolBelt
 								delegate(CommandLineArgument item)
 								{
 									return
-										IsValidCommand(item, command) &&
+										IsValidForCommand(item, command) &&
 										String.CompareOrdinal(item.Name, argumentName) == 0 ||
 										String.CompareOrdinal(item.ShortName, argumentName) == 0;
 								});
@@ -1252,7 +1252,7 @@ namespace ToolBelt
 						{
 							string command = argument.ToLower(CultureInfo.InvariantCulture);
 							
-							if (!IsValidCommand(command))
+							if (!IsValidForCommand(command))
 							{
 								throw new CommandLineArgumentException(CommandLineParserResources.UnknownCommandArgument(command));
 							}
@@ -1404,7 +1404,7 @@ namespace ToolBelt
 				lineLength = Math.Max(lineLength, 40);
 			}
 
-			if (HasCommandArgument && !IsValidCommand(command))
+			if (HasCommandArgument && !IsValidForCommand(command))
 			{
 				throw new CommandLineArgumentException(CommandLineParserResources.UnknownCommandArgument(command));
 			}
@@ -1455,7 +1455,7 @@ namespace ToolBelt
 					helpText.Append(" [" + CommandLineParserResources.Switches_Lowercase + "]");
 				}
 	
-				if (HasDefaultArgument && IsValidCommand(defaultArgument, command))
+				if (HasDefaultArgument && IsValidForCommand(defaultArgument, command))
 				{
 					string hint = GetDefaultArgumentValueHint(command);
 	
@@ -1480,7 +1480,7 @@ namespace ToolBelt
 							helpText.Append(" ...]");
 						}
 					}
-					else if (IsValidCommand(unprocessedArgument, command))
+					else if (IsValidForCommand(unprocessedArgument, command))
 					{
 						// Add the unprocessed arguments hint
 						hint = GetUnprocessedArgumentValueHint(command);
@@ -1567,7 +1567,7 @@ namespace ToolBelt
 
 			foreach (CommandLineArgument argument in argumentCollection)
 			{
-				if (!IsValidCommand(argument, command))
+				if (!IsValidForCommand(argument, command))
 					continue;
 				
 				string valueText = "";
@@ -1733,7 +1733,7 @@ namespace ToolBelt
 			{
 				foreach (CommandLineArgument argument in argumentCollection)
 				{
-					if (IsValidCommand(argument, command))
+					if (IsValidForCommand(argument, command))
 						return true;
 				}
 
@@ -1804,9 +1804,9 @@ namespace ToolBelt
 		/// Check that a command description exists for this command.
 		/// <param name="command"></param>
 		/// <returns></returns>
-		private bool IsValidCommand(string command)
+		private bool IsValidForCommand(string command)
 		{
-			if (HasCommandArgument && commandArgument.IsValidCommand(command))
+			if (HasCommandArgument && commandArgument.IsValidForCommand(command))
 				return true;
 
 			EnsureCommandSwitches();
@@ -1820,9 +1820,9 @@ namespace ToolBelt
 		/// <param name="argument"></param>
 		/// <param name="command"></param>
 		/// <returns></returns>
-		private bool IsValidCommand(CommandLineArgument argument, string command)
+		private bool IsValidForCommand(CommandLineArgument argument, string command)
 		{
-			if (argument.IsValidCommand(command))
+			if (argument.IsValidForCommand(command))
 				return true;
 
 			// check the command attributes instead if they contain this switch name
@@ -2195,7 +2195,7 @@ namespace ToolBelt
         public string MethodName { get; set; }
 
         /// <summary>
-		/// Gets or sets the commands associated with this argument
+		/// Gets or sets the commands associated with this argument.  Commands are specified as a comma separated list.
 		/// </summary>
 		public string Commands { get; set; }
 
@@ -2232,7 +2232,7 @@ namespace ToolBelt
 	}
 
 	/// <summary>
-	/// Used to for command base command lines where one of the arguments is is a command. The command defines 
+	/// Used to for command based command lines where one of the arguments is is a command. The command defines 
 	/// which of the other arguments are valid for that command.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
