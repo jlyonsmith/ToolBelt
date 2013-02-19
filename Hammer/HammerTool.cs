@@ -112,10 +112,15 @@ Arguments:
                 }
             }
 
-            WriteMessage("\"{0}\", lines={1}, cr={2}, lf={3}, crlf={4}", this.InputFileName, numLines, numCr, numLf, numCrLf);
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendFormat("\"{0}\", lines={1}, cr={2}, lf={3}, crlf={4}", this.InputFileName, numLines, numCr, numLf, numCrLf);
 
             if (!FixedEndings.HasValue)
+            {
+                WriteMessage(sb.ToString());
                 return;
+            }
             
             LineEnding autoLineEnding = LineEnding.Auto;
             int n = 0;
@@ -150,7 +155,7 @@ Arguments:
                 for (int i = 0; i < fileContents.Length; i++)
                 {
                     char c = fileContents [i];
-                    char c1 = (i < fileContents.Length - 2 ? fileContents [i + 1] : '\0');
+                    char c1 = (i < fileContents.Length - 1 ? fileContents [i + 1] : '\0');
 
                     if (c == '\r')
                     {
@@ -174,13 +179,15 @@ Arguments:
                 }
             }
 
-            WriteMessage(
-                "->\"{0}\", lines={1}, {2}={3}", 
+            sb.AppendFormat(
+                " -> \"{0}\", lines={1}, {2}={3}", 
                 OutputFileName, 
                 n + 1,
                 FixedEndings.Value == LineEnding.Cr ? "cr" : 
                 FixedEndings.Value == LineEnding.Lf ? "lf" : "crlf",
                 n);
+
+            WriteMessage(sb.ToString());
         }
 
         public void ProcessCommandLine(string[] args)
