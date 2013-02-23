@@ -50,7 +50,8 @@ namespace ToolBelt
 
         public void Message(MessageImportance importance, string message, params object[] messageArgs)
         {
-            this.outputter.OutputMessageEvent(new OutputMessageEventArgs(importance, StringUtility.CultureFormat(message, messageArgs)));
+            this.outputter.OutputMessageEvent(
+				new OutputMessageEventArgs(importance, messageArgs.Length == 0 ? message : message.CultureFormat(messageArgs)));
         }
 
         public void Error(string message, params object[] messageArgs)
@@ -95,7 +96,7 @@ namespace ToolBelt
                 senderName,
                 timestamp,
                 threadId,
-                StringUtility.CultureFormat(message, messageArgs));
+                messageArgs.Length == 0 ? message : message.CultureFormat(messageArgs));
 
             this.hasOutputErrors = true;
 
@@ -163,7 +164,7 @@ namespace ToolBelt
                 senderName,
                 timestamp,
                 threadId,
-                StringUtility.CultureFormat(message, messageArgs));
+                messageArgs.Length == 0 ? message : message.CultureFormat(messageArgs));
 
             this.outputter.OutputWarningEvent(e);
         }

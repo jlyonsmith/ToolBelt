@@ -42,7 +42,7 @@ public class CommandLineParserResources
     }
 
     /// <summary>
-    /// CommandLineCopyrightAttribute or AssemblyCopyrightAttribute not found.
+    /// CommandLineCopyrightAttribute or AssemblyCopyrightAttribute not found
     /// </summary>
     public static ToolBelt.Message CopyrightAttributesNotFound
     {
@@ -320,7 +320,7 @@ public class CommandLineParserResources
     }
 
     /// <summary>
-    /// AssemblyFileVersionAttribute not found.
+    /// AssemblyFileVersionAttribute not found
     /// </summary>
     public static ToolBelt.Message VersionAttributesNotFound
     {

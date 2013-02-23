@@ -108,13 +108,24 @@ namespace ToolBelt
 		/// <summary>
 		/// Prefix for UNC file paths. 
 		/// </summary>
-		public static readonly string UncPrefixChars = new string (Path.DirectorySeparatorChar, 2);
-		
+		public static readonly string UncPrefix = new string (Path.DirectorySeparatorChar, 2);
+
 		/// <summary>
 		/// Character used to separate the directories
 		/// </summary>
 		public static readonly char DirectorySeparatorChar = Path.DirectorySeparatorChar;
-
+		public static readonly string DirectorySeparator = Path.DirectorySeparatorChar.ToString();
+		
+		/// <summary>
+		/// Character used to separate the paths
+		/// </summary>
+#if WINDOWS
+		public static readonly char PathSeparatorChar = ';';
+#else
+		public static readonly char PathSeparatorChar = ':';
+#endif
+		public static readonly string PathSeparator = PathSeparatorChar.ToString();
+		
 		/// <summary>
 		/// Alternate character used to separate the directories ('\' on Unix, '/' on Windows)
 		/// </summary>
@@ -122,17 +133,30 @@ namespace ToolBelt
 		public static readonly char AltDirectorySeparatorChar = '/';
 #else
 		public static readonly char AltDirectorySeparatorChar = '\\';
+		public static readonly string AltDirectorySeparator = AltDirectorySeparatorChar.ToString();
 #endif
-
+		
+		/// <summary>
+		/// Alternate character used to separate the paths (':' on Unix, ';  ' on Windows)
+		/// </summary>
+#if WINDOWS
+		public static readonly char AltPathSeparatorChar = ':';
+#else
+		public static readonly char AltPathSeparatorChar = ';';
+		public static readonly string AltPathSeparator = AltPathSeparatorChar.ToString();
+#endif
+		
 		/// <summary>
 		/// Character used to separate the file extension from the main part of the file name.
 		/// </summary>
 		public static readonly char ExtensionSeparatorChar = '.';
+		public static readonly string ExtensionSeparator = ExtensionSeparatorChar.ToString();
 
 		/// <summary>
 		/// The volume separator character. Only Windows platforms use this.
 		/// </summary>
 		public static readonly char VolumeSeparatorChar = ':';
+		public static readonly string VolumeSeparator = VolumeSeparatorChar.ToString();
 
         /// <summary>
         /// Searches multiple directories for a file.

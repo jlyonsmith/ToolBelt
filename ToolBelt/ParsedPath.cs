@@ -173,28 +173,28 @@ namespace ToolBelt
         /// <param name="path">The file path to parse.</param>
         /// <param name="typeHint">See <see cref="T:PathType"/> for a list of path type hints</param>
         public ParsedPath(string path, PathType typeHint)
-		{
-			string machine = String.Empty;
-			string share = String.Empty;
-			string drive = String.Empty;
-			string dir = String.Empty;
-			string file = String.Empty;
-			string ext = String.Empty;
+        {
+            string machine = String.Empty;
+            string share = String.Empty;
+            string drive = String.Empty;
+            string dir = String.Empty;
+            string file = String.Empty;
+            string ext = String.Empty;
 
 			ValidateAndNormalizePath(ref path);
 
-			int i; // Always the beginning index
-			int j; // Always the ending index
+            int i; // Always the beginning index
+            int j; // Always the ending index
 
-			if (path.StartsWith(PathUtility.UncPrefixChars, StringComparison.InvariantCultureIgnoreCase))
-			{
-				i = 0;
+            if (path.StartsWith(PathUtility.UncPrefix, StringComparison.InvariantCultureIgnoreCase))
+            {
+                i = 0;
                 
-				if (i + PathUtility.UncPrefixChars.Length >= path.Length)
-					throw new ArgumentException("Badly formed UNC name");
+                if (i + PathUtility.UncPrefix.Length >= path.Length)
+                    throw new ArgumentException("Badly formed UNC name");
                     
-				// Find the '\' after the '\\'
-				j = path.IndexOf(Path.DirectorySeparatorChar, PathUtility.UncPrefixChars.Length);			
+                // Find the '\' after the '\\'
+                j = path.IndexOf(Path.DirectorySeparatorChar, PathUtility.UncPrefix.Length);			
                 
 				if (j == -1 || j - i == 0)
 					throw new ArgumentException("Badly formed UNC name");
@@ -292,7 +292,7 @@ namespace ToolBelt
                 throw new ArgumentException("Missing directory");
 
             // Fix double directory separators - it happens too often to be an error
-            dir = dir.Replace(PathUtility.UncPrefixChars, String.Empty + Path.DirectorySeparatorChar);
+            dir = dir.Replace(PathUtility.UncPrefix, String.Empty + Path.DirectorySeparatorChar);
 
             // You can't have wildcards in the directory part
             if (dir.IndexOfAny(PathUtility.WildcardChars) != -1)
@@ -788,14 +788,14 @@ namespace ToolBelt
                 }
             }
 
-#if MACOS
+			#if OSX
 			if (dir.StartsWith("~/"))
 			{
 				ParsedPath personalPath = new ParsedPath(Environment.GetFolderPath(Environment.SpecialFolder.Personal), PathType.Directory);
 
 				dir = personalPath + dir.Substring(2);
 			}
-#endif
+			#endif
 
             StringBuilder sb = new StringBuilder(dir.Length);
             int index = 0;  
@@ -975,7 +975,7 @@ namespace ToolBelt
 
         #region Static Methods
         /// <summary>
-        /// Parse a string and return a <see cref="ParsedPath"/> object.  Use <see cref="PathType.Automatic"/> to determine path type.
+        /// Parse a string and return a <see cref="ParsedPath"/> object.  Use <see cref="PathType.Unknown"/> to determine path type.
         /// </summary>
         /// <param name="value">String value to parse.</param>
         /// <returns></returns>
@@ -1033,6 +1033,7 @@ namespace ToolBelt
         /// <returns></returns>
         public override int GetHashCode()
         {
+			// TODO: This needs to be case insensitive on Windows!
             return this.ToString().GetHashCode();
         }
 

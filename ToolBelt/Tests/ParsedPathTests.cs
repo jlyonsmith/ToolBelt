@@ -11,7 +11,7 @@ namespace ToolBelt.Tests
     {
         [TestCase] public void TestOperators()
         {
-            ParsedPath pp = new ParsedPath("file.txt", PathType.Automatic);
+            ParsedPath pp = new ParsedPath("file.txt", PathType.Unknown);
             
             Assert.IsFalse(pp == null);
             Assert.IsFalse(null == pp);
@@ -55,63 +55,63 @@ namespace ToolBelt.Tests
         [TestCase] public void ConstructParsedPath() 
         {
             // Test some good paths
-            AssertPathParts(@"\", PathType.Automatic, "", "", @"", @"\", "", "");
-            AssertPathParts(@".txt", PathType.Automatic, "", "", "", "", "", ".txt");
+            AssertPathParts(@"\", PathType.Unknown, "", "", @"", @"\", "", "");
+            AssertPathParts(@".txt", PathType.Unknown, "", "", "", "", "", ".txt");
             AssertPathParts(@"*.txt", PathType.File, "", "", "", "", @"*", @".txt");
-            AssertPathParts(@"..\*.txt", PathType.Automatic, "", "", "", @"..\", @"*", @".txt");
-            AssertPathParts(@".", PathType.Automatic, "", "", "", "", "", "");
+            AssertPathParts(@"..\*.txt", PathType.Unknown, "", "", "", @"..\", @"*", @".txt");
+            AssertPathParts(@".", PathType.Unknown, "", "", "", "", "", "");
             AssertPathParts(@".", PathType.Directory, "", "", "", @".\", "", "");
-            AssertPathParts(@"..", PathType.Automatic, "", "", "", "", "", "");
+            AssertPathParts(@"..", PathType.Unknown, "", "", "", "", "", "");
             AssertPathParts(@"..", PathType.Directory, "", "", "", @"..\", "", "");
             
-            AssertPathParts(@"c:", PathType.Automatic, "", "", @"c:", "", "", "");
+            AssertPathParts(@"c:", PathType.Unknown, "", "", @"c:", "", "", "");
             AssertPathParts(@"c:", PathType.Volume, "", "", @"c:", "", "", "");
             AssertPathParts(@"c:\", PathType.Directory, "", "", @"c:", @"\", "", "");
-            AssertPathParts(@"c:foo.txt", PathType.Automatic, "", "", @"c:", "", "foo", ".txt");
-            AssertPathParts(@"c:.txt", PathType.Automatic, "", "", @"c:", "", "", ".txt");
-            AssertPathParts(@"c:....txt", PathType.Automatic, "", "", @"c:", "", "...", ".txt");
+            AssertPathParts(@"c:foo.txt", PathType.Unknown, "", "", @"c:", "", "foo", ".txt");
+            AssertPathParts(@"c:.txt", PathType.Unknown, "", "", @"c:", "", "", ".txt");
+            AssertPathParts(@"c:....txt", PathType.Unknown, "", "", @"c:", "", "...", ".txt");
             AssertPathParts(@"c:foo.txt", PathType.Directory, "", "", @"c:", @"foo.txt\", "", "");
-            AssertPathParts(@"c:blah\blah\", PathType.Automatic, "", "", @"c:", @"blah\blah\", "", "");
+            AssertPathParts(@"c:blah\blah\", PathType.Unknown, "", "", @"c:", @"blah\blah\", "", "");
             AssertPathParts(@"c:blah\blah", PathType.Directory, "", "", @"c:", @"blah\blah\", "", "");
-            AssertPathParts(@"c:blah\blah", PathType.Automatic, "", "", @"c:", @"blah\", "blah", "");
+            AssertPathParts(@"c:blah\blah", PathType.Unknown, "", "", @"c:", @"blah\", "blah", "");
             AssertPathParts(@"c:\test", PathType.Directory, "", "", @"c:", @"\test\", @"", "");
             AssertPathParts(@"c:\test", PathType.File, "", "", @"c:", @"\", @"test", "");
             AssertPathParts(@"c:\test.txt", PathType.File, "", "", @"c:", @"\", @"test", @".txt");
             AssertPathParts(@"c:\whatever\test.txt", PathType.File, "", "", @"c:", @"\whatever\", @"test", @".txt");
             AssertPathParts(@"c:\test\..\temp\??.txt", PathType.File, "", "", @"c:", @"\test\..\temp\", @"??", @".txt");
-            AssertPathParts(@"C:/test\the/use of\forward/slashes\a.txt", PathType.Automatic, 
+            AssertPathParts(@"C:/test\the/use of\forward/slashes\a.txt", PathType.Unknown, 
                 "", "", @"C:", @"\test\the\use of\forward\slashes\", "a", @".txt");
-            AssertPathParts(@"   C:\ remove \  trailing \     spaces   \  file.txt   ", PathType.Automatic, 
+            AssertPathParts(@"   C:\ remove \  trailing \     spaces   \  file.txt   ", PathType.Unknown, 
                 "", "", @"C:", @"\ remove\  trailing\     spaces\", "  file", @".txt");
-            AssertPathParts(@"C:\remove.\trailing....\dots . .\and\spaces. . \file.txt. . .", PathType.Automatic, 
+            AssertPathParts(@"C:\remove.\trailing....\dots . .\and\spaces. . \file.txt. . .", PathType.Unknown, 
                 "", "", @"C:", @"\remove\trailing\dots\and\spaces\", "file", @".txt");
             AssertPathParts(@"  .  . a . really . strange . name .. . . \a\b\c\...", PathType.Directory, 
                 "", "", "", @".  . a . really . strange . name\a\b\c\...\", "", "");
-            AssertPathParts(@"  ""  C:\this path is quoted\file.txt  ""  ", PathType.Automatic, 
+            AssertPathParts(@"  ""  C:\this path is quoted\file.txt  ""  ", PathType.Unknown, 
                 "", "", @"C:", @"\this path is quoted\", "file", @".txt");
-            AssertPathParts(@"c:\assembly\Company.Product.Subcomponent.dll", PathType.Automatic, 
+            AssertPathParts(@"c:\assembly\Company.Product.Subcomponent.dll", PathType.Unknown, 
                 "", "", @"c:", @"\assembly\", "Company.Product.Subcomponent", @".dll");
             
-            AssertPathParts(@"\\machine\share", PathType.Automatic, @"\\machine", @"\share", "", "", "", "");
-            AssertPathParts(@"\\machine\share\", PathType.Automatic, @"\\machine", @"\share", "", @"\", @"", @"");
-            AssertPathParts(@"\\computer\share\test\subtest\abc.txt", PathType.Automatic, 
+            AssertPathParts(@"\\machine\share", PathType.Unknown, @"\\machine", @"\share", "", "", "", "");
+            AssertPathParts(@"\\machine\share\", PathType.Unknown, @"\\machine", @"\share", "", @"\", @"", @"");
+            AssertPathParts(@"\\computer\share\test\subtest\abc.txt", PathType.Unknown, 
                 @"\\computer", @"\share", "", @"\test\subtest\", @"abc", @".txt");
 
             // Test special last folder property
-            Assert.AreEqual("c", new ParsedPath(@"c:\a\b\c\", PathType.Automatic).LastDirectoryNoSeparator);
-            Assert.AreEqual(@"\", new ParsedPath(@"c:\", PathType.Automatic).LastDirectoryNoSeparator);
+            Assert.AreEqual("c", new ParsedPath(@"c:\a\b\c\", PathType.Unknown).LastDirectoryNoSeparator);
+            Assert.AreEqual(@"\", new ParsedPath(@"c:\", PathType.Unknown).LastDirectoryNoSeparator);
 
             // Test some bad paths
             AssertBadPath(@"", PathType.File);
             AssertBadPath(@":", PathType.File);
             AssertBadPath(@"\", PathType.File);
             AssertBadPath(@"\  \", PathType.Directory);
-            AssertBadPath(@"  ""    ""  ", PathType.Automatic);
-            AssertBadPath(@"c:\*&#()_@\~{}|<>", PathType.Automatic);
+            AssertBadPath(@"  ""    ""  ", PathType.Unknown);
+            AssertBadPath(@"c:\*&#()_@\~{}|<>", PathType.Unknown);
 
             AssertBadPath(@"c:", PathType.Directory);
             AssertBadPath(@"c: \file.txt", PathType.File);
-            AssertBadPath(@"c:\a\b\*\c\", PathType.Automatic);
+            AssertBadPath(@"c:\a\b\*\c\", PathType.Unknown);
             AssertBadPath(@"c:\dir\file.txt", PathType.Volume);
             AssertBadPath(@"c:\dir\\file.txt", PathType.File);
 
@@ -234,9 +234,9 @@ namespace ToolBelt.Tests
             ParsedPath pp;
             
             if (baseDir != null)
-                pp = new ParsedPath(path, PathType.Automatic).MakeFullPath(new ParsedPath(baseDir, PathType.Directory));
+                pp = new ParsedPath(path, PathType.Unknown).MakeFullPath(new ParsedPath(baseDir, PathType.Directory));
             else
-                pp = new ParsedPath(path, PathType.Automatic).MakeFullPath();
+                pp = new ParsedPath(path, PathType.Unknown).MakeFullPath();
         
             Assert.AreEqual(machine, pp.Machine);
             Assert.AreEqual(share, pp.Share);
@@ -252,7 +252,7 @@ namespace ToolBelt.Tests
         {
             try
             {
-                ParsedPath pp = new ParsedPath(path, PathType.Automatic).MakeFullPath(
+                ParsedPath pp = new ParsedPath(path, PathType.Unknown).MakeFullPath(
                     baseDir == null ? null : new ParsedPath(baseDir, PathType.Directory));
 				Assert.IsNotNull(pp);
                 Assert.Fail("Badly formed path not caught");
@@ -270,7 +270,7 @@ namespace ToolBelt.Tests
             string basePath,
             string directory)
         {
-            ParsedPath pp = new ParsedPath(path, PathType.Automatic).MakeRelativePath(new ParsedPath(basePath, PathType.Automatic));
+            ParsedPath pp = new ParsedPath(path, PathType.Unknown).MakeRelativePath(new ParsedPath(basePath, PathType.Unknown));
             Assert.AreEqual(directory, pp.Directory);
         }
 
@@ -280,7 +280,7 @@ namespace ToolBelt.Tests
         {
             try
             {
-                ParsedPath pp = new ParsedPath(path, PathType.Automatic).MakeRelativePath(new ParsedPath(basePath, PathType.Automatic));
+                ParsedPath pp = new ParsedPath(path, PathType.Unknown).MakeRelativePath(new ParsedPath(basePath, PathType.Unknown));
 				Assert.IsNotNull(pp);
 				Assert.Fail("MakeRelativePath succeeded and should have failed");
             }
@@ -307,7 +307,7 @@ namespace ToolBelt.Tests
             // Test out specific entry points based on the values passed in
             if (level < -1)
             {
-                pp = new ParsedPath(path, PathType.Automatic).MakeParentPath(level);
+                pp = new ParsedPath(path, PathType.Unknown).MakeParentPath(level);
             
                 if (pp == null)
                 {
@@ -317,7 +317,7 @@ namespace ToolBelt.Tests
             }
             else
             {
-                pp = new ParsedPath(path, PathType.Automatic).MakeParentPath();
+                pp = new ParsedPath(path, PathType.Unknown).MakeParentPath();
 
                 if (pp == null)
                 {
@@ -343,9 +343,9 @@ namespace ToolBelt.Tests
                 ParsedPath pp;
                 
                 if (level <= -1 || level > 0)
-                    pp = new ParsedPath(path, PathType.Automatic).MakeParentPath(level);
+                    pp = new ParsedPath(path, PathType.Unknown).MakeParentPath(level);
                 else
-                    pp = new ParsedPath(path, PathType.Automatic).MakeParentPath();
+                    pp = new ParsedPath(path, PathType.Unknown).MakeParentPath();
                 
 				Assert.IsNotNull(pp);
                 Assert.Fail("Get parent succeeded and should have failed");
@@ -359,29 +359,29 @@ namespace ToolBelt.Tests
 
         [TestCase] public void TestPathTypes()
         {
-            Assert.IsTrue(new ParsedPath(@"c:\temp\", PathType.Automatic).IsDirectory);
-            Assert.IsFalse(new ParsedPath(@"c:\temp", PathType.Automatic).IsDirectory);
-            Assert.IsTrue(new ParsedPath(@"\\machine\share\foo", PathType.Automatic).HasUnc);
-            Assert.IsFalse(new ParsedPath(@"c:\foo", PathType.Automatic).HasUnc);
-            Assert.IsTrue(new ParsedPath(@"\\machine\share\foo\*.t?t", PathType.Automatic).HasWildcards);
-            Assert.IsFalse(new ParsedPath(@"\\machine\share\foo\foo.txt", PathType.Automatic).HasWildcards);
-            Assert.IsTrue(new ParsedPath(@"\\machine\share\foo\test.txt", PathType.Automatic).HasVolume);
-            Assert.IsFalse(new ParsedPath(@"foo\test.txt", PathType.Automatic).HasVolume);
-            Assert.IsTrue(new ParsedPath(@"C:\share\foo\", PathType.Automatic).HasDrive);
-            Assert.IsFalse(new ParsedPath(@"\\machine\share\foo\", PathType.Automatic).HasDrive);
-            Assert.IsTrue(new ParsedPath(@"C:\share\foo\..\..\thing.txt", PathType.Automatic).IsRelativePath);
-            Assert.IsTrue(new ParsedPath(@"C:\share\foo\...\thing.txt", PathType.Automatic).IsRelativePath);
-            Assert.IsTrue(new ParsedPath(@"...\thing.txt", PathType.Automatic).IsRelativePath);
-            Assert.IsFalse(new ParsedPath(@"\\machine\share\foo\thing.txt", PathType.Automatic).IsRelativePath);
-            Assert.IsTrue(new ParsedPath(@"C:\share\foo\thing.txt", PathType.Automatic).IsFullPath);
-            Assert.IsFalse(new ParsedPath(@"\thing.txt", PathType.Automatic).IsFullPath);
-            Assert.IsFalse(new ParsedPath(@"c:\a\..\thing.txt", PathType.Automatic).IsFullPath);
+            Assert.IsTrue(new ParsedPath(@"c:\temp\", PathType.Unknown).IsDirectory);
+            Assert.IsFalse(new ParsedPath(@"c:\temp", PathType.Unknown).IsDirectory);
+            Assert.IsTrue(new ParsedPath(@"\\machine\share\foo", PathType.Unknown).HasUnc);
+            Assert.IsFalse(new ParsedPath(@"c:\foo", PathType.Unknown).HasUnc);
+            Assert.IsTrue(new ParsedPath(@"\\machine\share\foo\*.t?t", PathType.Unknown).HasWildcards);
+            Assert.IsFalse(new ParsedPath(@"\\machine\share\foo\foo.txt", PathType.Unknown).HasWildcards);
+            Assert.IsTrue(new ParsedPath(@"\\machine\share\foo\test.txt", PathType.Unknown).HasVolume);
+            Assert.IsFalse(new ParsedPath(@"foo\test.txt", PathType.Unknown).HasVolume);
+            Assert.IsTrue(new ParsedPath(@"C:\share\foo\", PathType.Unknown).HasDrive);
+            Assert.IsFalse(new ParsedPath(@"\\machine\share\foo\", PathType.Unknown).HasDrive);
+            Assert.IsTrue(new ParsedPath(@"C:\share\foo\..\..\thing.txt", PathType.Unknown).IsRelativePath);
+            Assert.IsTrue(new ParsedPath(@"C:\share\foo\...\thing.txt", PathType.Unknown).IsRelativePath);
+            Assert.IsTrue(new ParsedPath(@"...\thing.txt", PathType.Unknown).IsRelativePath);
+            Assert.IsFalse(new ParsedPath(@"\\machine\share\foo\thing.txt", PathType.Unknown).IsRelativePath);
+            Assert.IsTrue(new ParsedPath(@"C:\share\foo\thing.txt", PathType.Unknown).IsFullPath);
+            Assert.IsFalse(new ParsedPath(@"\thing.txt", PathType.Unknown).IsFullPath);
+            Assert.IsFalse(new ParsedPath(@"c:\a\..\thing.txt", PathType.Unknown).IsFullPath);
         }
 
         [TestCase] public void TestSubDirectories()
         {
-            Assert.AreEqual(4, new ParsedPath(@"c:\a\b\c\", PathType.Automatic).SubDirectories.Count);
-            Assert.AreEqual(4, new ParsedPath(@"\\machine\share\a\b\c\", PathType.Automatic).SubDirectories.Count);
+            Assert.AreEqual(4, new ParsedPath(@"c:\a\b\c\", PathType.Unknown).SubDirectories.Count);
+            Assert.AreEqual(4, new ParsedPath(@"\\machine\share\a\b\c\", PathType.Unknown).SubDirectories.Count);
             
             IList<ParsedPath> subDirs;
             

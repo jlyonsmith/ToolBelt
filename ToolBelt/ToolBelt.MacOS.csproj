@@ -14,6 +14,7 @@
     <AssemblyName>ToolBelt</AssemblyName>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\ToolBelt.snk</AssemblyOriginatorKeyFile>
+    <ReleaseVersion>1.0</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugType>full</DebugType>
@@ -23,12 +24,7 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>True</DebugSymbols>
-    <DefineConstants>DEBUG;MACOS</DefineConstants>
-    <CustomCommands>
-      <CustomCommands>
-        <Command type="BeforeBuild" command="/bin/bash BuildResources.sh" workingdir="${ProjectDir}" />
-      </CustomCommands>
-    </CustomCommands>
+    <DefineConstants>DEBUG;OSX</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>none</DebugType>
@@ -37,12 +33,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <PlatformTarget>x86</PlatformTarget>
-    <DefineConstants>MACOS</DefineConstants>
-    <CustomCommands>
-      <CustomCommands>
-        <Command type="BeforeBuild" command="/bin/bash BuildResources.sh" workingdir="${ProjectDir}" />
-      </CustomCommands>
-    </CustomCommands>
+    <DefineConstants>OSX</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BigEndianBitConverter.cs" />
@@ -84,6 +75,8 @@
     <Compile Include="CommandLineParserResources.cs" />
     <Compile Include="ConsoleUtilityResources.cs" />
     <Compile Include="OutputterResources.cs" />
+    <Compile Include="ForEach.cs" />
+    <Compile Include="TextFileRegion.cs" />
     <Compile Include="ListRange.cs" />
     <Compile Include="Algorithms.cs" />
   </ItemGroup>

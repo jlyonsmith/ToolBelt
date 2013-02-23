@@ -20,7 +20,7 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <ConsolePause>False</ConsolePause>
-    <Commandlineparameters>../../Test/mixed1.txt -f:auto</Commandlineparameters>
+    <Commandlineparameters>../../Test/crlf.txt -o:../../Test/crlf2lf.txt -f:lf</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>none</DebugType>
