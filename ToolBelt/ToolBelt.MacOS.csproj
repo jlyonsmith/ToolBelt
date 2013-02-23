@@ -14,7 +14,6 @@
     <AssemblyName>ToolBelt</AssemblyName>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\ToolBelt.snk</AssemblyOriginatorKeyFile>
-    <ReleaseVersion>1.0</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugType>full</DebugType>
@@ -86,6 +85,7 @@
     <Compile Include="ConsoleUtilityResources.cs" />
     <Compile Include="OutputterResources.cs" />
     <Compile Include="ListRange.cs" />
+    <Compile Include="Algorithms.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildResources.sh" />
