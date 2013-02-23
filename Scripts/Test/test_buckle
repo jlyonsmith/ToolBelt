@@ -1,0 +1,13 @@
+mono ../../Buckle/bin/Debug/Buckle.exe ../../ToolBelt/CommandLineParserResources.resx -o:./CommandLineParserResources.cs -r:./CommandLineParserResources.resources -w:ToolBelt.Message
+python ../buckle.py ../../ToolBelt/CommandLineParserResources.resx -o ./CommandLineParserResources2.cs -w ToolBelt.Message
+diff -E -q CommandLineParserResources.cs CommandLineParserResources2.cs
+if [ $? != 0 ] ; then
+{
+	echo FAILED: Files are not the same!
+} else
+{
+	echo SUCCEEDED
+} fi
+rm CommandLineParserResources.cs
+rm CommandLineParserResources.resources
+rm CommandLineParserResources2.cs
