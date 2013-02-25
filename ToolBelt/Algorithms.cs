@@ -11,29 +11,18 @@ namespace ToolBelt
             #region IEnumerator implementation
             public bool MoveNext()
             {
-                if (i == len(a))
-                    yield return a;
-                else
-                {
-                    perm_aux(a, i+1, the_list);
-
-                    for j in range(i+1, len(a))
-                    {
-                        a[i], a[j] = a[j], a[i];
-                        perm_aux(a, i+1, the_list);
-                        a[i], a[j] = a[j], a[i];
-                    }
-                }
+                throw new NotImplementedException();
             }
             public void Reset()
             {
-                the_list = []
-                perm_aux(a, 0, the_list)
-                return the_list
+                throw new NotImplementedException();
             }
             public object Current
             {
-                get;
+                get 
+                {
+                    throw new NotImplementedException();
+                }
             }
             #endregion
 
@@ -49,7 +38,10 @@ namespace ToolBelt
 
             IList IEnumerator<IList>.Current
             {
-                get;
+                get
+                {
+                    throw new NotImplementedException();
+                }
             }
 
             #endregion
@@ -57,6 +49,7 @@ namespace ToolBelt
 
         public static IEnumerable Permute(IList list)
         {
+            throw new NotImplementedException();
         }
     }
 }
