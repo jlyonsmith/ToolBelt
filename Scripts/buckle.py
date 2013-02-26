@@ -75,9 +75,10 @@ class BuckleTool:
                 self.Modifier = options.Modifier
 
             self.Namespace = options.Namespace
-            
+
             if (options.Basename is None):
-                self.Basename = os.path.splitext(os.path.basename(self.ResXFileName))[0]
+                self.Basename = os.path.splitext(
+                    os.path.basename(self.ResXFileName))[0]
             else:
                 self.Basename = options.Basename
             return True
@@ -90,9 +91,9 @@ class BuckleTool:
             print elem.tag, elem.get("alias"), elem.get("name")
 
         for elem in root.iter("data"):
-            #print elem.tag, elem.get("name"), elem.get("type")
-            if ((elem.get("type") is not None) and 
-                (elem.get("type").startswith("System.Drawing"))):
+            # print elem.tag, elem.get("name"), elem.get("type")
+            if ((elem.get("type") is not None) and
+                    (elem.get("type").startswith("System.Drawing"))):
                 self.haveDrawingResources = True
 
     def WriteCs(self):
@@ -158,7 +159,6 @@ using System.Globalization;
 
         self.csfile.write("typeof(%s));\n" % self.Basename)
 
-
     def WriteClassEnd(self):
         self.csfile.write("}\n")
 
@@ -184,7 +184,8 @@ using System.Globalization;
                 str3 = ""
                 if (j > 0):
                     str3 = ", "
-                parametersWithTypes = parametersWithTypes + str3 + "object param" + repr(j)
+                parametersWithTypes = parametersWithTypes + \
+                    str3 + "object param" + repr(j)
                 parameters = parameters + str3 + "param" + repr(j)
             self.csfile.write("""    public static %s %s(%s)
     {

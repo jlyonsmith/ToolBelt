@@ -6,6 +6,8 @@ import fnmatch
 import os
 import datetime
 import xml.etree.ElementTree as xmlDoc
+from xml.dom import minidom
+import re
 
 
 class ChalkTool:
@@ -24,7 +26,7 @@ class ChalkTool:
         options, args = parser.parse_args()
 
         if (not options.NoLogo):
-            print "Chalk Version Number Maintainer. Version",__version__
+            print "Chalk Version Number Maintainer. Version", __version__
             print "Copyright (c) 2012, John Lyon-Smith."
 
         if (options.help):
@@ -44,15 +46,15 @@ class ChalkTool:
         print "Project root is", os.path.split(projectSln)[0]
 
         projectFileName = os.path.basename(projectSln)
-        projectName = projectFileName[:projectFileName.index(".")]
-        self.versionFile = projectName + ".version"
+        self.projectName = projectFileName[:projectFileName.index(".")]
+        self.versionFile = self.projectName + ".version"
 
         print "Version file is", self.versionFile
 
-        self.major = 1;
-        self.minor = 0;
-        self.build = 0;
-        self.revision = 0;
+        self.major = 1
+        self.minor = 0
+        self.build = 0
+        self.revision = 0
         self.startYear = datetime.date.today().year
         self.fileList = []
         if (os.path.exists(self.versionFile)):
@@ -65,45 +67,30 @@ class ChalkTool:
         else:
             self.revision += 1
 
-        versionBuildAndRevision = "%d.%d" % (self.build, self.revision)
-        versionMajorAndMinor = "%d.%d" % (self.major, self.minor)
-        versionMajorMinorAndBuild = "%d.%d.%d" % (self.major, self.minor, self.build)
-        versionFull = "%d.%d.%d.%d" % (self.major, self.minor, self.build, self.revision)
-        versionFullCsv = versionFull.replace('.', ',')
+        self.versionBuildAndRevision = "%d.%d" % (self.build, self.revision)
+        self.versionMajorAndMinor = "%d.%d" % (self.major, self.minor)
+        self.versionMajorMinorAndBuild = "%d.%d.%d" % (
+            self.major, self.minor, self.build)
+        self.versionFull = "%d.%d.%d.%d" % (
+            self.major, self.minor, self.build, self.revision)
+        self.versionFullCsv = self.versionFull.replace('.', ',')
 
-        print "New version is", versionFull
+        print "New version is", self.versionFull
         print "Updating version information in files:"
 
         for f in self.fileList:
-            path = os.path.join(os.path.split(projectSln)[0],f)
+            path = os.path.join(os.path.split(projectSln)[0], f)
             if (not (os.path.exists(path))):
                 print "File '%s' does not exist" % path
             else:
-                fn,ext = os.path.splitext(path)
-                if (ext == ".cs"):
-                    self.UpdateCSVersion(path, versionMajorAndMinor, versionFull)
-                elif (ext == ".rc"):
-                    self.UpdateRCVersion(path, versionFull, versionFullCsv)
-                elif (ext == ".wxi"):
-                    self.UpdateWxiVersion(path, versionMajorAndMinor, versionBuildAndRevision);
-                elif (ext in [".wixproj",".proj"]):
-                    self.UpdateProjVersion(path, versionFull, projectName);
-                elif (ext == ".vsixmanifest"):
-                    self.UpdateVsixManifestVersion(path, versionFull);
-                elif (ext == ".config"):
-                    self.UpdateConfigVersion(path, versionMajorAndMinor);
-                elif (ext == ".svg"):
-                    self.UpdateSvgContentVersion(path, versionMajorMinorAndBuild);
-                elif (ext == ".xml"):
-                    if (os.path.split(fn)[1] == "WMAppManifest"):
-                        self.UpdateWMAppManifestContentVersion(path, versionMajorAndMinor)
+                self.UpdateFileVersion(path)
                 print path
 
         self.WriteVersionFile()
 
-    def GetProjectSolution(self,dire=os.curdir):
+    def GetProjectSolution(self, dire=os.curdir):
         for filename in os.listdir(dire):
-            d = os.path.join(dire,filename)
+            d = os.path.join(dire, filename)
             if fnmatch.fnmatch(filename, '*.sln'):
                 return d
             elif (os.path.isdir(filename)):
@@ -123,9 +110,90 @@ class ChalkTool:
         for elem in version.iter("File"):
             self.fileList.append(elem.text)
 
-    def JDate(self,startYear):
+    def WriteVersionFile(self):
+        root = xmlDoc.Element("Version")
+        m = xmlDoc.SubElement(root, "Major")
+        m.text = repr(self.major)
+        m = xmlDoc.SubElement(root, "Minor")
+        m.text = repr(self.minor)
+        m = xmlDoc.SubElement(root, "Build")
+        m.text = repr(self.build)
+        m = xmlDoc.SubElement(root, "Revision")
+        m.text = repr(self.revision)
+        m = xmlDoc.SubElement(root, "StartYear")
+        m.text = repr(self.startYear)
+        fl = xmlDoc.SubElement(root, "Files")
+        for fn in self.fileList:
+            f = xmlDoc.SubElement(fl, "File")
+            f.text = fn
+        rough_string = xmlDoc.tostring(root, 'utf-8')
+        reparsed = minidom.parseString(rough_string)
+        xfile = open(self.versionFile, "w")
+        xfile.write(reparsed.toprettyxml(indent="  ", encoding="utf-8"))
+        xfile.close()
+
+    def JDate(self, startYear):
         today = datetime.date.today()
         return (((today.year - startYear + 1) * 10000) + (today.month * 100) + today.day)
+
+    def UpdateFileVersion(self, filename):
+        f = open(filename)
+        contents = f.read()
+        f.close()
+
+        fn, ext = os.path.splitext(filename)
+        if (ext == ".cs"):
+            contents = re.sub(
+                "(AssemblyVersion\(\"[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)",
+                'AssemblyVersion("' + self.versionMajorAndMinor + ".0.0", contents)
+            contents = re.sub(
+                "(AssemblyFileVersion\(\"[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)",
+                'AssemblyFileVersion("' + self.versionFull, contents)
+
+        elif (ext == ".rc"):
+            contents = re.sub("(FILEVERSION [0-9]+,[0-9]+,[0-9]+,[0-9]+)",
+                              "FILEVERSION " + self.versionFullCsv, contents)
+            contents = re.sub("(PRODUCTVERSION [0-9]+,[0-9]+,[0-9]+,[0-9]+)",
+                              "PRODUCTVERSION " + self.versionFullCsv, contents)
+            contents = re.sub(
+                "(FileVersion\",[ \t]*\"[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)",
+                'FileVersion", ' + self.versionFull, contents)
+            contents = re.sub(
+                "(ProductVersion\",[ \t]*\"[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)",
+                'ProductVersion", ' + self.versionFull, contents)
+
+        elif (ext == ".wxi"):
+            contents = re.sub("(ProductVersion = \"[0-9]+\.[0-9]+)",
+                              'ProductVersion = "' + self.versionMajorMinor, contents)
+            contents = re.sub("(ProductBuild = \"[0-9]+\.[0-9]|[1-9][0-9])",
+                              'ProductBuild = "' + self.versionBuildAndRevision, contents)
+
+        elif (ext in [".wixproj", ".proj"]):
+            contents = re.sub(
+                "(<OutputName>" + self.projectName +
+                "_[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)",
+                "<OutputName>" + self.projectName + "_" + self.version, contents)
+
+        elif (ext == ".vsixmanifest"):
+            contents = re.sub("(<Version>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)",
+                              "<Version>" + self.versionFull)
+
+        elif (ext == ".config"):
+            contents = re.sub("(, +Version=\d+\.\d+",
+                              ", Version=" + self.versionMajorMinor, contents)
+
+        elif (ext == ".svg"):
+            contents = re.sub("(VERSION [0-9]+\.[0-9]+\.[0-9]+)",
+                              "VERSION " + self.versionMajorMinorAndBuild, contents)
+
+        elif (ext == ".xml"):
+            if (os.path.split(fn)[1] == "WMAppManifest"):
+                contents = re.sub("(Version=\[0-9]+\.[0-9]+)",
+                                  "Version=" + self.versionMajorAndMinor, contents)
+
+        f = open(filename + "test", "w")
+        f.write(contents)
+        f.close()
 
 
 if __name__ == '__main__':

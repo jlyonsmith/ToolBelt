@@ -8,7 +8,8 @@ class HammerTool:
     def ProcessCommandLine(self):
         import optparse
         parser = optparse.OptionParser()
-        parser.set_description("Reports on and fixes line endings for text files.")
+        parser.set_description(
+            "Reports on and fixes line endings for text files.")
         parser.add_option("-o", dest="OutputFilename",
                           help="Specify different name for output file.")
         parser.add_option("-f", dest="lineEndings",
@@ -23,9 +24,9 @@ class HammerTool:
         options, args = parser.parse_args()
 
         if (not options.NoLogo):
-            print "Hammer text line ending fixer. Version",__version__
+            print "Hammer text line ending fixer. Version", __version__
             print "Copyright (c) 2012, John Lyon-Smith."
-            
+
         if (options.help):
             parser.print_help()
             return False
@@ -43,17 +44,17 @@ class HammerTool:
 
             self.FixedEndings = options.lineEndings
             return True
-    
+
     def Execute(self):
         ifile = open(self.InputFilename)
         fileContents = ifile.read()
         ifile.close()
 
-        numCr = 0;
-        numLf = 0;
-        numCrLf = 0;
+        numCr = 0
+        numLf = 0
+        numCrLf = 0
         numLines = 1
-        
+
         for i in range(len(fileContents)):
 
             if (fileContents[i] == '\r'):
@@ -71,15 +72,16 @@ class HammerTool:
             elif (fileContents[i] == '\n'):
                 numLf += 1
                 numLines += 1
-        
-        sb = self.InputFilename 
-        sb += " lines=%d, cr=%d, lf=%d, crlf=%d" % (numLines, numCr, numLf, numCrLf)
+
+        sb = self.InputFilename
+        sb += " lines=%d, cr=%d, lf=%d, crlf=%d" % (
+            numLines, numCr, numLf, numCrLf)
         if (self.FixedEndings is None):
             print sb
             return
 
         autoLineEnding = "Lf"
-        n = numLf;
+        n = numLf
 
         if (numCrLf > n):
             autoLineEnding = "CrLf"
@@ -97,9 +99,9 @@ class HammerTool:
             newLineChars = "\n"
         else:
             newLineChars = "\r\n"
-            
-        ofile = open(self.OutputFilename,"w")
-        
+
+        ofile = open(self.OutputFilename, "w")
+
         n = 0
         for i in range(len(fileContents)):
             c = fileContents[i]
@@ -116,11 +118,11 @@ class HammerTool:
             elif (c == '\n'):
                 n += 1
                 ofile.write(newLineChars)
-            
+
             else:
                 ofile.write(c)
         ofile.close()
-        sb += ' -> '+self.OutputFilename
+        sb += ' -> ' + self.OutputFilename
         sb += ", lines=%d, %s=%d" % (n + 1, self.FixedEndings, n)
         print sb
 
@@ -128,4 +130,3 @@ if __name__ == '__main__':
     t = HammerTool()
     if (t.ProcessCommandLine()):
         t.Execute()
-
