@@ -75,7 +75,11 @@ class BuckleTool:
                 self.Modifier = options.Modifier
 
             self.Namespace = options.Namespace
-            self.Basename = options.Basename
+            
+            if (options.Basename is None):
+                self.Basename = os.path.splitext(os.path.basename(self.ResXFileName))[0]
+            else:
+                self.Basename = options.Basename
             return True
 
     def ReadResources(self):
@@ -116,7 +120,7 @@ class BuckleTool:
 // Contains strongly typed wrappers for resources in %s
 //
 
-""" % (now.strftime("%d/%m/%y"), now.strftime("%H:%M"), self.ResXFileName))
+""" % (now.strftime("%m/%d/%Y"), now.strftime("%I:%M %p"), os.path.basename(self.ResXFileName)))
 
         if ((self.Namespace is not None) and (len(self.Namespace) > 0)):
             self.csfile.write("namespace %s {\n" % self.Namespace)
@@ -150,11 +154,10 @@ using System.Globalization;
             %
             (os.path.basename(self.ResXFileName),
                 self.Modifier,
-                os.path.splitext(os.path.basename(self.CsFileName))[0]))
-        if (self.Basename is None):
-            self.csfile.write("typeof(%s));\n" % os.path.splitext(os.path.basename(self.CsFileName))[0])
-        else:
-            self.csfile.write("typeof(%s));\n" % self.Basename)
+                self.Basename))
+
+        self.csfile.write("typeof(%s));\n" % self.Basename)
+
 
     def WriteClassEnd(self):
         self.csfile.write("}\n")
@@ -189,8 +192,7 @@ using System.Globalization;
         return new %s("%s", typeof(%s), ResourceManager, o);
     }
 """ % (self.Wrapper_Class, name, parametersWithTypes, parameters,
-       self.Wrapper_Class, name,
-       os.path.splitext(os.path.basename(self.CsFileName))[0]))
+       self.Wrapper_Class, name, self.Basename))
 
         else:
 
@@ -202,7 +204,7 @@ using System.Globalization;
         }
     }
 """ % (self.Wrapper_Class, name, self.Wrapper_Class, name,
-       os.path.splitext(os.path.basename(self.CsFileName))[0]))
+       self.Basename))
 
     def GetNumberOfParametersForStringResource(self, resourceValue):
         regex = re.compile("(?P<value>\{[0-9]*\})")
