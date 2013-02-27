@@ -51,29 +51,43 @@ class ChiselTool:
         ifile = open(self.InputFilename)
         fileContents = ifile.readlines()
         ifile.close()
-        
+
         tabs2space = ""
         for i in range(self.size):
             tabs2space += " "
-            
+
+        stringConstant = None
         ofile = open(self.OutputFilename, "w")
-        if (self.convertMode == "s2t"):
-            for line in fileContents:
-                i = 0
-                while (line[i:].startswith(tabs2space)):
-                    ofile.write("\t")
-                    i += self.size
-                ofile.write(line[i:])
-        else:
-            for line in fileContents:
-                for i in range(len(line)):
-                    if (line[i] != "\t"):
-                        ofile.write(line[i:])
-                        break
-                    else:
-                        ofile.write(tabs2space)
+
+        for line in fileContents:
+            if (stringConstant is None):
+                if (self.convertMode == "s2t"):
+                    i = 0
+                    while (line[i:].startswith(tabs2space)):
+                        ofile.write("\t")
+                        i += self.size
+                    ofile.write(line[i:])
+                else:
+                    for line in fileContents:
+                        for i in range(len(line)):
+                            if (line[i] != "\t"):
+                                ofile.write(line[i:])
+                                break
+                            else:
+                                ofile.write(tabs2space)
+
+                if ((line.find('@"'))>=0):
+                    cstr = line.replace('""','').replace('@"','')
+                    if (cstr.find('"')<0):
+                        stringConstant = "C#"
+            else:
+                ofile.write(line)
+                cstr = line.replace('""','')
+                if ((cstr.find('"'))>=0):
+                    stringConstant = None
+
         ofile.close()
-        
+
 if __name__ == '__main__':
     t = ChiselTool()
     if (t.ProcessCommandLine()):
