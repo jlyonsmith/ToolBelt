@@ -1,2 +1,5 @@
 #!/bin/bash
-mono ~/bin/Chalk.app/Chalk.exe $*
+pushd `dirname $0` > /dev/null
+SCRIPTDIR=`pwd`
+popd > /dev/null
+python $SCRIPTDIR/chalk.py $*
