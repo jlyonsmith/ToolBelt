@@ -1,14 +1,32 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Version>
-  <Major>1</Major>
-  <Minor>7</Minor>
-  <Build>20317</Build>
-  <Revision>0</Revision>
-  <StartYear>2012</StartYear>
+  <Major>
+    1
+  </Major>
+  <Minor>
+    7
+  </Minor>
+  <Build>
+    20317
+  </Build>
+  <Revision>
+    4
+  </Revision>
+  <StartYear>
+    2012
+  </StartYear>
   <Files>
-    <File>Chalk/Properties/AssemblyInfo.cs</File>
-    <File>Buckle/Properties/AssemblyInfo.cs</File>
-    <File>Hammer/Properties/AssemblyInfo.cs</File>
-    <File>ToolBelt/Properties/AssemblyInfo.cs</File>
+    <File>
+      Chalk/Properties/AssemblyInfo.cs
+    </File>
+    <File>
+      Buckle/Properties/AssemblyInfo.cs
+    </File>
+    <File>
+      Hammer/Properties/AssemblyInfo.cs
+    </File>
+    <File>
+      ToolBelt/Properties/AssemblyInfo.cs
+    </File>
   </Files>
 </Version>

@@ -40,14 +40,15 @@ class ChalkTool:
         projectSln = self.GetProjectSolution()
 
         if (projectSln is None):
-            print "Cannot find .sln file to determine project root."
+            print "error: Cannot find .sln file to determine project root."
             return
 
         print "Project root is", os.path.split(projectSln)[0]
 
         projectFileName = os.path.basename(projectSln)
+        # Do string index instead of splitext because we may have multiple .'s in filename
         self.projectName = projectFileName[:projectFileName.index(".")]
-        self.versionFile = self.projectName + ".version"
+        self.versionFile = os.path.join(os.path.split(projectSln)[0], self.projectName + ".version")
 
         print "Version file is", self.versionFile
 
@@ -57,8 +58,12 @@ class ChalkTool:
         self.revision = 0
         self.startYear = datetime.date.today().year
         self.fileList = []
-        if (os.path.exists(self.versionFile)):
-            self.ReadVersionFile()
+
+        if (not os.path.exists(self.versionFile)):
+            print "error: Version file %s does not exist" % self.versionFile
+            return
+
+        self.ReadVersionFile()
 
         jBuild = self.JDate(self.startYear)
         if (self.build != jBuild):
@@ -81,34 +86,35 @@ class ChalkTool:
         for f in self.fileList:
             path = os.path.join(os.path.split(projectSln)[0], f)
             if (not (os.path.exists(path))):
-                print "File '%s' does not exist" % path
+                print "error: File '%s' does not exist" % path
             else:
                 self.UpdateFileVersion(path)
                 print path
 
         self.WriteVersionFile()
 
-    def GetProjectSolution(self, dire=os.curdir):
-        for filename in os.listdir(dire):
-            d = os.path.join(dire, filename)
+    def GetProjectSolution(self, dir=os.curdir):
+        for filename in os.listdir(dir):
+            d = os.path.join(dir, filename)
             if fnmatch.fnmatch(filename, '*.sln'):
                 return d
-            elif (os.path.isdir(filename)):
-                sln = self.GetProjectSolution(dire=d)
-                if (sln is not None):
-                    return sln
-        return None
+
+        if (dir != os.path.sep):
+            dir = os.path.abspath(os.path.join(dir, os.pardir))
+            return self.GetProjectSolution(dir)
+        else:
+            return None
 
     def ReadVersionFile(self):
         doc = xmlDoc.parse(self.versionFile)
         version = doc.getroot()
-        self.major = int(version.find("Major").text)
-        self.minor = int(version.find("Minor").text)
-        self.build = int(version.find("Build").text)
-        self.revision = int(version.find("Revision").text)
-        self.startYear = int(version.find("StartYear").text)
+        self.major = int(version.find("Major").text.strip())
+        self.minor = int(version.find("Minor").text.strip())
+        self.build = int(version.find("Build").text.strip())
+        self.revision = int(version.find("Revision").text.strip())
+        self.startYear = int(version.find("StartYear").text.strip())
         for elem in version.iter("File"):
-            self.fileList.append(elem.text)
+            self.fileList.append(elem.text.strip())
 
     def WriteVersionFile(self):
         root = xmlDoc.Element("Version")
@@ -191,7 +197,7 @@ class ChalkTool:
                 contents = re.sub("(Version=\[0-9]+\.[0-9]+)",
                                   "Version=" + self.versionMajorAndMinor, contents)
 
-        f = open(filename + "test", "w")
+        f = open(filename, "w")
         f.write(contents)
         f.close()
 

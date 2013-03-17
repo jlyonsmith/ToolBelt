@@ -48,14 +48,11 @@ class ChiselTool:
             return True
 
     def Execute(self):
-        ifile = open(self.InputFilename)
-        fileContents = ifile.readlines()
-        ifile.close()
+        inputFile = open(self.InputFilename)
+        fileContents = inputFile.readlines()
+        inputFile.close()
 
-        tabs2space = ""
-        for i in range(self.size):
-            tabs2space += " "
-
+        tabs2space = " " * self.size
         stringConstant = None
         ofile = open(self.OutputFilename, "w")
 
@@ -68,13 +65,12 @@ class ChiselTool:
                         i += self.size
                     ofile.write(line[i:])
                 else:
-                    for line in fileContents:
-                        for i in range(len(line)):
-                            if (line[i] != "\t"):
-                                ofile.write(line[i:])
-                                break
-                            else:
-                                ofile.write(tabs2space)
+                    for i in range(len(line)):
+                        if (line[i] != "\t"):
+                            ofile.write(line[i:])
+                            break
+                        else:
+                            ofile.write(tabs2space)
 
                 if ((line.find('@"'))>=0):
                     cstr = line.replace('""','').replace('@"','')
