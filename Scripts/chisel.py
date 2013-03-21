@@ -1,90 +1,115 @@
 #!python
+__version__ = "0.0.0.0"
 
-__version__ = "Feb. 2013"
-
+import os.path
 
 class ChiselTool:
-
     def ProcessCommandLine(self):
-        import optparse
-        parser = optparse.OptionParser()
-        parser.set_description("Convert tab/spaces at the start of lines.")
-        parser.add_option("-o", dest="OutputFilename",
-                          help="Specify different name for output file.")
-        parser.add_option("-m", dest="convertMode", default="t2s",
-                          help="tab to spaces 't2s' or spaces to tab 's2t' (default = %default)")
-        parser.add_option("-s", dest="size", default=4, type = int,
-                          help="number of spaces corresponding to 1 tab (default = %default)")
-        parser.add_option("-q", dest="NoLogo", action="store_true",
-                          help="Suppress logo.")
-        parser.remove_option("-h")
-        parser.add_option("-h", dest="help", action="store_true",
-                          help="Show help.")
+        import argparse
+        parser = argparse.ArgumentParser(description = "Convert tab/spaces at the start of lines.")
+        parser.add_argument(
+            "inputFileName", metavar = "INPUTFILENAME")
+        parser.add_argument(
+            "-o", dest="outputFileName",
+            help="Specify different name for output file.")
+        parser.add_argument(
+            "-m", dest="convertMode",
+            help="'s' to convert line start of lines to spaces, 't' for tabs and spaces, " +
+                 "default is to report on tabs/spaces")
+        parser.add_argument(
+            "-s", dest="tabSize", default = 4, type = int,
+            help="The tab size (default is %default)")
+        parser.add_argument(
+            "-q", dest="noLogo", action="store_true",
+            help="Suppress logo.")
+        parser.parse_args(namespace = self)
 
-        parser.set_usage("%prog [options] <text-file>")
-        options, args = parser.parse_args()
+        if not self.noLogo:
+            print("Chisel tab/spaces converter. Version " + __version__)
+            print("Copyright (c) 2013, John Lyon-Smith.")
 
-        if (not options.NoLogo):
-            print "Chisel tab/spaces converter. Version", __version__
-            print "Copyright (c) 2013, John Lyon-Smith."
-
-        if (options.help):
-            parser.print_help()
+        if self.outputFileName is not None and self.convertMode is None:
+            print("Error: Output file specified with no conversion mode")
             return False
 
-        elif (len(args) == 0):
-            print "Error: A text file must be specified"
+        if self.outputFileName is None:
+            self.outputFileName = self.inputFileName
+
+        if not os.path.exists(self.inputFileName):
+            print("Error: File '%s' does not exist" % self.inputFileName)
             return False
 
-        else:
-            self.InputFilename = args[0]
-            if (options.OutputFilename is None):
-                self.OutputFilename = self.InputFilename
-            else:
-                self.OutputFilename = options.OutputFilename
-
-            self.convertMode = options.convertMode
-            self.size = options.size
-            return True
+        return True
 
     def Execute(self):
-        inputFile = open(self.InputFilename)
-        fileContents = inputFile.readlines()
-        inputFile.close()
+        with open(self.inputFileName) as file:
+            fileLines = file.readlines()
 
-        tabs2space = " " * self.size
-        stringConstant = None
-        ofile = open(self.OutputFilename, "w")
+        inStringConst = False
 
-        for line in fileContents:
-            if (stringConstant is None):
-                if (self.convertMode == "s2t"):
-                    i = 0
-                    while (line[i:].startswith(tabs2space)):
-                        ofile.write("\t")
-                        i += self.size
-                    ofile.write(line[i:])
-                else:
-                    for i in range(len(line)):
-                        if (line[i] != "\t"):
-                            ofile.write(line[i:])
-                            break
-                        else:
-                            ofile.write(tabs2space)
+        totalTabs = 0
+        totalSpaces = 0
+        newTotalTabs = 0
+        newTotalSpaces = 0
 
-                if ((line.find('@"'))>=0):
-                    cstr = line.replace('""','').replace('@"','')
-                    if (cstr.find('"')<0):
-                        stringConstant = "C#"
+        try:
+            if self.convertMode is not None:
+                file = open(self.outputFileName, "w")
             else:
-                ofile.write(line)
-                cstr = line.replace('""','')
-                if ((cstr.find('"'))>=0):
-                    stringConstant = None
+                file = None
 
-        ofile.close()
+            for line in fileLines:
+                if not inStringConst:
+                    # Count the number of spaces, converting tabs to spaces
+                    n = 0
+                    i = 0
+                    while True:
+                        c = line[i]
+                        if c == ' ':
+                            n += 1
+                            totalSpaces += 1
+                        elif c == '\t':
+                            n += self.tabSize
+                            totalTabs += 1
+                        else:
+                            break
+                        i += 1
+
+                    if self.convertMode == 't':
+                        m = (n // self.tabSize)
+                        file.write(m * '\t')
+                        newTotalTabs += m
+                        m = (n % self.tabSize)
+                        file.write(m * ' ')
+                        newTotalSpaces += m
+                    elif self.convertMode == 's':
+                        file.write(' ' * n)
+                        newTotalSpaces += n
+
+                    if (self.convertMode is not None):
+                        file.write(line[i:])
+
+                    if line.find('@"') >= 0:
+                        if line.replace('@"', '').replace('""', '').find('"') < 0:
+                            inStringConst = True
+                else:
+                    if file is not None:
+                        file.write(line)
+
+                    if (line.replace('""', '').find('"')) >= 0:
+                        inStringConst = False
+        finally:
+            if file is not None:
+                file.close()
+
+        print("tabs = %d, spaces = %d" % (totalTabs, totalSpaces), end="")
+
+        if self.convertMode is not None:
+            print(" -> tabs = %d, spaces = %d" % (newTotalTabs, newTotalSpaces))
+        else:
+            print()
 
 if __name__ == '__main__':
     t = ChiselTool()
-    if (t.ProcessCommandLine()):
+    if t.ProcessCommandLine():
         t.Execute()

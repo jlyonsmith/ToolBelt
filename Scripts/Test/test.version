@@ -1,0 +1,13 @@
+%YAML 1.1
+---
+Major: 1
+Minor: 7
+Build: 20317
+Revision: 4
+StartYear: 2012
+Files:
+  Scripts/chalk.py
+  Scripts/hammer.py
+  Scripts/buckle.py
+  Scripts/chisel.py
+  ToolBelt/Properties/AssemblyInfo.cs

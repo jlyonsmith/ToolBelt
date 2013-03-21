@@ -1,6 +1,6 @@
 #!python
 
-__version__ = "Feb. 2013"
+__version__ = "0.0.0.0"
 
 import os.path
 import re
@@ -9,86 +9,66 @@ import xml.etree.ElementTree as xmlDoc
 
 InvalidCharacters = ".$*{}|<>"
 
-
 class BuckleTool:
-
     def ProcessCommandLine(self):
-        import optparse
-        parser = optparse.OptionParser()
-        parser.set_description("Generates strongly typed wrappers for string and bitmap .resx resources")
-        parser.add_option("-o", dest="Output_Cs",
-                          help="Specify different name for .cs file.")
-        parser.add_option("-n", dest="Namespace",
-                          help="Namespace to use in generated C#.")
-        parser.add_option("-b", dest="Basename",
-                          help="The root name of the resource file without its extension " +
-                               "but including any fully qualified namespace name. See " +
-                               "ResourceManager constructor documentation for details.")
-        parser.add_option("-w", dest="Wrapper_Class",
-                          help="String wrapper class. See Message.cs for details.")
-        parser.add_option("-a", dest="Modifier",
-                          help="Access modifier for properties and methods.")
-        parser.add_option("-q", dest="NoLogo", action="store_true",
-                          help="Suppress logo.")
-        parser.add_option("-i", dest="Incremental", action="store_true",
-                          help="Incremental build. Create outputs only if out-of-date.")
-        parser.remove_option("-h")
-        parser.add_option("-h", dest="help", action="store_true",
-                          help="Show help.")
+        import argparse
+        parser = argparse.ArgumentParser(
+            description="Generates strongly typed wrappers for string and bitmap .resx resources")
+        parser.add_argument("resxFileName", metavar = "RESXFILE")
+        parser.add_argument(
+            "-o", dest="csFileName", metavar = "CSFILE",
+            help="Specify different name for .cs file.")
+        parser.add_argument(
+            "-r", dest="resourcesFileName", metavar = "RESOURCESFILE",
+            help="Specify different name for .resources file.")
+        parser.add_argument(
+            "-n", dest="namespace",
+            help="Namespace to use in generated C# class.")
+        parser.add_argument(
+            "-c", dest="className",
+            help="Class name to use in generated C# class.")
+        parser.add_argument(
+            "-b", dest="basename",
+            help="Alternate file basename that will be used instead of the namespace and class " +
+                 "name to embed the .resources file in the assembly manifest.")
+        parser.add_argument(
+            "-w", dest="wrapperClassName", default = "ToolBelt.Message",
+            help="String wrapper class. See Message.cs for details. Default is %default")
+        parser.add_argument(
+            "-a", dest="modifier", default="public",
+            help="Access modifier for properties and methods. Default is %default")
+        parser.add_argument(
+            "-q", dest="noLogo", action="store_true",
+            help="Suppress logo.")
+        parser.add_argument(
+            "-i", dest="incremental", action="store_true",
+            help="incremental build. Create outputs only if out-of-date.")
 
-        parser.set_usage("%prog [options] <resx-file>")
-        options, args = parser.parse_args()
+        parser.parse_args(namespace = self)
 
-        if (not options.NoLogo):
-            print "Buckle ResX to C# String Wrapper Class Generator. Version", __version__
-            print "Copyright (c) 2012, John Lyon-Smith."
+        if not self.noLogo:
+            print("Buckle ResX to C# String Wrapper Class Generator. Version " + __version__)
+            print("Copyright (c) 2012, John Lyon-Smith.")
 
-        if (options.help):
-            parser.print_help()
-            return False
+        if (self.csFileName is None):
+            self.csFileName = os.path.splitext(self.resXFileName)[0] + ".cs"
 
-        elif (len(args) == 0):
-            print "Error: A .resx file must be specified"
-            return False
-
-        else:
-            self.ResXFileName = args[0]
-            if (options.Wrapper_Class is None):
-                print "Error: A string wrapper class must be specified"
+        if (self.incremental):
+            if (os.path.exists(self.csFileName) and
+               (os.path.getmtime(self.resxFileName) < os.path.getmtime(self.csFileName))):
                 return False
 
-            self.Wrapper_Class = options.Wrapper_Class
-            if (options.Output_Cs is None):
-                self.CsFileName = os.path.splitext(
-                    self.ResXFileName)[0] + ".cs"
-            else:
-                self.CsFileName = options.Output_Cs
+        if self.className is None:
+            self.className = os.path.basename(self.resxFileName)
 
-            if (options.Incremental):
-                if (os.path.exists(self.CsFileName) and
-                   (os.path.getmtime(self.ResXFileName) < os.path.getmtime(self.CsFileName))):
-                    return False
-
-            if (options.Modifier is None):
-                self.Modifier = "public"
-            else:
-                self.Modifier = options.Modifier
-
-            self.Namespace = options.Namespace
-
-            if (options.Basename is None):
-                self.Basename = os.path.splitext(
-                    os.path.basename(self.ResXFileName))[0]
-            else:
-                self.Basename = options.Basename
-            return True
+        return True
 
     def ReadResources(self):
-        self.resources = xmlDoc.parse(self.ResXFileName)
+        self.resources = xmlDoc.parse(self.resxFileName)
         self.haveDrawingResources = False
         root = self.resources.getroot()
         for elem in root.iter("assembly"):
-            print elem.tag, elem.get("alias"), elem.get("name")
+            print(elem.tag, elem.get("alias"), elem.get("name"))
 
         for elem in root.iter("data"):
             # print elem.tag, elem.get("name"), elem.get("type")
@@ -97,7 +77,7 @@ class BuckleTool:
                 self.haveDrawingResources = True
 
     def WriteCs(self):
-        self.csfile = open(self.CsFileName, "w")
+        self.csFile = open(self.csFileName, "w")
         self.WriteNamespaceStart()
         self.WriteClassStart()
 
@@ -110,23 +90,23 @@ class BuckleTool:
         self.WriteClassEnd()
         self.WriteNamespaceEnd()
 
-        print "Generated wrapper class '%s' for %d resource(s)" % (self.CsFileName, num)
+        print("Generated wrapper class '%s' for %d resource(s)" % (self.csFileName, num))
 
     def WriteNamespaceStart(self):
         now = datetime.datetime.now()
-        self.csfile.write(
+        self.csFile.write(
             """//
 // This file generated by the Buckle tool on %s at %s.
 //
 // Contains strongly typed wrappers for resources in %s
 //
 
-""" % (now.strftime("%m/%d/%Y"), now.strftime("%I:%M %p"), os.path.basename(self.ResXFileName)))
+""" % (now.strftime("%m/%d/%Y"), now.strftime("%I:%M %p"), os.path.basename(self.resxFileName)))
 
-        if ((self.Namespace is not None) and (len(self.Namespace) > 0)):
-            self.csfile.write("namespace %s {\n" % self.Namespace)
+        if self.namespace is not None:
+            self.csFile.write("namespace %s {\n" % self.namespace)
 
-        self.csfile.write(
+        self.csFile.write(
             """using System;
 using System.Reflection;
 using System.Resources;
@@ -134,33 +114,33 @@ using System.Diagnostics;
 using System.Globalization;
 """)
 
-        if (self.haveDrawingResources):
-            self.csfile.write("using System.Drawing;\n")
+        if self.haveDrawingResources:
+            self.csFile.write("using System.Drawing;\n")
 
-        self.csfile.write("\n")
+        self.csFile.write("\n")
 
     def WriteNamespaceEnd(self):
-        if ((self.Namespace is not None) and (len(self.Namespace) > 0)):
-            self.csfile.write("}\n")
+        if (self.namespace is not None) and (len(self.namespace) > 0):
+            self.csFile.write("}\n")
 
     def WriteClassStart(self):
-        self.csfile.write(
-            """
-/// <summary>
-/// Strongly typed resource wrappers generated from %s.
+        self.csFile.write('''/// <summary>
+/// Strongly typed resource wrappers generated from %(resx)s.
 /// </summary>
-%s class %s
-{
-    internal static readonly ResourceManager ResourceManager = new ResourceManager("""
-            %
-            (os.path.basename(self.ResXFileName),
-                self.Modifier,
-                self.Basename))
+%(modifier)s class %(className)s
+{''' % {'resx': os.path.basename(self.resxFileName), 'modifier': self.modifier, 'className': self.className})
 
-        self.csfile.write("typeof(%s));\n" % self.Basename)
+        if self.basename is None:
+            self.csFile.write('''
+    internal static readonly ResourceManager ResourceManager = new ResourceManager(typeof(%(class)s);
+''' % {'class': self.className})
+        else:
+            self.csFile.write('''
+    internal static readonly ResourceManager ResourceManager = new ResourceManager("%(base)s", Assembly.GetExecutingAssembly());
+''' % {'base': self.basename})
 
     def WriteClassEnd(self):
-        self.csfile.write("}\n")
+        self.csFile.write("}\n")
 
     def WriteResourceMethod(self, elem):
         value = elem.find("value").text
@@ -168,44 +148,42 @@ using System.Globalization;
         for char in InvalidCharacters:
             name = name.replace(char, "_")
         try:
-            paramcount = self.GetNumberOfParametersForStringResource(value)
-        except Exception, excpt:
-            print "Error: Resource has been skipped:", excpt
+            paramCount = self.GetNumberOfParametersForStringResource(value)
+        except Exception as exception:
+            print("Error: Resource has been skipped: %s" % exception)
             return
 
-        self.csfile.write("\n    /// <summary>\n")
-        self.csfile.write("    /// %s\n" % value)
-        self.csfile.write("    /// </summary>\n")
+        self.csFile.write("\n    /// <summary>\n")
+        self.csFile.write("    /// %s\n" % value)
+        self.csFile.write("    /// </summary>\n")
 
-        if (paramcount > 0):
+        if paramCount > 0:
             parametersWithTypes = ""
             parameters = ""
-            for j in range(paramcount):
+            for j in range(paramCount):
                 str3 = ""
-                if (j > 0):
+                if j > 0:
                     str3 = ", "
                 parametersWithTypes = parametersWithTypes + \
                     str3 + "object param" + repr(j)
                 parameters = parameters + str3 + "param" + repr(j)
-            self.csfile.write("""    public static %s %s(%s)
+            self.csFile.write("""    public static %s %s(%s)
     {
         Object[] o = { %s };
         return new %s("%s", typeof(%s), ResourceManager, o);
     }
-""" % (self.Wrapper_Class, name, parametersWithTypes, parameters,
-       self.Wrapper_Class, name, self.Basename))
+""" % (self.wrapperClassName, name, parametersWithTypes, parameters, self.wrapperClassName, name, self.className))
 
         else:
-
-            self.csfile.write("""    public static %s %s
+            self.csFile.write("""    public static %s %s
     {
         get
         {
             return new %s("%s", typeof(%s), ResourceManager, null);
         }
     }
-""" % (self.Wrapper_Class, name, self.Wrapper_Class, name,
-       self.Basename))
+"""
+            % (self.wrapperClassName, name, self.wrapperClassName, name, self.className))
 
     def GetNumberOfParametersForStringResource(self, resourceValue):
         regex = re.compile("(?P<value>\{[0-9]*\})")
@@ -214,12 +192,12 @@ using System.Globalization;
             try:
                 num3 = int(match[1:-1])
                 num = max(num, num3)
-            except ValueError, excpt:
-                raise Exception(resourceValue + str(excpt) + match[1:-1])
+            except ValueError as exception:
+                raise Exception(resourceValue + str(exception) + match[1:-1])
         return num + 1
 
 if __name__ == '__main__':
     b = BuckleTool()
-    if (b.ProcessCommandLine()):
+    if b.ProcessCommandLine():
         b.ReadResources()
         b.WriteCs()
