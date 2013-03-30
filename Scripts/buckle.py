@@ -33,10 +33,10 @@ class BuckleTool:
                  "name to embed the .resources file in the assembly manifest.")
         parser.add_argument(
             "-w", dest="wrapperClassName", default = "ToolBelt.Message",
-            help="String wrapper class. See Message.cs for details. Default is %default")
+            help="String wrapper class. See Message.cs for details. Default is %(default)s")
         parser.add_argument(
             "-a", dest="modifier", default="public",
-            help="Access modifier for properties and methods. Default is %default")
+            help="Access modifier for properties and methods. Default is %(default)s")
         parser.add_argument(
             "-q", dest="noLogo", action="store_true",
             help="Suppress logo.")

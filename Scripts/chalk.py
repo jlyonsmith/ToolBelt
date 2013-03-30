@@ -14,10 +14,12 @@ class ChalkTool:
         parser = argparse.ArgumentParser(
             "Creates and increments version information in .version file in .sln directory.")
         parser.add_argument(
-            "-q", dest="noLogo", action="store_true", help="Suppress logo.")
+            "-q", dest="doLogo", action="store_false", help="Suppress logo.")
+        parser.add_argument(
+            "-i", dest="doIncr", action="store_true", help="Increment build and/or revision number")
         parser.parse_args(namespace = self)
 
-        if not self.noLogo:
+        if self.doLogo:
             print("Chalk Version Number Maintainer. Version " + __version__)
             print("Copyright (c) 2012, John Lyon-Smith.")
 
@@ -36,8 +38,13 @@ class ChalkTool:
         self.projectName = os.path.abspath(projectFileName[:projectFileName.index(".")])
         self.versionFile = os.path.join(self.rootDir, self.projectName + ".version")
 
-        print("Version file is " + self.versionFile)
+        if not os.path.exists(self.versionFile):
+            print("Error: Version file '%s' does not exist" % self.versionFile)
+            return
+        else:
+            print("Version file is " + self.versionFile)
 
+        # Set defaults
         self.major = 1
         self.minor = 0
         self.build = 0
@@ -45,18 +52,16 @@ class ChalkTool:
         self.startYear = datetime.date.today().year
         self.fileList = []
 
-        if not os.path.exists(self.versionFile):
-            print("Error: Version file %s does not exist" % self.versionFile)
-            return
-
         self.ReadVersionFile()
 
         jBuild = self.JDate(self.startYear)
-        if self.build != jBuild:
-            self.revision = 0
-            self.build = jBuild
-        else:
-            self.revision += 1
+
+        if self.doIncr:
+            if self.build != jBuild:
+                self.revision = 0
+                self.build = jBuild
+            else:
+                self.revision += 1
 
         self.versionBuildAndRevision = "%d.%d" % (self.build, self.revision)
         self.versionMajorAndMinor = "%d.%d" % (self.major, self.minor)
@@ -66,7 +71,11 @@ class ChalkTool:
             self.major, self.minor, self.build, self.revision)
         self.versionFullCsv = self.versionFull.replace('.', ',')
 
-        print("New version is " +  self.versionFull)
+        if not self.doIncr:
+            print("Version is %s" % (self.versionFull))
+            return
+
+        print("New version is %s" % (self.versionFull))
         print("Updating version information in files:")
 
         for fileName in self.fileList:
