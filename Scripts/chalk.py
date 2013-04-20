@@ -1,6 +1,5 @@
 #!python
-
-__version__ = "0.0.0.0"
+__version__ = "1.7.20401.3"
 
 import fnmatch
 import os
@@ -35,14 +34,15 @@ class ChalkTool:
         self.rootDir = os.path.abspath(os.path.split(projectSln)[0])
         projectFileName = os.path.basename(projectSln)
         # Do string index instead of splitext because we may have multiple .'s in filename
-        self.projectName = os.path.abspath(projectFileName[:projectFileName.index(".")])
+        temp = os.path.split(projectFileName)[1]
+        self.projectName = temp[:temp.index(".")]
         self.versionFile = os.path.join(self.rootDir, self.projectName + ".version")
 
         if not os.path.exists(self.versionFile):
             print("Error: Version file '%s' does not exist" % self.versionFile)
             return
         else:
-            print("Version file is " + self.versionFile)
+            print("Version file is '%s'" % self.versionFile)
 
         # Set defaults
         self.major = 1
@@ -133,54 +133,52 @@ class ChalkTool:
 
         if ext == ".cs":
             contents = re.sub(
-                "(AssemblyVersion\(\"[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)",
-                'AssemblyVersion("' + self.versionMajorAndMinor + ".0.0", contents)
+                "(?P<pre>AssemblyVersion\(\")[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+",
+                '\g<pre>' + self.versionMajorAndMinor + ".0.0", contents)
             contents = re.sub(
-                "(AssemblyFileVersion\(\"[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)",
-                'AssemblyFileVersion("' + self.versionFull, contents)
+                "(?P<pre>AssemblyFileVersion\(\")[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+",
+                '\g<pre>' + self.versionFull, contents)
 
         elif ext == ".rc":
-            contents = re.sub("(FILEVERSION [0-9]+,[0-9]+,[0-9]+,[0-9]+)",
-                              "FILEVERSION " + self.versionFullCsv, contents)
-            contents = re.sub("(PRODUCTVERSION [0-9]+,[0-9]+,[0-9]+,[0-9]+)",
-                              "PRODUCTVERSION " + self.versionFullCsv, contents)
+            contents = re.sub("(?P<pre>FILEVERSION\s+)[0-9]+,[0-9]+,[0-9]+,[0-9]+",
+                              '\g<pre>' + self.versionFullCsv, contents)
+            contents = re.sub("(?P<pre>PRODUCTVERSION\s+)[0-9]+,[0-9]+,[0-9]+,[0-9]+",
+                              '\g<pre>' + self.versionFullCsv, contents)
             contents = re.sub(
-                "(FileVersion\",[ \t]*\"[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)",
-                'FileVersion", ' + self.versionFull, contents)
+                "(?P<pre>FileVersion\",\s*\")[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+",
+                '\g<pre>' + self.versionFull, contents)
             contents = re.sub(
-                "(ProductVersion\",[ \t]*\"[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)",
-                'ProductVersion", ' + self.versionFull, contents)
+                "(?P<pre>ProductVersion\",\s*\")[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+",
+                '\g<pre>' + self.versionFull, contents)
 
         elif ext == ".wxi":
-            contents = re.sub("(ProductVersion = \"[0-9]+\.[0-9]+)",
-                              'ProductVersion = "' + self.versionMajorMinor, contents)
-            contents = re.sub("(ProductBuild = \"[0-9]+\.[0-9]|[1-9][0-9])",
-                              'ProductBuild = "' + self.versionBuildAndRevision, contents)
+            contents = re.sub("(?P<pre>ProductVersion\s*=\s*\")[0-9]+\.[0-9]+",
+                              '\g<pre>' + self.versionMajorMinor, contents)
+            contents = re.sub("(?P<pre>ProductBuild\s*=\s*\")[0-9]+\.[0-9]|[1-9][0-9]",
+                              '\g<pre>' + self.versionBuildAndRevision, contents)
 
         elif ext in [".wixproj", ".proj"]:
             contents = re.sub(
-                "(<OutputName>" + self.projectName +
-                "_[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)",
-                "<OutputName>" + self.projectName + "_" + self.version, contents)
+                "(?P<pre>\<OutputName\>" + self.projectName + "_)[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+",
+                '\g<pre>' + self.version, contents)
 
         elif ext == ".vsixmanifest":
-            contents = re.sub("(<Version>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)",
-                              "<Version>" + self.versionFull)
+            contents = re.sub("(?P<pre>\<Version\>)[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+]",
+                              '\g<pre>' + self.versionFull)
 
         elif ext == ".svg":
-            contents = re.sub("(VERSION [0-9]+\.[0-9]+\.[0-9]+)",
-                              "VERSION " + self.versionMajorMinorAndBuild, contents)
+            contents = re.sub("(?P<pre>VERSION\s+)[0-9]+\.[0-9]+\.[0-9]+]",
+                              '\g<pre>' + self.versionMajorMinorAndBuild, contents)
 
         elif ext == ".xml":
             if os.path.split(fn)[1] == "WMAppManifest":
-                contents = re.sub("(Version=\[0-9]+\.[0-9]+)",
-                                  "Version=" + self.versionMajorAndMinor, contents)
+                contents = re.sub("(?P<pre>Version\s*=\s*)[0-9]+\.[0-9]+",
+                                  '\g<pre>' + self.versionMajorAndMinor, contents)
 
         elif ext == ".py":
-            # TODO: Probably should check for __version__ at start of line
             contents = re.sub(
-                "(__version__=\[0-9]+\.[0-9]+)",
-                "__version__=" + self.versionMajorAndMinor, contents)
+                '(?P<pre>__version__\s*=\s*("|\'))[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+',
+                '\g<pre>' + self.versionFull, contents)
 
         else:
             return

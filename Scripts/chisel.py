@@ -1,5 +1,5 @@
 #!python
-__version__ = "0.0.0.0"
+__version__ = "1.7.20401.3"
 
 import os.path
 
@@ -13,9 +13,8 @@ class ChiselTool:
             "-o", dest="outputFileName",
             help="Specify different name for output file.")
         parser.add_argument(
-            "-m", dest="convertMode",
-            help="'s' to convert line start of lines to spaces, 't' for tabs and spaces, " +
-                 "default is to report on tabs/spaces")
+            "-m", dest="convertMode", choices=['2s', '2t', None], default = None,
+            help="The conversion mode if conversion is required")
         parser.add_argument(
             "-s", dest="tabSize", default = 4, type = int,
             help="The tab size (default is %default)")
@@ -75,14 +74,14 @@ class ChiselTool:
                             break
                         i += 1
 
-                    if self.convertMode == 't':
+                    if self.convertMode == '2t':
                         m = (n // self.tabSize)
                         file.write(m * '\t')
                         newTotalTabs += m
                         m = (n % self.tabSize)
                         file.write(m * ' ')
                         newTotalSpaces += m
-                    elif self.convertMode == 's':
+                    elif self.convertMode == '2s':
                         file.write(' ' * n)
                         newTotalSpaces += n
 
