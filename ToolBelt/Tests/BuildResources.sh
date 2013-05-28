@@ -1,2 +1,1 @@
-~/bin/buckle CommandLineParserTestsResources.resx -q -i -n:ToolBelt -w:ToolBelt.Message
-
+../../Tools/strapper CommandLineParserTestsResources.resx -i -n:ToolBelt -w:ToolBelt.Message

@@ -1,12 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{775B7519-4FB8-4E8C-8785-3D8FE08C1FFA}"
-	ProjectSection(SolutionItems) = preProject
-		Scripts\ToastIt.bat = Scripts\ToastIt.bat
-		Scripts\UpdateVersion.csr = Scripts\UpdateVersion.csr
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EF60F8C0-BCDF-484C-9F81-1262C02A4315}"
 	ProjectSection(SolutionItems) = preProject
 		ToolBelt.version = ToolBelt.version
