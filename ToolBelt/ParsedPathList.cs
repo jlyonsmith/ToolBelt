@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
@@ -22,23 +22,23 @@ namespace ToolBelt
             paths = new List<ParsedPath>();
         }
 
-		public ParsedPathList(string pathList, PathType pathType)
-		{
-			string[] splitPaths = pathList.Split(Path.PathSeparator);
-			
-			paths = new List<ParsedPath>();
-			
-			foreach (string splitPath in splitPaths)
-				paths.Add(new ParsedPath(splitPath, pathType));
-		}
+        public ParsedPathList(string pathList, PathType pathType)
+        {
+            string[] splitPaths = pathList.Split(Path.PathSeparator);
+            
+            paths = new List<ParsedPath>();
+            
+            foreach (string splitPath in splitPaths)
+                paths.Add(new ParsedPath(splitPath, pathType));
+        }
 
-		public ParsedPathList(IEnumerable<ParsedPath> otherPaths)
-		{
-			this.paths = new List<ParsedPath>();
+        public ParsedPathList(IEnumerable<ParsedPath> otherPaths)
+        {
+            this.paths = new List<ParsedPath>();
 
-			foreach (var path in otherPaths)
-				this.paths.Add(path);
-		}
+            foreach (var path in otherPaths)
+                this.paths.Add(path);
+        }
 
         public ParsedPathList(IList<string> pathList, PathType pathType)
         {

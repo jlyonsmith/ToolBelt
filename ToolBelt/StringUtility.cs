@@ -128,9 +128,9 @@ namespace ToolBelt
         /// <returns>An array of strings no longer than the given line length</returns>
         public static string[] WordWrap(this string text, int lineLength)
         {
-			Debug.Assert(lineLength > 0);
+            Debug.Assert(lineLength > 0);
 
-			List<string> lines = new List<string>();
+            List<string> lines = new List<string>();
             
             // First, split the string up on any newline boundaries
             lines.AddRange(text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None));
@@ -205,8 +205,8 @@ namespace ToolBelt
         /// <param name="source">String containing tagged entities</param>
         /// <param name="tagPrefix">The tag prefix</param>
         /// <param name="tagSuffix">The tag suffix</param>
-		/// <param name="dictionary">A dictionary of tag values</param>
-		/// <param name="flags"><see cref="TaggedStringOptions"/> for the replace operation</param>
+        /// <param name="dictionary">A dictionary of tag values</param>
+        /// <param name="flags"><see cref="TaggedStringOptions"/> for the replace operation</param>
         /// <returns>A string with all tags replaced</returns>
         public static string ReplaceTags(
             this string source, string tagPrefix, string tagSuffix, IDictionary dictionary, TaggedStringOptions flags)
@@ -228,12 +228,12 @@ namespace ToolBelt
                 if (tagStart < 0)
                     break;
 
-				string key = source.Substring(tagStart + tagPrefix.Length, tagEnd - tagStart - tagPrefix.Length);
+                string key = source.Substring(tagStart + tagPrefix.Length, tagEnd - tagStart - tagPrefix.Length);
 
-				if (dictionary.Contains(key))
+                if (dictionary.Contains(key))
                 {
                     sb.Remove(tagStart, tagEnd + tagSuffix.Length - tagStart);
-					sb.Insert(tagStart, (string)dictionary[key]);
+                    sb.Insert(tagStart, (string)dictionary[key]);
                 }
                 else
                 {
@@ -243,7 +243,7 @@ namespace ToolBelt
                     }
                     if ((flags & TaggedStringOptions.ThrowOnUnknownTags) == TaggedStringOptions.ThrowOnUnknownTags)
                     {
-						throw new InvalidOperationException("{0}{1}{2} is undefined".CultureFormat(tagPrefix, key, tagSuffix));
+                        throw new InvalidOperationException("{0}{1}{2} is undefined".CultureFormat(tagPrefix, key, tagSuffix));
                     }
                 }
                 

@@ -7,25 +7,25 @@ using NUnit.Framework;
 
 namespace ToolBelt.Tests
 {
-	[TestFixture]
-	public class StringUtilsTests 
-	{
-		[TestCase]
-		public void TestWordWrap() 
-		{
-						  //1234567890123456789012345678901234567890123456789012345678901234567890
-			string text1 = "This is some text that will be broken up onto word boundaries.";
-			string[] lines = StringUtility.WordWrap(text1, 12);
-			
-			Assert.IsTrue(lines.Length == 7);	
-			Assert.IsTrue(lines[2] == "that will ");
+    [TestFixture]
+    public class StringUtilsTests 
+    {
+        [TestCase]
+        public void TestWordWrap() 
+        {
+                          //1234567890123456789012345678901234567890123456789012345678901234567890
+            string text1 = "This is some text that will be broken up onto word boundaries.";
+            string[] lines = StringUtility.WordWrap(text1, 12);
+            
+            Assert.IsTrue(lines.Length == 7);   
+            Assert.IsTrue(lines[2] == "that will ");
             Assert.IsTrue(Array.TrueForAll<string>(lines, delegate(string s) { return s.Length <= 12; }));
 
-			              //1234567890123456789012345678901234567890123456789012345678901234567890
-			string text2 = "Higgletypiggletywiggletywoo.  I wonder what this will do?";
-			
-			lines = StringUtility.WordWrap(text2, 12);
-			
+                          //1234567890123456789012345678901234567890123456789012345678901234567890
+            string text2 = "Higgletypiggletywiggletywoo.  I wonder what this will do?";
+            
+            lines = StringUtility.WordWrap(text2, 12);
+            
             Assert.IsTrue(lines.Length == 6);
             Assert.IsTrue(lines[3] == "wonder what ");
             Assert.IsTrue(Array.TrueForAll<string>(lines, delegate(string s) { return s.Length <= 12; }));

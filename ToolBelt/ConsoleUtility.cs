@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
@@ -99,13 +99,13 @@ namespace ToolBelt
                     break;
                 case MessageType.Warning:
                     Console.ForegroundColor = ConsoleColor.Yellow;
-					Console.Error.Write(ConsoleUtilityResources.Warning);
+                    Console.Error.Write(ConsoleUtilityResources.Warning);
                     Console.Error.WriteLine(format, args);
                     Console.ResetColor();
                     break;
                 case MessageType.Error:
                     Console.ForegroundColor = ConsoleColor.Red;
-					Console.Error.Write(ConsoleUtilityResources.Error);
+                    Console.Error.Write(ConsoleUtilityResources.Error);
                     Console.Error.WriteLine(format, args);
                     Console.ResetColor();
                     break;

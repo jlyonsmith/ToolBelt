@@ -210,7 +210,7 @@ namespace ToolBelt.Tests
             try
             {
                 ParsedPath pp = new ParsedPath(path, type);
-				Assert.IsNotNull(pp);
+                Assert.IsNotNull(pp);
                 Assert.Fail("Badly formed path not caught");
             }
             catch (Exception e)
@@ -218,7 +218,7 @@ namespace ToolBelt.Tests
                 Assert.IsTrue(e is ArgumentException);
             }
         }
-        #endregion		
+        #endregion      
 
         #region Assert path parts with MakeFullPath()
         private void AssertPathPartsFull(
@@ -254,7 +254,7 @@ namespace ToolBelt.Tests
             {
                 ParsedPath pp = new ParsedPath(path, PathType.Unknown).MakeFullPath(
                     baseDir == null ? null : new ParsedPath(baseDir, PathType.Directory));
-				Assert.IsNotNull(pp);
+                Assert.IsNotNull(pp);
                 Assert.Fail("Badly formed path not caught");
             }
             catch (Exception e)
@@ -281,8 +281,8 @@ namespace ToolBelt.Tests
             try
             {
                 ParsedPath pp = new ParsedPath(path, PathType.Unknown).MakeRelativePath(new ParsedPath(basePath, PathType.Unknown));
-				Assert.IsNotNull(pp);
-				Assert.Fail("MakeRelativePath succeeded and should have failed");
+                Assert.IsNotNull(pp);
+                Assert.Fail("MakeRelativePath succeeded and should have failed");
             }
             catch (Exception e)
             {
@@ -347,7 +347,7 @@ namespace ToolBelt.Tests
                 else
                     pp = new ParsedPath(path, PathType.Unknown).MakeParentPath();
                 
-				Assert.IsNotNull(pp);
+                Assert.IsNotNull(pp);
                 Assert.Fail("Get parent succeeded and should have failed");
             }
             catch (Exception e)
@@ -397,15 +397,15 @@ namespace ToolBelt.Tests
             Assert.AreEqual(Path.DirectorySeparatorChar.ToString(), subDirs[0]);
         }
 
-		[TestCase] public void TestAppend()
-		{
+        [TestCase] public void TestAppend()
+        {
             ParsedPath pp1 = new ParsedPath(@"c:\blah\blah", PathType.Directory);
             ParsedPath ppCombine = pp1.Append("file.txt", PathType.File);
 
             Assert.AreEqual(@"c:\blah\blah\file.txt", ppCombine);
 
             pp1 = new ParsedPath(@"c:\blah\blah", PathType.Directory);
-			Assert.Throws(typeof(ArgumentException), delegate { ppCombine = pp1.Append(@"\blah\file.txt", PathType.File); });
+            Assert.Throws(typeof(ArgumentException), delegate { ppCombine = pp1.Append(@"\blah\file.txt", PathType.File); });
 
             pp1 = new ParsedPath(@"c:\blah\blah", PathType.Directory);
             ppCombine = pp1.Append(@"blah\file.txt", PathType.File);

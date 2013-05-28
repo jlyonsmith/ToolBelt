@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Resources;
 using System.Text.RegularExpressions;
 
@@ -38,7 +38,7 @@ namespace ToolBelt
         #endregion
         
         #region Public Methods
-		public void Message()
+        public void Message()
         {
             Message(MessageImportance.Normal, String.Empty);
         }
@@ -51,7 +51,7 @@ namespace ToolBelt
         public void Message(MessageImportance importance, string message, params object[] messageArgs)
         {
             this.outputter.OutputMessageEvent(
-				new OutputMessageEventArgs(importance, messageArgs.Length == 0 ? message : message.CultureFormat(messageArgs)));
+                new OutputMessageEventArgs(importance, messageArgs.Length == 0 ? message : message.CultureFormat(messageArgs)));
         }
 
         public void Error(string message, params object[] messageArgs)
@@ -171,6 +171,6 @@ namespace ToolBelt
 
         public bool HasOutputErrors { get { return this.hasOutputErrors; } }
 
-	    #endregion    
-	}
+        #endregion    
+    }
 }

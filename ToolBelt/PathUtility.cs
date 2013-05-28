@@ -7,156 +7,156 @@ using System.Collections.Generic;
 
 namespace ToolBelt
 {
-	/// <summary>
-	/// Extends the functionality of <see cref="System.IO.Path"/>. 
-	/// </summary>
-	public sealed class PathUtility
-	{
-		#region Fields
-		public static char[] InvalidPathChars = new char[]
-		{
-			'"',
-			'<',
-			'>',
-			'|',
-			'\0',
-			'\u0001',
-			'\u0002',
-			'\u0003',
-			'\u0004',
-			'\u0005',
-			'\u0006',
-			'\a',
-			'\b',
-			'\t',
-			'\n',
-			'\v',
-			'\f',
-			'\r',
-			'\u000e',
-			'\u000f',
-			'\u0010',
-			'\u0011',
-			'\u0012',
-			'\u0013',
-			'\u0014',
-			'\u0015',
-			'\u0016',
-			'\u0017',
-			'\u0018',
-			'\u0019',
-			'\u001a',
-			'\u001b',
-			'\u001c',
-			'\u001d',
-			'\u001e',
-			'\u001f'
-		};
-		public static char[] InvalidFileNameChars = new char[]
-		{
-			'/',
-			'\\',
-			'"',
-			'<',
-			'>',
-			'|',
-			'\0',
-			'\u0001',
-			'\u0002',
-			'\u0003',
-			'\u0004',
-			'\u0005',
-			'\u0006',
-			'\a',
-			'\b',
-			'\t',
-			'\n',
-			'\v',
-			'\f',
-			'\r',
-			'\u000e',
-			'\u000f',
-			'\u0010',
-			'\u0011',
-			'\u0012',
-			'\u0013',
-			'\u0014',
-			'\u0015',
-			'\u0016',
-			'\u0017',
-			'\u0018',
-			'\u0019',
-			'\u001a',
-			'\u001b',
-			'\u001c',
-			'\u001d',
-			'\u001e',
-			'\u001f'
-		};
-		public static readonly char[] BadDirTrailChars = new char[] {'.', ' ', '\t'};
-		public static readonly char[] WildcardChars = new char[] {'*', '?'};
+    /// <summary>
+    /// Extends the functionality of <see cref="System.IO.Path"/>. 
+    /// </summary>
+    public sealed class PathUtility
+    {
+        #region Fields
+        public static char[] InvalidPathChars = new char[]
+        {
+            '"',
+            '<',
+            '>',
+            '|',
+            '\0',
+            '\u0001',
+            '\u0002',
+            '\u0003',
+            '\u0004',
+            '\u0005',
+            '\u0006',
+            '\a',
+            '\b',
+            '\t',
+            '\n',
+            '\v',
+            '\f',
+            '\r',
+            '\u000e',
+            '\u000f',
+            '\u0010',
+            '\u0011',
+            '\u0012',
+            '\u0013',
+            '\u0014',
+            '\u0015',
+            '\u0016',
+            '\u0017',
+            '\u0018',
+            '\u0019',
+            '\u001a',
+            '\u001b',
+            '\u001c',
+            '\u001d',
+            '\u001e',
+            '\u001f'
+        };
+        public static char[] InvalidFileNameChars = new char[]
+        {
+            '/',
+            '\\',
+            '"',
+            '<',
+            '>',
+            '|',
+            '\0',
+            '\u0001',
+            '\u0002',
+            '\u0003',
+            '\u0004',
+            '\u0005',
+            '\u0006',
+            '\a',
+            '\b',
+            '\t',
+            '\n',
+            '\v',
+            '\f',
+            '\r',
+            '\u000e',
+            '\u000f',
+            '\u0010',
+            '\u0011',
+            '\u0012',
+            '\u0013',
+            '\u0014',
+            '\u0015',
+            '\u0016',
+            '\u0017',
+            '\u0018',
+            '\u0019',
+            '\u001a',
+            '\u001b',
+            '\u001c',
+            '\u001d',
+            '\u001e',
+            '\u001f'
+        };
+        public static readonly char[] BadDirTrailChars = new char[] {'.', ' ', '\t'};
+        public static readonly char[] WildcardChars = new char[] {'*', '?'};
 
-		#endregion
+        #endregion
 
-		#region Constructors
-		// No need to construct this object
-		private PathUtility()
-		{
-		}
-		#endregion
+        #region Constructors
+        // No need to construct this object
+        private PathUtility()
+        {
+        }
+        #endregion
 
-		/// <summary>
-		/// Prefix for UNC file paths. 
-		/// </summary>
-		public static readonly string UncPrefix = new string (Path.DirectorySeparatorChar, 2);
+        /// <summary>
+        /// Prefix for UNC file paths. 
+        /// </summary>
+        public static readonly string UncPrefix = new string (Path.DirectorySeparatorChar, 2);
 
-		/// <summary>
-		/// Character used to separate the directories
-		/// </summary>
-		public static readonly char DirectorySeparatorChar = Path.DirectorySeparatorChar;
-		public static readonly string DirectorySeparator = Path.DirectorySeparatorChar.ToString();
-		
-		/// <summary>
-		/// Character used to separate the paths
-		/// </summary>
+        /// <summary>
+        /// Character used to separate the directories
+        /// </summary>
+        public static readonly char DirectorySeparatorChar = Path.DirectorySeparatorChar;
+        public static readonly string DirectorySeparator = Path.DirectorySeparatorChar.ToString();
+        
+        /// <summary>
+        /// Character used to separate the paths
+        /// </summary>
 #if WINDOWS
-		public static readonly char PathSeparatorChar = ';';
+        public static readonly char PathSeparatorChar = ';';
 #else
-		public static readonly char PathSeparatorChar = ':';
+        public static readonly char PathSeparatorChar = ':';
 #endif
-		public static readonly string PathSeparator = PathSeparatorChar.ToString();
-		
-		/// <summary>
-		/// Alternate character used to separate the directories ('\' on Unix, '/' on Windows)
-		/// </summary>
+        public static readonly string PathSeparator = PathSeparatorChar.ToString();
+        
+        /// <summary>
+        /// Alternate character used to separate the directories ('\' on Unix, '/' on Windows)
+        /// </summary>
 #if WINDOWS
-		public static readonly char AltDirectorySeparatorChar = '/';
+        public static readonly char AltDirectorySeparatorChar = '/';
 #else
-		public static readonly char AltDirectorySeparatorChar = '\\';
-		public static readonly string AltDirectorySeparator = AltDirectorySeparatorChar.ToString();
+        public static readonly char AltDirectorySeparatorChar = '\\';
+        public static readonly string AltDirectorySeparator = AltDirectorySeparatorChar.ToString();
 #endif
-		
-		/// <summary>
-		/// Alternate character used to separate the paths (':' on Unix, ';  ' on Windows)
-		/// </summary>
+        
+        /// <summary>
+        /// Alternate character used to separate the paths (':' on Unix, ';  ' on Windows)
+        /// </summary>
 #if WINDOWS
-		public static readonly char AltPathSeparatorChar = ':';
+        public static readonly char AltPathSeparatorChar = ':';
 #else
-		public static readonly char AltPathSeparatorChar = ';';
-		public static readonly string AltPathSeparator = AltPathSeparatorChar.ToString();
+        public static readonly char AltPathSeparatorChar = ';';
+        public static readonly string AltPathSeparator = AltPathSeparatorChar.ToString();
 #endif
-		
-		/// <summary>
-		/// Character used to separate the file extension from the main part of the file name.
-		/// </summary>
-		public static readonly char ExtensionSeparatorChar = '.';
-		public static readonly string ExtensionSeparator = ExtensionSeparatorChar.ToString();
+        
+        /// <summary>
+        /// Character used to separate the file extension from the main part of the file name.
+        /// </summary>
+        public static readonly char ExtensionSeparatorChar = '.';
+        public static readonly string ExtensionSeparator = ExtensionSeparatorChar.ToString();
 
-		/// <summary>
-		/// The volume separator character. Only Windows platforms use this.
-		/// </summary>
-		public static readonly char VolumeSeparatorChar = ':';
-		public static readonly string VolumeSeparator = VolumeSeparatorChar.ToString();
+        /// <summary>
+        /// The volume separator character. Only Windows platforms use this.
+        /// </summary>
+        public static readonly char VolumeSeparatorChar = ':';
+        public static readonly string VolumeSeparator = VolumeSeparatorChar.ToString();
 
         /// <summary>
         /// Searches multiple directories for a file.
@@ -166,24 +166,24 @@ namespace ToolBelt
         /// <returns>An array of just the paths that contain the file, in the same order as the passed in array.</returns>
         public static ParsedPathList FindFileInPaths(ParsedPathList paths, ParsedPath file)
         {
-			ParsedPathList foundPaths = new ParsedPathList();
+            ParsedPathList foundPaths = new ParsedPathList();
 
             foreach (ParsedPath path in paths)
-			{
-				try 
-				{
+            {
+                try 
+                {
                     ParsedPath fullPath = new ParsedPath(path, PathParts.VolumeAndDirectory).Append(file);
-				
-					if (File.Exists(fullPath))
+                
+                    if (File.Exists(fullPath))
                         foundPaths.Add(fullPath);
-				}
-				catch (ArgumentException)
-				{
-					// If there is a bad path in the list, ignore it
-				}
-			}
-			
+                }
+                catch (ArgumentException)
+                {
+                    // If there is a bad path in the list, ignore it
+                }
+            }
+            
             return foundPaths;
-		}
-	}
+        }
+    }
 }

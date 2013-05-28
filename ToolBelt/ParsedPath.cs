@@ -25,14 +25,14 @@ namespace ToolBelt
         /// The path is just a Windows style "volume" (drive or share)
         /// </summary>
         Volume,
-		/// <summary>
-		/// A file or directory with wildcards
-		/// </summary>
-		Wildcard,
+        /// <summary>
+        /// A file or directory with wildcards
+        /// </summary>
+        Wildcard,
         /// <summary>
         /// The type of path is unknown.  This.  Will assume path is a directory if 
         /// it has a trailing <see cref="Path.DirectorySeparatorChar"/>, or a wildcard
-		/// if there is a wildcard in the file name.
+        /// if there is a wildcard in the file name.
         /// </summary>
         Unknown,
     };
@@ -82,9 +82,9 @@ namespace ToolBelt
     /// <item>The path is unquoted ("") if necessary</item>
     /// <item>Leading and trailing whitespace is trimmed, both before and after unquoting</item>
     /// <item>A check is made that the path is > 1 character long</item>
-	/// <item>A check is made that the path does not contain any invalid path characters</item>
-	/// <item>Double directory separators are changed to a single separator.</item>
-	/// <item>The <see cref="P:Directory"/> property is always given a terminating separator</item>
+    /// <item>A check is made that the path does not contain any invalid path characters</item>
+    /// <item>Double directory separators are changed to a single separator.</item>
+    /// <item>The <see cref="P:Directory"/> property is always given a terminating separator</item>
     /// <item><see cref="P:Drive"/> property will always have a drive letter separator character if it refers to a drive</item>
     /// <item>Extensions will always have a preceding <see cref="PathUtility.ExtensionSeparatorChar"/> character</item>
     /// <item>Trailing '.' and ' ' combinations are trimmed from all file and directory names</item>
@@ -181,7 +181,7 @@ namespace ToolBelt
             string file = String.Empty;
             string ext = String.Empty;
 
-			ValidateAndNormalizePath(ref path);
+            ValidateAndNormalizePath(ref path);
 
             int i; // Always the beginning index
             int j; // Always the ending index
@@ -194,59 +194,59 @@ namespace ToolBelt
                     throw new ArgumentException("Badly formed UNC name");
                     
                 // Find the '\' after the '\\'
-                j = path.IndexOf(Path.DirectorySeparatorChar, PathUtility.UncPrefix.Length);			
+                j = path.IndexOf(Path.DirectorySeparatorChar, PathUtility.UncPrefix.Length);            
                 
-				if (j == -1 || j - i == 0)
-					throw new ArgumentException("Badly formed UNC name");
+                if (j == -1 || j - i == 0)
+                    throw new ArgumentException("Badly formed UNC name");
                     
-				machine = path.Substring(0, j);
+                machine = path.Substring(0, j);
 
-				i = j;
+                i = j;
                 
-				// Find the '\' after the share name, if there is one and it's not bang up
-				// against the next one
-				if (i + 1 >= path.Length || path[i + 1] == Path.DirectorySeparatorChar)
-					throw new ArgumentException("Badly formed UNC name");
+                // Find the '\' after the share name, if there is one and it's not bang up
+                // against the next one
+                if (i + 1 >= path.Length || path[i + 1] == Path.DirectorySeparatorChar)
+                    throw new ArgumentException("Badly formed UNC name");
                 
-				j = path.IndexOf(Path.DirectorySeparatorChar, i + 1);
+                j = path.IndexOf(Path.DirectorySeparatorChar, i + 1);
 
-				// Either it wasn't found or the string ended
-				if (j == -1)
-					j = path.Length;
+                // Either it wasn't found or the string ended
+                if (j == -1)
+                    j = path.Length;
                 
-				if (j - i == 0)
-					throw new ArgumentException("Badly formed UNC name");
+                if (j - i == 0)
+                    throw new ArgumentException("Badly formed UNC name");
 
-				share = path.Substring(i, j - i);
+                share = path.Substring(i, j - i);
 
-				if (typeHint == PathType.Unknown && path.Length == machine.Length + share.Length)
-					typeHint = PathType.Volume;
-			}
-			else if (path.Length >= 2 && path[1] == PathUtility.VolumeSeparatorChar)
-			{
-				drive = path.Substring(0, 2);
+                if (typeHint == PathType.Unknown && path.Length == machine.Length + share.Length)
+                    typeHint = PathType.Volume;
+            }
+            else if (path.Length >= 2 && path[1] == PathUtility.VolumeSeparatorChar)
+            {
+                drive = path.Substring(0, 2);
                 
-				if (typeHint == PathType.Unknown && path.Length == 2)
-					typeHint = PathType.Volume;
-			}
+                if (typeHint == PathType.Unknown && path.Length == 2)
+                    typeHint = PathType.Volume;
+            }
 
-			if (typeHint == PathType.Unknown)
-			{
-				if (path[path.Length - 1] == Path.DirectorySeparatorChar)
-				{
-					typeHint = PathType.Directory;
-				}
-				else
-				{			
-					typeHint = PathType.File;
-				}
-			}
-			else if (typeHint == PathType.Wildcard)
-			{
-				typeHint = PathType.File;
-			}
+            if (typeHint == PathType.Unknown)
+            {
+                if (path[path.Length - 1] == Path.DirectorySeparatorChar)
+                {
+                    typeHint = PathType.Directory;
+                }
+                else
+                {           
+                    typeHint = PathType.File;
+                }
+            }
+            else if (typeHint == PathType.Wildcard)
+            {
+                typeHint = PathType.File;
+            }
             
-            if (typeHint == PathType.File)	
+            if (typeHint == PathType.File)  
             {
                 // Get the file name
                 i = path.LastIndexOfAny(
@@ -257,7 +257,7 @@ namespace ToolBelt
                 {
                     i = 0;
                 }
-                else 	
+                else    
                 {
                     if (i + 1 >= path.Length)
                         throw new ArgumentException("Path is badly formed.  It does not contain a file name.");
@@ -512,36 +512,36 @@ namespace ToolBelt
 
         #region Instance Methods
 
-		private void ValidateAndNormalizePath(ref string path)
-		{
-			// Null reference is bad
-			if (path == null)
-				throw new ArgumentNullException("path");
-			
-			// Remove leading/trailing spaces 
-			path = path.Trim();
-			
-			// Remove any surrounding quotes
-			if (path.Length >= 2 && path[0] == '\"')
-			{
-				// TODO: This can be done without a RegEx for better performance
-				path = SurroundingQuotesSingleLineRegex.Replace(path, @"$1");
-				path = path.Trim(null);
-			}
-			
-			// Do we still have anything?
-			if (path.Length == 0)
-				throw new ArgumentException("Path is zero length");
-			
-			// Do an invalid character check once now
-			if (path.IndexOfAny(PathUtility.InvalidPathChars) != -1)
-			{
-				throw new ArgumentException("Path contains invalid characters");
-			}
-			
-			// Convert '/' into '\' or vica versa
-			path = path.Replace(PathUtility.AltDirectorySeparatorChar, PathUtility.DirectorySeparatorChar);
-		}
+        private void ValidateAndNormalizePath(ref string path)
+        {
+            // Null reference is bad
+            if (path == null)
+                throw new ArgumentNullException("path");
+            
+            // Remove leading/trailing spaces 
+            path = path.Trim();
+            
+            // Remove any surrounding quotes
+            if (path.Length >= 2 && path[0] == '\"')
+            {
+                // TODO: This can be done without a RegEx for better performance
+                path = SurroundingQuotesSingleLineRegex.Replace(path, @"$1");
+                path = path.Trim(null);
+            }
+            
+            // Do we still have anything?
+            if (path.Length == 0)
+                throw new ArgumentException("Path is zero length");
+            
+            // Do an invalid character check once now
+            if (path.IndexOfAny(PathUtility.InvalidPathChars) != -1)
+            {
+                throw new ArgumentException("Path contains invalid characters");
+            }
+            
+            // Convert '/' into '\' or vica versa
+            path = path.Replace(PathUtility.AltDirectorySeparatorChar, PathUtility.DirectorySeparatorChar);
+        }
 
         /// <summary>
         /// Combine a path fragment with an existing path. You can only combine to the path if it is not 
@@ -592,7 +592,7 @@ namespace ToolBelt
         /// <returns></returns>
         public ParsedPath WithExtension(string newExtension)
         {
-			ValidateAndNormalizePath(ref newExtension);
+            ValidateAndNormalizePath(ref newExtension);
 
             if (!newExtension.StartsWith("."))
                 throw new ArgumentException("Extensions must start with a '.'");
@@ -616,7 +616,7 @@ namespace ToolBelt
         /// <returns>A new path with the give file name</returns>
         public ParsedPath WithFileAndExtension(string newFileAndExtension)
         {
-			ValidateAndNormalizePath(ref newFileAndExtension);
+            ValidateAndNormalizePath(ref newFileAndExtension);
 
             string newFile;
             string newExtension;
@@ -649,55 +649,55 @@ namespace ToolBelt
                 newExtension.Length);
         }
 
-		/// <summary>
-		/// Creates a new <see cref="ParsedPath"/> with the new directory.
-		/// </summary>
-		/// <returns>
-		/// The new <see cref="ParsedPath"/>.
-		/// </returns>
-		/// <param name='newDirectory'>
-		/// New directory.
-		/// </param>
-		public ParsedPath WithDirectory(IEnumerable<ParsedPath> newDirectoryParts)
-		{
-			StringBuilder sb = new StringBuilder();
+        /// <summary>
+        /// Creates a new <see cref="ParsedPath"/> with the new directory.
+        /// </summary>
+        /// <returns>
+        /// The new <see cref="ParsedPath"/>.
+        /// </returns>
+        /// <param name='newDirectory'>
+        /// New directory.
+        /// </param>
+        public ParsedPath WithDirectory(IEnumerable<ParsedPath> newDirectoryParts)
+        {
+            StringBuilder sb = new StringBuilder();
 
-			foreach (var newDirectoryPart in newDirectoryParts)
-			{
-				sb.Append(newDirectoryPart.Directory.ToString());
-			}
-	
-			string newDir = sb.ToString();
-			string path = this.Volume + newDir + this.File + this.Extension;
+            foreach (var newDirectoryPart in newDirectoryParts)
+            {
+                sb.Append(newDirectoryPart.Directory.ToString());
+            }
+    
+            string newDir = sb.ToString();
+            string path = this.Volume + newDir + this.File + this.Extension;
 
-			return new ParsedPath(
-				path,
-				machineLength,
-				shareLength,
-				driveLength,
-				newDir.Length,
-				fileLength,
-				extLength);
-		}
+            return new ParsedPath(
+                path,
+                machineLength,
+                shareLength,
+                driveLength,
+                newDir.Length,
+                fileLength,
+                extLength);
+        }
 
-		public ParsedPath WithDirectory(ParsedPath directory)
-		{
-			throw new NotImplementedException();
-		}
+        public ParsedPath WithDirectory(ParsedPath directory)
+        {
+            throw new NotImplementedException();
+        }
 
-		/// <summary>
-		/// Creates a new ParsedPath with the new volume.
-		/// </summary>
-		/// <returns>
-		/// The volume.
-		/// </returns>
-		/// <param name='newVolume'>
-		/// New volume.
-		/// </param>
-		public ParsedPath WithVolume(string newVolume)
-		{
-			throw new NotImplementedException();
-		}
+        /// <summary>
+        /// Creates a new ParsedPath with the new volume.
+        /// </summary>
+        /// <returns>
+        /// The volume.
+        /// </returns>
+        /// <param name='newVolume'>
+        /// New volume.
+        /// </param>
+        public ParsedPath WithVolume(string newVolume)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <overloads>Creates a fully qualified file path.</overloads>
         /// <summary>
@@ -740,18 +740,18 @@ namespace ToolBelt
                 basePath = new ParsedPath(System.Environment.CurrentDirectory, PathType.Directory);
 
 #if WINDOWS
-			if (!basePath.HasVolume)
-				throw new ArgumentException("Base directory has no volume");
+            if (!basePath.HasVolume)
+                throw new ArgumentException("Base directory has no volume");
 #else
-			if (basePath.HasVolume)
-				throw new ArgumentException("Base directory is not a Unix style path");
+            if (basePath.HasVolume)
+                throw new ArgumentException("Base directory is not a Unix style path");
 #endif
 
             if (basePath.Directory == String.Empty)
                 throw new ArgumentException("Base directory has no directory");
 
-			if (!basePath.HasRootDirectory)
-				throw new ArgumentException("Base directory has no root");
+            if (!basePath.HasRootDirectory)
+                throw new ArgumentException("Base directory has no root");
                 
             string machine = String.Empty;
             string share = String.Empty;
@@ -767,7 +767,7 @@ namespace ToolBelt
                 if (HasUnc)
                 {
                     machine = this.Machine;
-                    share = this.Share;	
+                    share = this.Share; 
                 }
                 else
                 {
@@ -780,7 +780,7 @@ namespace ToolBelt
                 if (basePath.HasUnc)
                 {
                     machine = basePath.Machine;
-                    share = basePath.Share;	
+                    share = basePath.Share; 
                 }
                 else
                 {
@@ -788,14 +788,14 @@ namespace ToolBelt
                 }
             }
 
-			#if OSX
-			if (dir.StartsWith("~/"))
-			{
-				ParsedPath personalPath = new ParsedPath(Environment.GetFolderPath(Environment.SpecialFolder.Personal), PathType.Directory);
+            #if OSX
+            if (dir.StartsWith("~/"))
+            {
+                ParsedPath personalPath = new ParsedPath(Environment.GetFolderPath(Environment.SpecialFolder.Personal), PathType.Directory);
 
-				dir = personalPath + dir.Substring(2);
-			}
-			#endif
+                dir = personalPath + dir.Substring(2);
+            }
+            #endif
 
             StringBuilder sb = new StringBuilder(dir.Length);
             int index = 0;  
@@ -803,7 +803,7 @@ namespace ToolBelt
 
             // Does this path contain a rooted directory, i.e. does it start with '\'?
             if (dir.Length > 0 && dir[index] == Path.DirectorySeparatorChar)
-            {	
+            {   
                 // Yes, start with the volume directory
                 sb.Append(dir[index++]);
             }
@@ -945,31 +945,31 @@ namespace ToolBelt
                 ext.Length);
         }
 
-		/// <summary>
-		/// Makes the parent path.
-		/// </summary>
-		/// <returns>
-		/// The parent path.
-		/// </returns>
-		/// <param name='level'>
-		/// Number of levels up the path to go; 0, -1, -2, etc..
-		/// </param>
-		public ParsedPath MakeParentPath(int level)
-		{
-			IList<ParsedPath> subDirs = this.SubDirectories;
-			int n = subDirs.Count + level;
+        /// <summary>
+        /// Makes the parent path.
+        /// </summary>
+        /// <returns>
+        /// The parent path.
+        /// </returns>
+        /// <param name='level'>
+        /// Number of levels up the path to go; 0, -1, -2, etc..
+        /// </param>
+        public ParsedPath MakeParentPath(int level)
+        {
+            IList<ParsedPath> subDirs = this.SubDirectories;
+            int n = subDirs.Count + level;
 
-			if (n == 0)
-				throw new InvalidOperationException(
-					"Insufficient directories to make parent path {0} levels down".CultureFormat(-level));
+            if (n == 0)
+                throw new InvalidOperationException(
+                    "Insufficient directories to make parent path {0} levels down".CultureFormat(-level));
 
-			return this.WithDirectory(new ListRange<ParsedPath>(subDirs, 0, n));
-		}
+            return this.WithDirectory(new ListRange<ParsedPath>(subDirs, 0, n));
+        }
 
-		public ParsedPath MakeParentPath()
-		{
-			return MakeParentPath(-1);
-		}
+        public ParsedPath MakeParentPath()
+        {
+            return MakeParentPath(-1);
+        }
         
         #endregion
 
@@ -1033,7 +1033,7 @@ namespace ToolBelt
         /// <returns></returns>
         public override int GetHashCode()
         {
-			// TODO: This needs to be case insensitive on Windows!
+            // TODO: This needs to be case insensitive on Windows!
             return this.ToString().GetHashCode();
         }
 
@@ -1304,26 +1304,26 @@ namespace ToolBelt
         {
             get 
             {
-				List<ParsedPath> subDirs = new List<ParsedPath>();
+                List<ParsedPath> subDirs = new List<ParsedPath>();
 
-				subDirs.Add(new ParsedPath(Path.DirectorySeparatorChar.ToString(), PathType.Directory));
+                subDirs.Add(new ParsedPath(Path.DirectorySeparatorChar.ToString(), PathType.Directory));
 
-				string dir = this.Directory;
-				int i = 1;
+                string dir = this.Directory;
+                int i = 1;
 
-				for (int j = i; j < dir.Length;)
-				{
-					if (dir[j] != Path.DirectorySeparatorChar)
-					{
-						subDirs.Add(new ParsedPath(dir.Substring(i, j - i + 1), PathType.Directory));
-						j++;
-						i = j;
-					}
-					else
-					{
-						j++;
-					}
-				}
+                for (int j = i; j < dir.Length;)
+                {
+                    if (dir[j] != Path.DirectorySeparatorChar)
+                    {
+                        subDirs.Add(new ParsedPath(dir.Substring(i, j - i + 1), PathType.Directory));
+                        j++;
+                        i = j;
+                    }
+                    else
+                    {
+                        j++;
+                    }
+                }
 
                 return subDirs;
             }
@@ -1372,7 +1372,7 @@ namespace ToolBelt
             } 
         }
         /// <summary>
-        ///	Get the directory part of the path.  
+        /// Get the directory part of the path.  
         /// </summary>
         public ParsedPath Directory 
         { 
@@ -1383,7 +1383,7 @@ namespace ToolBelt
             } 
         }
         /// <summary>
-        ///	Get the name of the last sub-directory in the directory name, with no trailing separator
+        /// Get the name of the last sub-directory in the directory name, with no trailing separator
         /// </summary>
         public ParsedPath LastDirectory
         {
@@ -1409,7 +1409,7 @@ namespace ToolBelt
             }
         }
         /// <summary>
-        ///	Get the name of the last sub-directory in the directory name, with no trailing separator unless the directory is the root directory.
+        /// Get the name of the last sub-directory in the directory name, with no trailing separator unless the directory is the root directory.
         /// </summary>
         public string LastDirectoryNoSeparator
         { 
@@ -1422,7 +1422,7 @@ namespace ToolBelt
             } 
         }
         /// <summary>
-        ///	Get the directory part of the path.  
+        /// Get the directory part of the path.  
         /// </summary>
         public string DirectoryNoSeparator 
         { 
