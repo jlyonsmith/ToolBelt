@@ -497,11 +497,11 @@ namespace ToolBelt
         }
 
         /// <summary>
-        /// Tests if the given command is valid for this argument.  A null or empty command is valid for all arguments.
+        /// Tests if the given command is valid.  A null or empty command is always valid.
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        public bool IsValidForCommand(string command)
+        public bool IsValidCommand(string command)
         {
             if (String.IsNullOrEmpty(command))
                 return true;
@@ -1024,7 +1024,7 @@ namespace ToolBelt
                 while (enumerator.MoveNext())
                 {
                     CommandLineArgument argument = enumerator.Current;
-                    if (!HasCommandArgument || argument.IsValidForCommand(commandArgument.ToString()))
+                    if (!HasCommandArgument || argument.IsValidCommand(commandArgument.ToString()))
                     {
                         string s = argument.ToString();
     
@@ -1033,7 +1033,7 @@ namespace ToolBelt
                     }
                 }
                 
-                if (HasDefaultArgument && (!HasCommandArgument || defaultArgument.IsValidForCommand(commandArgument.ToString())))
+                if (HasDefaultArgument && (!HasCommandArgument || defaultArgument.IsValidCommand(commandArgument.ToString())))
                 {
                     string s = defaultArgument.ToString();
                     
@@ -1041,7 +1041,7 @@ namespace ToolBelt
                         sb.Append(" " + s);
                 }
 
-                if (HasUnprocessedArgument && (!HasCommandArgument || unprocessedArgument.IsValidForCommand(commandArgument.ToString())))
+                if (HasUnprocessedArgument && (!HasCommandArgument || unprocessedArgument.IsValidCommand(commandArgument.ToString())))
                 {
                     string s = unprocessedArgument.ToString();
                     
@@ -1218,11 +1218,14 @@ namespace ToolBelt
 							else
 								command = String.Empty;
 						
+                            // Needed for the use of the parser in the lambda
+                            CommandLineParser parser = this;
+
 							arg = argumentCollection.Find(
-								delegate(CommandLineArgument item)
+								item =>
 								{
 									return
-										IsValidForCommand(item, command) &&
+										parser.IsValidArgumentForCommand(item, command) &&
 										String.CompareOrdinal(item.Name, argumentName) == 0 ||
 										String.CompareOrdinal(item.ShortName, argumentName) == 0;
 								});
@@ -1230,7 +1233,7 @@ namespace ToolBelt
 						else
 						{
 							arg = argumentCollection.Find(
-								delegate(CommandLineArgument item)
+								item =>
 								{
 									return
 										String.CompareOrdinal(item.Name, argumentName) == 0 ||
@@ -1252,7 +1255,7 @@ namespace ToolBelt
 						{
 							string command = argument.ToLower(CultureInfo.InvariantCulture);
 							
-							if (!IsValidForCommand(command))
+							if (!IsValidCommand(command))
 							{
 								throw new CommandLineArgumentException(CommandLineParserResources.UnknownCommandArgument(command));
 							}
@@ -1404,7 +1407,7 @@ namespace ToolBelt
                 lineLength = Math.Max(lineLength, 40);
             }
 
-            if (HasCommandArgument && !IsValidForCommand(command))
+            if (HasCommandArgument && !IsValidCommand(command))
             {
                 throw new CommandLineArgumentException(CommandLineParserResources.UnknownCommandArgument(command));
             }
@@ -1455,7 +1458,7 @@ namespace ToolBelt
                     helpText.Append(" [" + CommandLineParserResources.Switches_Lowercase + "]");
                 }
     
-                if (HasDefaultArgument && IsValidForCommand(defaultArgument, command))
+                if (HasDefaultArgument && IsValidArgumentForCommand(defaultArgument, command))
                 {
                     string hint = GetDefaultArgumentValueHint(command);
     
@@ -1480,7 +1483,7 @@ namespace ToolBelt
                             helpText.Append(" ...]");
                         }
                     }
-                    else if (IsValidForCommand(unprocessedArgument, command))
+                    else if (IsValidArgumentForCommand(unprocessedArgument, command))
                     {
                         // Add the unprocessed arguments hint
                         hint = GetUnprocessedArgumentValueHint(command);
@@ -1567,7 +1570,7 @@ namespace ToolBelt
 
             foreach (CommandLineArgument argument in argumentCollection)
             {
-                if (!IsValidForCommand(argument, command))
+                if (!IsValidArgumentForCommand(argument, command))
                     continue;
                 
                 string valueText = "";
@@ -1733,7 +1736,7 @@ namespace ToolBelt
             {
                 foreach (CommandLineArgument argument in argumentCollection)
                 {
-                    if (IsValidForCommand(argument, command))
+                    if (IsValidArgumentForCommand(argument, command))
                         return true;
                 }
 
@@ -1799,51 +1802,49 @@ namespace ToolBelt
 
 
         /// <summary>
-        /// Is this command a valid command.
+        /// Is this a valid command.
         /// </summary>
-        /// Check that a command description exists for this command.
         /// <param name="command"></param>
         /// <returns></returns>
-        private bool IsValidForCommand(string command)
+        private bool IsValidCommand(string command)
         {
-            if (HasCommandArgument && commandArgument.IsValidForCommand(command))
+            if (HasCommandArgument && commandArgument.IsValidCommand(command))
                 return true;
 
-            EnsureCommandSwitches();
+            LazyGenerateCommandArguments();
 
-            return commandSwitches.ContainsKey(command);
+            return commandArguments.ContainsKey(command);
         }
 
         /// <summary>
-        /// Is the given command a valid command for this switch (i.e. is this switch used by this command)
+        /// Is the argument valid of for this command?
         /// </summary>
         /// <param name="argument"></param>
         /// <param name="command"></param>
         /// <returns></returns>
-        private bool IsValidForCommand(CommandLineArgument argument, string command)
+        private bool IsValidArgumentForCommand(CommandLineArgument argument, string command)
         {
-            if (argument.IsValidForCommand(command))
+            if (argument.IsValidCommand(command))
                 return true;
 
-            // check the command attributes instead if they contain this switch name
-            EnsureCommandSwitches();
+            LazyGenerateCommandArguments();
 
-            return Array.Exists(commandSwitches[command],
+            return Array.Exists(commandArguments[command],
                 delegate(string s) { return string.CompareOrdinal(s, argument.Name) == 0; });
         }
 
-        private void EnsureCommandSwitches()
+        private void LazyGenerateCommandArguments()
         {
-            if (commandSwitches == null)
+            if (commandArguments == null)
             {
                 object[] attributes = this.argumentSpecificationType.GetCustomAttributes(typeof(CommandLineCommandDescriptionAttribute), true);
-                commandSwitches = new Dictionary<string, string[]>(attributes.Length);
+                commandArguments = new Dictionary<string, string[]>(attributes.Length);
 
                 // Build a list of all the commands
                 foreach (CommandLineCommandDescriptionAttribute attribute in attributes)
                 {
                     string[] switches = attribute.Switches != null ? attribute.Switches.Split(',') : new string[0];
-                    commandSwitches.Add(attribute.Command, switches);
+                    commandArguments.Add(attribute.Command, switches);
                 }
             }
         }
@@ -1868,7 +1869,7 @@ namespace ToolBelt
         private string commandName;
         private Stack<string> responseFiles;
         private const int maxResponseFileDepth = 10;
-        private Dictionary<string, string[]> commandSwitches; // map of command -> switches it supports
+        private Dictionary<string, string[]> commandArguments; // map of command -> arguments it supports
 
         #endregion
     }

@@ -8,7 +8,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.MacOS", "ToolBelt\ToolBelt.MacOS.csproj", "{2055D34D-3DF2-444B-937B-32CC1A6E11DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.Tests.MacOS", "ToolBelt\Tests\ToolBelt.Tests.MacOS.csproj", "{B394705D-6015-4FF9-9EE5-E1D25F514DA1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.NUnit.MacOS", "ToolBelt.NUnit\ToolBelt.NUnit.MacOS.csproj", "{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{07024690-13E6-40E8-9FEC-5541056517E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandTestProgram.MacOS", "Tests\CommandTestProgram\CommandTestProgram.MacOS.csproj", "{BEEE8EE8-832C-4068-AA22-4CFE69F46044}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.Tests.MacOS", "Tests\ToolBelt.Tests\ToolBelt.Tests.MacOS.csproj", "{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitTestProgram.MacOS", "Tests\NUnitTestProgram\NUnitTestProgram.MacOS.csproj", "{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,18 +25,39 @@ Global
 		Default|Any CPU = Default|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE}.Debug|x86.Build.0 = Debug|Any CPU
+		{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE}.Default|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE}.Default|Any CPU.Build.0 = Debug|Any CPU
+		{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE}.Release|x86.ActiveCfg = Release|Any CPU
+		{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE}.Release|x86.Build.0 = Release|Any CPU
 		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Debug|x86.ActiveCfg = Debug|x86
 		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Debug|x86.Build.0 = Debug|x86
 		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|x86.ActiveCfg = Release|x86
 		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|x86.Build.0 = Release|x86
-		{B394705D-6015-4FF9-9EE5-E1D25F514DA1}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{B394705D-6015-4FF9-9EE5-E1D25F514DA1}.Debug|x86.Build.0 = Debug|Any CPU
-		{B394705D-6015-4FF9-9EE5-E1D25F514DA1}.Default|Any CPU.ActiveCfg = Debug|Any CPU
-		{B394705D-6015-4FF9-9EE5-E1D25F514DA1}.Default|Any CPU.Build.0 = Debug|Any CPU
-		{B394705D-6015-4FF9-9EE5-E1D25F514DA1}.Release|x86.ActiveCfg = Release|Any CPU
-		{B394705D-6015-4FF9-9EE5-E1D25F514DA1}.Release|x86.Build.0 = Release|Any CPU
+		{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}.Debug|x86.Build.0 = Debug|Any CPU
+		{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}.Default|Any CPU.ActiveCfg = Debug|Any CPU
+		{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}.Default|Any CPU.Build.0 = Debug|Any CPU
+		{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}.Release|x86.ActiveCfg = Release|Any CPU
+		{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}.Release|x86.Build.0 = Release|Any CPU
+		{BEEE8EE8-832C-4068-AA22-4CFE69F46044}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BEEE8EE8-832C-4068-AA22-4CFE69F46044}.Debug|x86.Build.0 = Debug|Any CPU
+		{BEEE8EE8-832C-4068-AA22-4CFE69F46044}.Default|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEEE8EE8-832C-4068-AA22-4CFE69F46044}.Default|Any CPU.Build.0 = Debug|Any CPU
+		{BEEE8EE8-832C-4068-AA22-4CFE69F46044}.Release|x86.ActiveCfg = Release|Any CPU
+		{BEEE8EE8-832C-4068-AA22-4CFE69F46044}.Release|x86.Build.0 = Release|Any CPU
+		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}.Debug|x86.ActiveCfg = Debug|x86
+		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}.Debug|x86.Build.0 = Debug|x86
+		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}.Default|Any CPU.ActiveCfg = Debug|x86
+		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}.Default|Any CPU.Build.0 = Debug|x86
+		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}.Release|x86.ActiveCfg = Release|x86
+		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{BEEE8EE8-832C-4068-AA22-4CFE69F46044} = {07024690-13E6-40E8-9FEC-5541056517E1}
+		{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE} = {07024690-13E6-40E8-9FEC-5541056517E1}
+		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622} = {07024690-13E6-40E8-9FEC-5541056517E1}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = ToolBelt\ToolBelt.MacOS.csproj
@@ -60,12 +89,13 @@ Global
 		$7.inheritsSet = null
 		$7.scope = application/config+xml
 		$0.TextStylePolicy = $8
+		$8.FileWidth = 120
+		$8.NoTabsAfterNonTabs = True
 		$8.EolMarker = Unix
 		$8.inheritsSet = VisualStudio
 		$8.inheritsScope = text/plain
 		$8.scope = text/x-csharp
 		$0.CSharpFormattingPolicy = $9
-		$9.IndentSwitchBody = True
 		$9.AnonymousMethodBraceStyle = NextLine
 		$9.PropertyBraceStyle = NextLine
 		$9.PropertyGetBraceStyle = NextLine
@@ -79,12 +109,13 @@ Global
 		$9.CatchNewLinePlacement = NewLine
 		$9.FinallyNewLinePlacement = NewLine
 		$9.WhileNewLinePlacement = NewLine
-		$9.ArrayInitializerBraceStyle = NextLine
 		$9.BeforeMethodDeclarationParentheses = False
 		$9.BeforeMethodCallParentheses = False
 		$9.BeforeConstructorDeclarationParentheses = False
+		$9.BeforeIndexerDeclarationBracket = False
 		$9.BeforeDelegateDeclarationParentheses = False
 		$9.NewParentheses = False
+		$9.SpacesBeforeBrackets = False
 		$9.inheritsSet = Mono
 		$9.inheritsScope = text/x-csharp
 		$9.scope = text/x-csharp

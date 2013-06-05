@@ -14,25 +14,20 @@ namespace ToolBelt
     public enum PathType
     {
         /// <summary>
-        /// The path is a file which may include a drive or share.
+        /// The path is a file which may include a directory, drive or UNC share and wildcard characters.
         /// </summary>
         File,
         /// <summary>
-        /// The path is a directory which may include a drive or share.
+        /// The path is a directory which may include a drive or share, with no wildcard characters.
         /// </summary>
         Directory,
         /// <summary>
-        /// The path is just a Windows style "volume" (drive or share)
+        /// The path is just a Windows style "volume" (drive or UNC share)
         /// </summary>
         Volume,
         /// <summary>
-        /// A file or directory with wildcards
-        /// </summary>
-        Wildcard,
-        /// <summary>
         /// The type of path is unknown.  This.  Will assume path is a directory if 
-        /// it has a trailing <see cref="Path.DirectorySeparatorChar"/>, or a wildcard
-        /// if there is a wildcard in the file name.
+        /// it has a trailing <see cref="Path.DirectorySeparatorChar"/>
         /// </summary>
         Unknown,
     };
@@ -222,8 +217,14 @@ namespace ToolBelt
                 if (typeHint == PathType.Unknown && path.Length == machine.Length + share.Length)
                     typeHint = PathType.Volume;
             }
-            else if (path.Length >= 2 && path[1] == PathUtility.VolumeSeparatorChar)
+            else if (path.Length >= 2 && path[1] == PathUtility.DriveSeparatorChar)
             {
+                if (!Char.IsLetter(path[0]))
+                    throw new ArgumentException("Drive must be a letter A-Z");
+
+                if (path.IndexOf(PathUtility.DriveSeparatorChar, 2) != -1)
+                    throw new ArgumentException("Can only be one drive separator character in a path");
+
                 drive = path.Substring(0, 2);
                 
                 if (typeHint == PathType.Unknown && path.Length == 2)
@@ -241,28 +242,25 @@ namespace ToolBelt
                     typeHint = PathType.File;
                 }
             }
-            else if (typeHint == PathType.Wildcard)
-            {
-                typeHint = PathType.File;
-            }
-            
+
             if (typeHint == PathType.File)  
             {
                 // Get the file name
                 i = path.LastIndexOfAny(
-                    new char[2] {Path.DirectorySeparatorChar, Path.VolumeSeparatorChar}, path.Length - 1);
+                    new char[2] {PathUtility.DirectorySeparatorChar, PathUtility.DriveSeparatorChar}, path.Length - 1);
                 
-                // If we didn't find anything we must have an unrooted file
+                // If we didn't find a directory separator, so we must have an unrooted file
                 if (i == -1)
                 {
-                    i = 0;
+                    // Assume the file name is the first thing after any volume name
+                    i = drive.Length + machine.Length + share.Length;
                 }
                 else    
                 {
                     if (i + 1 >= path.Length)
                         throw new ArgumentException("Path is badly formed.  It does not contain a file name.");
 
-                    // Move past the separator; that's part of the directory
+                    // Move past the separator; that's part of the directory or volume
                     i++;
                 }
 
@@ -788,7 +786,7 @@ namespace ToolBelt
                 }
             }
 
-            #if OSX
+            #if MACOS
             if (dir.StartsWith("~/"))
             {
                 ParsedPath personalPath = new ParsedPath(Environment.GetFolderPath(Environment.SpecialFolder.Personal), PathType.Directory);
@@ -904,12 +902,11 @@ namespace ToolBelt
             if (baseDirs.Count - n == 0)
             {
                 sb.Append(PathUtility.ExtensionSeparatorChar);
-                sb.Append(Path.DirectorySeparatorChar);
+                sb.Append(PathUtility.DirectorySeparatorChar);
                 
                 for (; n < dirs.Count; n++)
                 {
                     sb.Append(dirs[n]);
-                    sb.Append(Path.DirectorySeparatorChar);
                 }
             }
             else
@@ -921,13 +918,12 @@ namespace ToolBelt
                 {
                     sb.Append(PathUtility.ExtensionSeparatorChar);
                     sb.Append(PathUtility.ExtensionSeparatorChar);
-                    sb.Append(Path.DirectorySeparatorChar);
+                    sb.Append(PathUtility.DirectorySeparatorChar);
                 }
 
                 for (n = m; n < dirs.Count; n++)
                 {
                     sb.Append(dirs[n]);
-                    sb.Append(Path.DirectorySeparatorChar);
                 }
             }
             
@@ -956,6 +952,9 @@ namespace ToolBelt
         /// </param>
         public ParsedPath MakeParentPath(int level)
         {
+            if (this.IsRelativePath)
+                throw new InvalidOperationException("Path cannot contain relative parts");
+
             IList<ParsedPath> subDirs = this.SubDirectories;
             int n = subDirs.Count + level;
 
@@ -1305,15 +1304,12 @@ namespace ToolBelt
             get 
             {
                 List<ParsedPath> subDirs = new List<ParsedPath>();
-
-                subDirs.Add(new ParsedPath(Path.DirectorySeparatorChar.ToString(), PathType.Directory));
-
                 string dir = this.Directory;
-                int i = 1;
+                int i = 0;
 
                 for (int j = i; j < dir.Length;)
                 {
-                    if (dir[j] != Path.DirectorySeparatorChar)
+                    if (dir[j] == PathUtility.DirectorySeparatorChar)
                     {
                         subDirs.Add(new ParsedPath(dir.Substring(i, j - i + 1), PathType.Directory));
                         j++;

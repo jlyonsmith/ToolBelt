@@ -10,24 +10,46 @@ namespace ToolBelt
     /// <summary>
     /// Class for running command line tools
     /// </summary>
-    public static class Command
+    public class Command
     {
+        #region Fields
+        /// <summary>
+        /// Get or set debug execution mode.  In debug mode, just print the command that is supposed to be
+        /// executed and return 0.
+        /// </summary>
+        public bool DebugMode { get; set; }
+        public string ProgramAndArgs { get; private set; }
+        public TextWriter OutputWriter { get; private set; }
+        public TextWriter ErrorWriter { get; private set; }
+
+        #endregion
+
+        #region Construction
+        public Command(string programAndArgs, TextWriter outputWriter, TextWriter errorWriter, bool debugMode)
+        {
+            this.ProgramAndArgs = programAndArgs;
+            this.OutputWriter = outputWriter;
+            this.ErrorWriter = errorWriter;
+            this.DebugMode = debugMode;
+        }
+        #endregion
+
         #region Private Methods
-        private static string CreateScriptFile(string command)
+        private string CreateScriptFile(string programAndArgs)
         {
 #if WINDOWS
-            string scriptContents = String.Format("@echo off\r\n{0}\r\n", command);
+            string scriptContents = String.Format("@echo off\r\n{0}\r\n", programAndArgs);
             ParsedPath scriptFileName = new ParsedPath(Path.GetTempFileName(), PathType.File).WithExtension(".bat");
-#elif OSX
-            string scriptContents = command;
+#elif MACOS
+            string scriptContents = String.Format("{0}\nexit $?", programAndArgs);
             ParsedPath scriptFileName = new ParsedPath(Path.GetTempFileName(), PathType.File).WithExtension(".sh");
 #else
-            throw new NotImplementedException();
+#error Unsupported OS
 #endif
 
             File.WriteAllText(scriptFileName, scriptContents);
 
-            if (debugMode)
+            if (this.DebugMode)
             {
                 Console.WriteLine(scriptFileName + ":");
                 Console.WriteLine(scriptContents);
@@ -43,26 +65,31 @@ namespace ToolBelt
         /// Run the specified command through the shell specified in the COMSPEC
         /// environment variable.  Output is sent to the default console output and error streams.
         /// </summary>
-        /// <param name="command">The command to pass to the shell.</param>
+        /// <param name="programAndArgs">The command to pass to the shell.</param>
         /// <returns>The exit code of the process.</returns>
-        public static int Run(string command)
+        public static int Run(string programAndArgs)
         {
-            return Run(command, Console.Out, Console.Error);  // DO NOT change this behavior!
+            return Run(programAndArgs, Console.Out, Console.Error, false);  // DO NOT change this behavior!
         }
 
         /// <summary>
         /// Run the specified command through the shell specified in the COMSPEC 
         /// environment variable.
         /// </summary>
-        /// <param name="command">The command to pass to the shell.</param>
+        /// <param name="programAndArgs">The command to pass to the shell.</param>
         /// <param name="output">Interleaved results from standard output and standard error streams.</param>
         /// <returns>The exit code of the process.</returns>
-        public static int Run(string command, out string output)
+        public static int Run(string programAndArgs, out string output)
+        {
+            return Run(programAndArgs, out output, false);
+        }
+
+        public static int Run(string programAndArgs, out string output, bool debugMode)
         {
             StringBuilder outputString = new StringBuilder();
             StringWriter outputWriter = new StringWriter(outputString);
 
-            int exitCode = Run(command, outputWriter, outputWriter);
+            int exitCode = Run(programAndArgs, outputWriter, outputWriter, debugMode);
 
             outputWriter.Close();
 
@@ -75,11 +102,11 @@ namespace ToolBelt
         /// Run the specified command through the shell specified in the COMSPEC 
         /// environment variable.
         /// </summary>
-        /// <param name="command">The command to pass to the shell.</param>
+        /// <param name="programAndArgs">The command to pass to the shell.</param>
         /// <param name="output">Results from standard output stream.</param>
         /// <param name="error">Results from standard error stream.</param>
         /// <returns>The exit code of the process.</returns>
-        public static int Run(string command, out string output, out string error)
+        public static int Run(string programAndArgs, out string output, out string error)
         {
             StringBuilder outputString = new StringBuilder();
             StringWriter outputWriter = new StringWriter(outputString);
@@ -87,7 +114,7 @@ namespace ToolBelt
             StringBuilder errorString = new StringBuilder();
             StringWriter errorWriter = new StringWriter(errorString);
 
-            int exitCode = Run(command, outputWriter, errorWriter);
+            int exitCode = Run(programAndArgs, outputWriter, errorWriter, false);
 
             outputWriter.Close();
             errorWriter.Close();
@@ -101,29 +128,35 @@ namespace ToolBelt
         /// <summary>
         /// Run the specified command through the shell specified in the COMSPEC environment variable.
         /// </summary>
-        /// <param name="command">The command to pass to the shell.</param>
+        /// <param name="programAndArgs">The command to pass to the shell.</param>
         /// <param name="outputWriter">The stream to which the standard output stream will be redirected.</param>
         /// <param name="errorWriter">The stream to which the standard error stream will be redirected.</param>
+        /// <param name="debugMode">Debug mode</param>
         /// <returns>The exit code of the process.</returns>
-        public static int Run(string command, TextWriter outputWriter, TextWriter errorWriter)
+        public static int Run(string programAndArgs, TextWriter outputWriter, TextWriter errorWriter, bool debugMode)
+        {
+            return new Command(programAndArgs, outputWriter, errorWriter, debugMode).Run();
+        }
+            
+        public int Run()
         {
             int exitCode = -1;
             string scriptFileName = null;
 
             try
             {
-                scriptFileName = CreateScriptFile(command);
+                scriptFileName = CreateScriptFile(this.ProgramAndArgs);
 
-                if (debugMode)
+                if (this.DebugMode)
                 {
-                    outputWriter.WriteLine(command);
+                    this.OutputWriter.WriteLine(this.ProgramAndArgs);
                     return 0;
                 }
 
 #if WINDOWS
                 string shell = System.Environment.GetEnvironmentVariable("COMSPEC");
                 string argString = "/c \"" + scriptFileName + "\"";
-#elif OSX
+#elif MACOS
                 string shell = "/bin/bash";
                 string argString = "\"" + scriptFileName + "\"";
 #else 
@@ -139,13 +172,13 @@ namespace ToolBelt
                 p.StartInfo.RedirectStandardError = true;
                 p.StartInfo.WorkingDirectory = Environment.CurrentDirectory;
 
-                if (outputWriter != null && errorWriter != null)
+                if (this.OutputWriter != null && this.ErrorWriter != null)
                 {
                     p.OutputDataReceived += delegate(object sender, DataReceivedEventArgs arg)
                     {
                         if (arg.Data != null)
                         {
-                            outputWriter.WriteLine(arg.Data);
+                            this.OutputWriter.WriteLine(arg.Data);
                         }
                     };
 
@@ -153,14 +186,14 @@ namespace ToolBelt
                     {
                         if (arg.Data != null)
                         {
-                            errorWriter.WriteLine(arg.Data);
+                            this.ErrorWriter.WriteLine(arg.Data);
                         }
                     };
                 }
 
                 p.Start();
 
-                if (outputWriter != null && errorWriter != null)
+                if (this.OutputWriter != null && this.ErrorWriter != null)
                 {
                     p.BeginOutputReadLine();
                     p.BeginErrorReadLine();
@@ -181,24 +214,6 @@ namespace ToolBelt
             return exitCode;
         }
 
-        static bool debugMode = false;
-
-        /// <summary>
-        /// Get or set debug execution mode.  In debug mode, just print the command that is supposed to be
-        /// executed and return 0.
-        /// </summary>
-        public static bool DebugMode
-        {
-            get
-            {
-                return debugMode;
-            }
-            set
-            {
-                debugMode = value;
-            }
-        }
-        
         #endregion
     }
 }

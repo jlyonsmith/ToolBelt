@@ -1,5 +1,5 @@
 //
-// This file genenerated by the Buckle tool on 9/16/2012 at 1:03 PM. 
+// This file genenerated by the Buckle tool on 6/4/2013 at 10:16 AM. 
 //
 // Contains strongly typed wrappers for resources in CommandLineParserTestsResources.resx
 //

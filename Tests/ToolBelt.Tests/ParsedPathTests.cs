@@ -4,7 +4,7 @@ using NUnit.Framework;
 using ToolBelt;
 using System.Collections.Generic;
 
-namespace ToolBelt.Tests
+namespace ToolBelt
 {
     [TestFixture] 
     public class ParsedPathTests
@@ -34,7 +34,11 @@ namespace ToolBelt.Tests
             ParsedPath ppB2 = new ParsedPath(@"c:\blah\b.txt", PathType.File);
             ParsedPath ppC = new ParsedPath(@"c:\blah\a.txt", PathType.File);
             ParsedPath ppC2 = new ParsedPath(@"c:\blah\b.txt", PathType.File);
+#if MACOS
+            string p = @"c:/blah/a.txt";
+#else
             string p = @"c:\blah\a.txt";
+#endif
 
             // MSDN gives the following axioms for CompareTo()
             Assert.AreEqual(0, ppA.CompareTo(ppB));
@@ -55,7 +59,7 @@ namespace ToolBelt.Tests
         [TestCase] public void ConstructParsedPath() 
         {
             // Test some good paths
-            AssertPathParts(@"\", PathType.Unknown, "", "", @"", @"\", "", "");
+            AssertPathParts(@"\", PathType.Unknown, "", "", "", @"\", "", "");
             AssertPathParts(@".txt", PathType.Unknown, "", "", "", "", "", ".txt");
             AssertPathParts(@"*.txt", PathType.File, "", "", "", "", @"*", @".txt");
             AssertPathParts(@"..\*.txt", PathType.Unknown, "", "", "", @"..\", @"*", @".txt");
@@ -99,11 +103,16 @@ namespace ToolBelt.Tests
 
             // Test special last folder property
             Assert.AreEqual("c", new ParsedPath(@"c:\a\b\c\", PathType.Unknown).LastDirectoryNoSeparator);
+#if MACOS
+            Assert.AreEqual(@"/", new ParsedPath(@"c:\", PathType.Unknown).LastDirectoryNoSeparator);
+#else
             Assert.AreEqual(@"\", new ParsedPath(@"c:\", PathType.Unknown).LastDirectoryNoSeparator);
+#endif
 
             // Test some bad paths
             AssertBadPath(@"", PathType.File);
             AssertBadPath(@":", PathType.File);
+            AssertBadPath(@"::::a", PathType.File);
             AssertBadPath(@"\", PathType.File);
             AssertBadPath(@"\  \", PathType.Directory);
             AssertBadPath(@"  ""    ""  ", PathType.Unknown);
@@ -113,18 +122,34 @@ namespace ToolBelt.Tests
             AssertBadPath(@"c: \file.txt", PathType.File);
             AssertBadPath(@"c:\a\b\*\c\", PathType.Unknown);
             AssertBadPath(@"c:\dir\file.txt", PathType.Volume);
-            AssertBadPath(@"c:\dir\\file.txt", PathType.File);
 
             AssertBadPath(@"\\", PathType.Volume);
             AssertBadPath(@"\\computer", PathType.Volume);
             AssertBadPath(@"\\computer\", PathType.Volume);
             AssertBadPath(@"\\computer\\", PathType.Volume);
-            AssertBadPath(@"\\machine\share\\bad", PathType.Directory);
         }
 
         [TestCase] public void MakeFullPath()
         {
             // Test some good paths
+#if MACOS
+            AssertPathPartsFull(@".txt", 
+                                @"/temp/", "", "", "", @"\temp\", "", ".txt");
+            AssertPathPartsFull(@"/test/../temp/??.txt", 
+                                null, "", "", "", @"\temp\", @"??", @".txt");
+            AssertPathPartsFull(@"\test\..\temp\abc.txt", 
+                                @"\a\b\", "", "", "", @"\temp\", @"abc", @".txt");
+            AssertPathPartsFull(@"test\..\temp\abc.txt", 
+                                @"\a\b\", "", "", "", @"\a\b\temp\", @"abc", @".txt");
+            AssertPathPartsFull(@".\test\....\temp\abc.txt", 
+                                @"\a\b\c\", "", "", "", @"\a\temp\", @"abc", @".txt");
+            AssertPathPartsFull(@"...\test\abc.txt", 
+                                @"\a\b\c\", "", "", "", @"\a\test\", @"abc", @".txt");
+            AssertPathPartsFull(@"C:\temp\..yes...this...is.a..legal.file.name....\and...\so...\...is\.this.\blah.txt", 
+                                null, "", "", @"C:", 
+                                @"\temp\..yes...this...is.a..legal.file.name\and\so\...is\.this\", 
+                                @"blah", @".txt");
+#else
             AssertPathPartsFull(@".txt", 
                 @"c:\temp\", "", "", @"c:", @"\temp\", "", ".txt");
             AssertPathPartsFull(@"c:\test\..\temp\??.txt", 
@@ -141,7 +166,7 @@ namespace ToolBelt.Tests
                 null, "", "", @"C:", 
                 @"\temp\..yes...this...is.a..legal.file.name\and\so\...is\.this\", 
                 @"blah", @".txt");
-
+#endif
             // Test that using the current directory works
             ParsedPath pp = new ParsedPath(Environment.CurrentDirectory, PathType.Directory);
             AssertPathPartsFull(@"test.txt", null, pp.Machine, pp.Share, pp.Drive, pp.Directory, "test", ".txt");
@@ -167,10 +192,8 @@ namespace ToolBelt.Tests
             // Test going up one parent
             AssertParentPath(@"c:\a\b\c\p.q", -1, "", "", "c:", @"\a\b\", "p", ".q"); 
             AssertParentPath(@"c:\a\b\c\", -1, "", "", "c:", @"\a\b\", "", ""); 
-            AssertParentPath(@"c:\a\b\..\c\", -1, "", "", "c:", @"\a\", "", ""); 
-            AssertParentPath(@"..\c\", -1, "", "", "c:", @"\a\", "", ""); 
-            AssertParentPath(@"\\machine\share\a\b\c\..\d\foo.bar", -1, 
-                @"\\machine", @"\share", "", @"\a\b\", "foo", ".bar"); 
+            AssertParentPath(@"\\machine\share\a\b\c\d\foo.bar", -1, 
+                @"\\machine", @"\share", "", @"\a\b\c\", "foo", ".bar"); 
             
             // Test going up multiple parents
             AssertParentPath(@"c:\a\b\c\d\e\", -3, "", "", "c:", @"\a\b\", "", "");
@@ -180,6 +203,7 @@ namespace ToolBelt.Tests
             AssertBadParentPath(@"c:\", -1); // Already root
             AssertBadParentPath(@"c:\a\", 2); // Positive index not allowed
             AssertBadParentPath(@"c:\a\b\c\", -4); // Too many parent levels
+            AssertBadParentPath(@"c:\a\b\..\c\", -1); // Path cannot be relative 
         }
 
         #region Assert paths parts
@@ -195,12 +219,19 @@ namespace ToolBelt.Tests
         {
             ParsedPath pp = new ParsedPath(path, type);
         
-            Assert.AreEqual(machine, pp.Machine);
-            Assert.AreEqual(share, pp.Share);
-            Assert.AreEqual(drive, pp.Drive);
-            Assert.AreEqual(directory, pp.Directory);
-            Assert.AreEqual(file, pp.File);
-            Assert.AreEqual(extension, pp.Extension);
+            #if MACOS
+            // We have to compare to OS specific paths
+            machine = machine.Replace(@"\", "/");
+            share = share.Replace(@"\", "/");
+            directory = directory.Replace(@"\", "/");
+            #endif
+
+            Assert.AreEqual(machine, pp.Machine.ToString());
+            Assert.AreEqual(share, pp.Share.ToString());
+            Assert.AreEqual(drive, pp.Drive.ToString());
+            Assert.AreEqual(directory, pp.Directory.ToString());
+            Assert.AreEqual(file, pp.File.ToString());
+            Assert.AreEqual(extension, pp.Extension.ToString());
         }
         
         private void AssertBadPath(
@@ -238,12 +269,19 @@ namespace ToolBelt.Tests
             else
                 pp = new ParsedPath(path, PathType.Unknown).MakeFullPath();
         
-            Assert.AreEqual(machine, pp.Machine);
-            Assert.AreEqual(share, pp.Share);
-            Assert.AreEqual(drive, pp.Drive);
-            Assert.AreEqual(directory, pp.Directory);
-            Assert.AreEqual(file, pp.File);
-            Assert.AreEqual(extension, pp.Extension);
+            #if MACOS
+            // We have to compare to OS specific paths
+            machine = machine.Replace(@"\", "/");
+            share = share.Replace(@"\", "/");
+            directory = directory.Replace(@"\", "/");
+            #endif
+
+            Assert.AreEqual(machine, pp.Machine.ToString());
+            Assert.AreEqual(share, pp.Share.ToString());
+            Assert.AreEqual(drive, pp.Drive.ToString());
+            Assert.AreEqual(directory, pp.Directory.ToString());
+            Assert.AreEqual(file, pp.File.ToString());
+            Assert.AreEqual(extension, pp.Extension.ToString());
         }
         
         private void AssertBadPathFull(
@@ -271,7 +309,10 @@ namespace ToolBelt.Tests
             string directory)
         {
             ParsedPath pp = new ParsedPath(path, PathType.Unknown).MakeRelativePath(new ParsedPath(basePath, PathType.Unknown));
-            Assert.AreEqual(directory, pp.Directory);
+#if MACOS
+            directory = directory.Replace(@"\", "/");
+#endif
+            Assert.AreEqual(directory, pp.Directory.ToString());
         }
 
         private void AssertBadPathPartsRelative(
@@ -326,12 +367,19 @@ namespace ToolBelt.Tests
                 }
             }
                     
-            Assert.AreEqual(machine, pp.Machine);
-            Assert.AreEqual(share, pp.Share);
-            Assert.AreEqual(drive, pp.Drive);
-            Assert.AreEqual(directory, pp.Directory);
-            Assert.AreEqual(file, pp.File);
-            Assert.AreEqual(extension, pp.Extension);
+            #if MACOS
+            // We have to compare to OS specific paths
+            machine = machine.Replace(@"\", "/");
+            share = share.Replace(@"\", "/");
+            directory = directory.Replace(@"\", "/");
+            #endif
+
+            Assert.AreEqual(machine, pp.Machine.ToString());
+            Assert.AreEqual(share, pp.Share.ToString());
+            Assert.AreEqual(drive, pp.Drive.ToString());
+            Assert.AreEqual(directory, pp.Directory.ToString());
+            Assert.AreEqual(file, pp.File.ToString());
+            Assert.AreEqual(extension, pp.Extension.ToString());
         }
 
         private void AssertBadParentPath(
@@ -352,7 +400,7 @@ namespace ToolBelt.Tests
             }
             catch (Exception e)
             {
-                Assert.IsTrue(e is ArgumentException);
+                Assert.IsTrue(e is ArgumentException || e is InvalidOperationException);
             }
         }
         #endregion
@@ -389,12 +437,12 @@ namespace ToolBelt.Tests
             
             Assert.AreEqual(4, subDirs.Count);
             Assert.AreEqual(Path.DirectorySeparatorChar.ToString(), subDirs[0].ToString());
-            Assert.AreEqual("c", subDirs[3].ToString());
+            Assert.AreEqual("c" + PathUtility.DirectorySeparator, subDirs[3].ToString());
             
             subDirs = new ParsedPath(@"c:\", PathType.Directory).SubDirectories;
             
             Assert.AreEqual(1, subDirs.Count);
-            Assert.AreEqual(Path.DirectorySeparatorChar.ToString(), subDirs[0]);
+            Assert.AreEqual(PathUtility.DirectorySeparator, subDirs[0].ToString());
         }
 
         [TestCase] public void TestAppend()
@@ -402,7 +450,11 @@ namespace ToolBelt.Tests
             ParsedPath pp1 = new ParsedPath(@"c:\blah\blah", PathType.Directory);
             ParsedPath ppCombine = pp1.Append("file.txt", PathType.File);
 
-            Assert.AreEqual(@"c:\blah\blah\file.txt", ppCombine);
+#if MACOS
+            Assert.AreEqual(@"c:/blah/blah/file.txt", ppCombine.ToString());
+#else
+            Assert.AreEqual(@"c:\blah\blah\file.txt", ppCombine.ToString());
+#endif
 
             pp1 = new ParsedPath(@"c:\blah\blah", PathType.Directory);
             Assert.Throws(typeof(ArgumentException), delegate { ppCombine = pp1.Append(@"\blah\file.txt", PathType.File); });
@@ -410,7 +462,11 @@ namespace ToolBelt.Tests
             pp1 = new ParsedPath(@"c:\blah\blah", PathType.Directory);
             ppCombine = pp1.Append(@"blah\file.txt", PathType.File);
 
-            Assert.AreEqual(@"c:\blah\blah\blah\file.txt", ppCombine);
+#if MACOS
+            Assert.AreEqual(@"c:/blah/blah/blah/file.txt", ppCombine.ToString());
+#else
+            Assert.AreEqual(@"c:\blah\blah\blah\file.txt", ppCombine.ToString());
+#endif
         }
     }
 }

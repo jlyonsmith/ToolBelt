@@ -8,13 +8,14 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("Release")]
 #endif
 
-[assembly: AssemblyTitle("ToolBelt")]
-[assembly: AssemblyDescription("Programmers ToolBelt .NET Unit Tests")]
+[assembly: AssemblyTitle("CommandTestProgram")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyCompany("John Lyon-Smith")]
 [assembly: AssemblyProduct("ToolBelt")]
-[assembly: AssemblyCopyright("Copyright © John Lyon-Smith 2010")]
+[assembly: AssemblyCopyright("Copyright © 2013, John Lyon-Smith.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("1.5.0.0")]
-[assembly: AssemblyFileVersion("1.5.11215.0")]
+[assembly: AssemblyVersion("1.7.0.0")]
+[assembly: AssemblyFileVersion("1.7.20530.0")]
+

@@ -4,10 +4,9 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
-using ToolBelt;
 using NUnit.Framework;
 
-namespace ToolBelt.Tests
+namespace ToolBelt
 {
     [TestFixture]
     public class CommandLineParserTests
@@ -465,8 +464,8 @@ namespace ToolBelt.Tests
             CommandLineParser parser = new CommandLineParser(typeof(ArgumentsCaseSensitive), null, CommandLineParserFlags.CaseSensitive);
             string[] args = new string[] 
             { 
-                "/Tp:valueForArg1", 
-                "/TP:valueForArg2", 
+                "-Tp:valueForArg1", 
+                "-TP:valueForArg2", 
             };
 
             parser.ParseAndSetTarget(args, target);
@@ -492,14 +491,14 @@ namespace ToolBelt.Tests
                 
             string[] args = new string[]
             {
-                "/arg:blah", "thing", "gomez", "/morestuff"
+                "-arg:blah", "thing", "gomez", "-morestuff"
             };
 
             parser.ParseAndSetTarget(args, target);
             
             Assert.AreEqual("blah", target.Arg);
             Assert.AreEqual("thing", target.Default);
-            CollectionAssert.AreEqual(new string[] { "gomez", "/morestuff" }, target.Unprocessed);
+            CollectionAssert.AreEqual(new string[] { "gomez", "-morestuff" }, target.Unprocessed);
         }
         
         [TestCase]
@@ -518,8 +517,9 @@ namespace ToolBelt.Tests
         public void TestLogoBanner()
         {
             Regex regex = new Regex(
-                @"^Command Line Program\. (Debug|Release) Version \d+\.\d+\.\d+\.\d+\r\nCopyright \(c\) John Lyon-Smith\.\r\n", 
-                RegexOptions.Multiline | RegexOptions.ExplicitCapture);
+                @"^Command Line Program\. (?:Debug|Release) Version \d+\.\d+\.\d+\.\d+" + Environment.NewLine + 
+                @"Copyright \(c\) John Lyon-Smith\." + Environment.NewLine, 
+                RegexOptions.Multiline);
             
             CommandLineParser parser = new CommandLineParser(typeof(ArgumentsBasic), null, CommandLineParserFlags.Default);
             
@@ -535,7 +535,8 @@ namespace ToolBelt.Tests
             logoBanner = parser.LogoBanner;
 
             regex = new Regex(
-                @"^.+?\. Release Version \d+\.\d+\.\d+\.\d+\r\nCopyright \(c\) .+?\.\r\n",
+                @"^.+?\. Release Version \d+\.\d+\.\d+\.\d+" + Environment.NewLine + 
+                @"Copyright \(c\) .+?" + Environment.NewLine,
                 RegexOptions.Multiline | RegexOptions.ExplicitCapture);
 
             Assert.IsTrue(regex.IsMatch(logoBanner));
@@ -546,7 +547,8 @@ namespace ToolBelt.Tests
             logoBanner = parser.LogoBanner;
 
             regex = new Regex(
-                @"^.+?\. (Debug|Release) Version \d+\.\d+\.\d+\.\d+\r\nCopyright \(c\) .+?\.\r\n",
+                @"^.+?\. (Debug|Release) Version \d+\.\d+\.\d+\.\d+" + Environment.NewLine + 
+                @"Copyright \(c\) .+?" + Environment.NewLine,
                 RegexOptions.Multiline | RegexOptions.ExplicitCapture);
     
             Assert.IsTrue(regex.IsMatch(logoBanner));
@@ -604,9 +606,16 @@ namespace ToolBelt.Tests
             CommandLineParser parser = new CommandLineParser(typeof(ArgumentsBasic), CommandLineParserFlags.Default);
 
             string usage = parser.Usage;
+            string nl = Environment.NewLine;
 
-            Assert.IsTrue(Regex.IsMatch(usage,
-                @"Syntax:\s*.+? \[switches\] <default>\r\n\r\nDescription:\s*.*\r\n\r\nSwitches:\r\n\r\n(^(/\w+)|(\s+).*\r\n)+(.*\r\n)+",
+            Assert.IsTrue(Regex.IsMatch(
+                usage,
+                @"Syntax:\s*.+? \[switches\] <default>" + nl + nl + 
+                @"Description:\s*.*" + nl + nl +
+                @"Switches:" + nl + nl + 
+                @"(^(/\w+)|(\s+).*" + nl + nl + 
+                @")+(.*" + nl + 
+                @")+",
                 RegexOptions.Multiline | RegexOptions.ExplicitCapture));
             
             parser.CommandName = "AnythingYouWant";
@@ -628,8 +637,14 @@ namespace ToolBelt.Tests
     
             Debug.WriteLine(usage);
 
-            Assert.IsTrue(Regex.IsMatch(usage,
-                @"Syntax:\s*.+? <command> \.\.\.\r\n\r\nDescription:\s*.+\r\n\r\nCommands:\r\n\r\n((^  \w+\s+\S+\r\n)|(^\s+.+\r\n))+(^\s+.+)",
+            Assert.IsTrue(Regex.IsMatch(
+                usage,
+                @"Syntax:\s*.+? <command> \.\.\." + nl + nl +
+                @"Description:\s*.+" + nl + nl +
+                @"Commands:" + nl + nl +
+                @"((^  \w+\s+\S+" + nl + 
+                @")|(^\s+.+" + nl + 
+                @"))+(^\s+.+)",
                 RegexOptions.Multiline | RegexOptions.ExplicitCapture));
 
             // Get usage for individual command
@@ -637,8 +652,16 @@ namespace ToolBelt.Tests
 
             Debug.WriteLine(usage);
 
-            Assert.IsTrue(Regex.IsMatch(usage,
-                @"Syntax:\s*.+? start \[switches\] <default>\r\n\r\nDescription:\s*.+\r\n(^\s+.+\r\n)+\r\nSwitches:\r\n\r\n((^  \w+\s+\S+\r\n)|(^\s+.+\r\n))+(^\s+.+)",
+            Assert.IsTrue(Regex.IsMatch(
+                usage,
+                @"Syntax:\s*.+? start \[switches\] <default>" + nl + nl +
+                @"Description:\s*.+" + nl + 
+                @"(^\s+.+" + nl + 
+                @")+" + nl + 
+                @"Switches:" + nl + 
+                @"((^  \w+\s+\S+" + nl + 
+                @")|(^\s+.+" + nl + 
+                @"))+(^\s+.+)",
                 RegexOptions.Multiline | RegexOptions.ExplicitCapture));
 
             ArgumentsWithCommand target = new ArgumentsWithCommand();
@@ -674,9 +697,11 @@ namespace ToolBelt.Tests
         [ExpectedException(typeof(CommandLineArgumentException))]
         public void TestBadCommandArgument()
         {
-            string[] args = { "start", "/arg1" };
+            string[] args = { "start", "-arg1" };
 
-            new CommandLineParser(typeof(ArgumentsWithCommand)).Parse(args);
+            CommandLineParser parser = new CommandLineParser(typeof(ArgumentsWithCommand));
+
+            parser.Parse(args);
         }
 
         [TestCase]
@@ -690,8 +715,10 @@ namespace ToolBelt.Tests
             parser.ParseAndSetTarget(args, target);
 
             Assert.AreEqual("file.txt", target.File);
-            Assert.IsTrue(Regex.IsMatch(parser.Usage,
-                @"Syntax:\s+.+? \[switches\]\r\n\r\nSwitches:\r\n\r\n(^  -\w+.*)",
+            Assert.IsTrue(Regex.IsMatch(
+                parser.Usage,
+                @"Syntax:\s+.+? \[switches\]" + Environment.NewLine + Environment.NewLine + 
+                @"Switches:" + Environment.NewLine + Environment.NewLine + @"(^  -\w+.*)",
                 RegexOptions.Multiline | RegexOptions.ExplicitCapture));
         }
         
@@ -712,7 +739,7 @@ namespace ToolBelt.Tests
             {
                 "start",
                 "default",
-                "/arg2:blah"
+                "-arg2:blah"
             };
             
             parser.ParseAndSetTarget(args1, target);

@@ -9,12 +9,12 @@ using System.Runtime.InteropServices;
 #endif
 
 [assembly: AssemblyTitle("ToolBelt")]
-[assembly: AssemblyDescription("Programmers ToolBelt .NET")]
+[assembly: AssemblyDescription("A .NET utility library for NUnit testing")]
 [assembly: AssemblyCompany("John Lyon-Smith")]
 [assembly: AssemblyProduct("ToolBelt")]
-[assembly: AssemblyCopyright("Copyright © 2012, John Lyon-Smith.")]
+[assembly: AssemblyCopyright("Copyright © 2013, John Lyon-Smith.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: AssemblyVersion("1.7.0.0")]
-[assembly: AssemblyFileVersion("1.7.20530.0")]
+[assembly: AssemblyFileVersion("1.7.20527.0")]

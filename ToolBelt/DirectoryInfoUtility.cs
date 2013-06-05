@@ -14,12 +14,14 @@ namespace ToolBelt
         /// Returns a list of directories given a file search pattern.  Will also search sub-directories and 
         /// parent directories.
         /// </summary>
-        /// <param name="searchPattern">Search pattern.  Can include a full or partial path and standard wildcards for the directory name.</param>
+        /// <param name="dirSpec">Search specification with with optional directory and wildcards</param>
         /// <param name="scope">The scope of the search. <see cref="SearchScope"/></param>
-        /// <param name="baseDir">Base directory for partially qualified file names</param>
         /// <returns>An array of <c>DirectoryInfo</c> objects for files matching the search pattern. </returns>
         public static IList<DirectoryInfo> GetDirectories(ParsedPath dirSpec, SearchScope scope)
         {
+            if (!dirSpec.HasFilename)
+                throw new ArgumentException("Path does not have a filename");
+
             ParsedPath rootPath = dirSpec.MakeFullPath();
         
             if (scope != SearchScope.DirectoryOnly)
@@ -51,29 +53,22 @@ namespace ToolBelt
             DirectoryInfo dirInfo = new DirectoryInfo(rootPath.VolumeAndDirectory);
             DirectoryInfo[] dirInfos = dirInfo.GetDirectories(rootPath.FileAndExtension);
 
-            if (!breadthFirst)
-            {
-                foreach (DirectoryInfo subDirInfo in dirInfo.GetDirectories())
-                {
-                    dirs.Add(subDirInfo);
-
-                    RecursiveGetSubDirectories(
-                        new ParsedPath(subDirInfo.FullName, PathType.Directory).Append(rootPath.FileAndExtension),
-                        breadthFirst,
-                        ref dirs);
-                }
-            }
-            else
+            if (breadthFirst)
             {
                 dirs.AddRange(dirInfos);
-            
-                foreach (DirectoryInfo subDirInfo in dirInfo.GetDirectories())
-                {
-                    RecursiveGetSubDirectories(
-                        new ParsedPath(subDirInfo.FullName, PathType.Directory).Append(rootPath.FileAndExtension), 
-                        breadthFirst, 
-                        ref dirs);
-                }
+            }
+
+            foreach (DirectoryInfo subDirInfo in dirInfo.GetDirectories())
+            {
+                RecursiveGetSubDirectories(
+                    new ParsedPath(subDirInfo.FullName, PathType.Directory).Append(rootPath.FileAndExtension),
+                    breadthFirst,
+                    ref dirs);
+            }
+
+            if (!breadthFirst)
+            {
+                dirs.AddRange(dirInfos);
             }
         }
     

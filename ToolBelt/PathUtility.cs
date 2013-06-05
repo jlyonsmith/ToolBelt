@@ -153,10 +153,10 @@ namespace ToolBelt
         public static readonly string ExtensionSeparator = ExtensionSeparatorChar.ToString();
 
         /// <summary>
-        /// The volume separator character. Only Windows platforms use this.
+        /// The drive separator character. Only Windows platforms use this.
         /// </summary>
-        public static readonly char VolumeSeparatorChar = ':';
-        public static readonly string VolumeSeparator = VolumeSeparatorChar.ToString();
+        public static readonly char DriveSeparatorChar = ':';
+        public static readonly string DriveSeparator = DriveSeparatorChar.ToString();
 
         /// <summary>
         /// Searches multiple directories for a file.
