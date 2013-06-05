@@ -2,12 +2,13 @@
 <Version>
   <Files>
     <File>ToolBelt/Properties/AssemblyInfo.cs</File>
-    <File>ToolBelt/Tests/Properties/AssemblyInfo.cs</File>
-    <File>ToolBelt/Tests/CommandTestProgram/Properties/AssemblyInfo.cs</File>
+    <File>Tests/ToolBelt.Tests/Properties/AssemblyInfo.cs</File>
+    <File>Tests/CommandTestProgram/Properties/AssemblyInfo.cs</File>
+    <File>Tests/CommandTestProgram/Properties/AssemblyInfo.cs</File>
   </Files>
   <Major>1</Major>
   <Minor>7</Minor>
-  <Build>20530</Build>
+  <Build>20605</Build>
   <Revision>0</Revision>
   <StartYear>2012</StartYear>
 </Version>
