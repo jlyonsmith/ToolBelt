@@ -1137,148 +1137,148 @@ namespace ToolBelt
                                 foreach (string fname in responseFiles.ToArray())
                                     error.WriteLine("\t@" + fname);
 
-								throw new CommandLineArgumentException(error.ToString());
-							}
-							string path = argument.Substring(1);
-							try
-							{
-								string rspFileName = Path.GetFullPath(path);
-								using (TextReader rspFile = new StreamReader(rspFileName))
-								{
-									// read all the lines as one argument each
-									List<string> rspArgs = new List<string>();
-									string nextLine = null;
-									while ((nextLine = rspFile.ReadLine()) != null)
-										rspArgs.Add(nextLine);
+                                throw new CommandLineArgumentException(error.ToString());
+                            }
+                            string path = argument.Substring(1);
+                            try
+                            {
+                                string rspFileName = Path.GetFullPath(path);
+                                using (TextReader rspFile = new StreamReader(rspFileName))
+                                {
+                                    // read all the lines as one argument each
+                                    List<string> rspArgs = new List<string>();
+                                    string nextLine = null;
+                                    while ((nextLine = rspFile.ReadLine()) != null)
+                                        rspArgs.Add(nextLine);
 
-									// recursively call parse; any exceptions will be propagated up
-									responseFiles.Push(rspFileName);
-									Parse(rspArgs);
-									responseFiles.Pop();
-								}
-							}
-							catch (CommandLineArgumentException)
-							{
-								// We want to catch argument exceptions from the block, but we don't want to catch
-								// recursive CommandLineArgumentExceptions
-								throw;
-							}
-							catch (ArgumentException ex)
-							{
-								throw new CommandLineArgumentException(
-									CommandLineParserResources.ResponseFileUnopened(path), ex);
-							}
-							catch (IOException ex)
-							{
-								throw new CommandLineArgumentException(
-									CommandLineParserResources.ResponseFileUnopened(path), ex);
-							}
+                                    // recursively call parse; any exceptions will be propagated up
+                                    responseFiles.Push(rspFileName);
+                                    Parse(rspArgs);
+                                    responseFiles.Pop();
+                                }
+                            }
+                            catch (CommandLineArgumentException)
+                            {
+                                // We want to catch argument exceptions from the block, but we don't want to catch
+                                // recursive CommandLineArgumentExceptions
+                                throw;
+                            }
+                            catch (ArgumentException ex)
+                            {
+                                throw new CommandLineArgumentException(
+                                    CommandLineParserResources.ResponseFileUnopened(path), ex);
+                            }
+                            catch (IOException ex)
+                            {
+                                throw new CommandLineArgumentException(
+                                    CommandLineParserResources.ResponseFileUnopened(path), ex);
+                            }
 
-							break;
-						}
-					case '-':
+                            break;
+                        }
+                    case '-':
 #if WINDOWS
-					case '/':
+                    case '/':
 #endif
-						int endIndex = argument.IndexOfAny(new char[] { ':', '+', '-' }, 1);
-						string argumentName = argument.Substring(1, endIndex == -1 ? argument.Length - 1 : endIndex - 1);
-						string argumentValue;
+                        int endIndex = argument.IndexOfAny(new char[] { ':', '+', '-' }, 1);
+                        string argumentName = argument.Substring(1, endIndex == -1 ? argument.Length - 1 : endIndex - 1);
+                        string argumentValue;
 
-						if (argumentName.Length + 1 == argument.Length)
-						{
-							// There's nothing left for a value
-							argumentValue = null;
-						}
-						else if (argument.Length > 1 + argumentName.Length && argument[1 + argumentName.Length] == ':')
-						{
-							argumentValue = argument.Substring(argumentName.Length + 2);
-						}
-						else
-						{
-							argumentValue = argument.Substring(argumentName.Length + 1);
-						}
+                        if (argumentName.Length + 1 == argument.Length)
+                        {
+                            // There's nothing left for a value
+                            argumentValue = null;
+                        }
+                        else if (argument.Length > 1 + argumentName.Length && argument[1 + argumentName.Length] == ':')
+                        {
+                            argumentValue = argument.Substring(argumentName.Length + 2);
+                        }
+                        else
+                        {
+                            argumentValue = argument.Substring(argumentName.Length + 1);
+                        }
 
-						if (!CaseSensitive)
-						{
-							argumentName = argumentName.ToLower(CultureInfo.InvariantCulture);
-						}
+                        if (!CaseSensitive)
+                        {
+                            argumentName = argumentName.ToLower(CultureInfo.InvariantCulture);
+                        }
 
-						CommandLineArgument arg;
+                        CommandLineArgument arg;
 
-						// By this point the strings have either been made the same case or not, and 
-						// we only care about equality, so an ordinal comparison is fine.
-						if (HasCommandArgument)
-						{
-							string command;
-							
-							// If the cammand has not yet been set then the command string is assumed to be default
-							// or empty command, otherwise it is whatever the command value is.
-							if (HasCommandArgument)
-								command = commandArgument.ToString().ToLower(CultureInfo.InvariantCulture);
-							else
-								command = String.Empty;
-						
+                        // By this point the strings have either been made the same case or not, and 
+                        // we only care about equality, so an ordinal comparison is fine.
+                        if (HasCommandArgument)
+                        {
+                            string command;
+                            
+                            // If the cammand has not yet been set then the command string is assumed to be default
+                            // or empty command, otherwise it is whatever the command value is.
+                            if (HasCommandArgument)
+                                command = commandArgument.ToString().ToLower(CultureInfo.InvariantCulture);
+                            else
+                                command = String.Empty;
+                        
                             // Needed for the use of the parser in the lambda
                             CommandLineParser parser = this;
 
-							arg = argumentCollection.Find(
-								item =>
-								{
-									return
-										parser.IsValidArgumentForCommand(item, command) &&
-										String.CompareOrdinal(item.Name, argumentName) == 0 ||
-										String.CompareOrdinal(item.ShortName, argumentName) == 0;
-								});
-						}
-						else
-						{
-							arg = argumentCollection.Find(
-								item =>
-								{
-									return
-										String.CompareOrdinal(item.Name, argumentName) == 0 ||
-										String.CompareOrdinal(item.ShortName, argumentName) == 0;
-								});
-						}
+                            arg = argumentCollection.Find(
+                                item =>
+                                {
+                                    return
+                                        parser.IsValidArgumentForCommand(item, command) &&
+                                        String.CompareOrdinal(item.Name, argumentName) == 0 ||
+                                        String.CompareOrdinal(item.ShortName, argumentName) == 0;
+                                });
+                        }
+                        else
+                        {
+                            arg = argumentCollection.Find(
+                                item =>
+                                {
+                                    return
+                                        String.CompareOrdinal(item.Name, argumentName) == 0 ||
+                                        String.CompareOrdinal(item.ShortName, argumentName) == 0;
+                                });
+                        }
 
-						if (arg == null)
-						{
-							throw new CommandLineArgumentException(CommandLineParserResources.UnknownArgument(argument));
-						}
-						else
-						{
-							arg.SetArgumentValue(argumentValue);
-						}
-						break;
-					default:
-						if (HasCommandArgument && !commandArgument.HasArgumentValue)
-						{
-							string command = argument.ToLower(CultureInfo.InvariantCulture);
-							
-							if (!IsValidCommand(command))
-							{
-								throw new CommandLineArgumentException(CommandLineParserResources.UnknownCommandArgument(command));
-							}
-							
-							commandArgument.SetArgumentValue(command);
-						}
-						else if (HasDefaultArgument)
-						{
-							defaultArgument.SetArgumentValue(argument);
-						}
-						else
-						{
-							throw new CommandLineArgumentException(CommandLineParserResources.UnknownArgument(argument));
-						}
-						break;
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Initialize a target type instance from parsed arguments.
-		/// </summary>
-		/// <param name="target">The target type to initialize</param>
+                        if (arg == null)
+                        {
+                            throw new CommandLineArgumentException(CommandLineParserResources.UnknownArgument(argument));
+                        }
+                        else
+                        {
+                            arg.SetArgumentValue(argumentValue);
+                        }
+                        break;
+                    default:
+                        if (HasCommandArgument && !commandArgument.HasArgumentValue)
+                        {
+                            string command = argument.ToLower(CultureInfo.InvariantCulture);
+                            
+                            if (!IsValidCommand(command))
+                            {
+                                throw new CommandLineArgumentException(CommandLineParserResources.UnknownCommandArgument(command));
+                            }
+                            
+                            commandArgument.SetArgumentValue(command);
+                        }
+                        else if (HasDefaultArgument)
+                        {
+                            defaultArgument.SetArgumentValue(argument);
+                        }
+                        else
+                        {
+                            throw new CommandLineArgumentException(CommandLineParserResources.UnknownArgument(argument));
+                        }
+                        break;
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Initialize a target type instance from parsed arguments.
+        /// </summary>
+        /// <param name="target">The target type to initialize</param>
         public void SetTarget(object target)
         {
             // NOTE: We typically do this two part parsing because of arrays.  If the target type is an array, there is no efficient 
