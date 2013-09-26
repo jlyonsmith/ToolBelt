@@ -1,1 +1,1 @@
-../../Tools/strapper CommandLineParserTestsResources.resx -i -n:ToolBelt -w:ToolBelt.Message
+../../bin/strapper CommandLineParserTestsResources.resx -i -n:ToolBelt -w:ToolBelt.Message
