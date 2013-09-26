@@ -6,6 +6,7 @@ using System.Diagnostics;
 
 namespace ToolBelt
 {
+#if WINDOWS
     public class ProcessCycleStopwatch
     {
         ulong startCycles;
@@ -94,4 +95,5 @@ namespace ToolBelt
             public static extern ulong QueryProcessCycleTime(IntPtr handle, out ulong cycles);
         }
     }
+#endif // WINDOWS
 }

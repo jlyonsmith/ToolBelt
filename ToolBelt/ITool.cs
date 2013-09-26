@@ -7,6 +7,5 @@ namespace ToolBelt
     public interface ITool
     {
         void Execute();
-        OutputHelper Output { get; }
     }
 }

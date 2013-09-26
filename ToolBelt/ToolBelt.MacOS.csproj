@@ -49,7 +49,6 @@
     <Compile Include="CollectionHelper.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="CommandLineParser.cs" />
-    <Compile Include="ConsoleOutputter.cs" />
     <Compile Include="ConsoleUtility.cs" />
     <Compile Include="DirectoryInfoUtility.cs" />
     <Compile Include="DirectoryUtility.cs" />
@@ -61,37 +60,28 @@
     <Compile Include="IBufferManager.cs" />
     <Compile Include="IProcessConfiguration.cs" />
     <Compile Include="ITool.cs" />
-    <Compile Include="IOutputter.cs" />
     <Compile Include="IProcessCommandLine.cs" />
     <Compile Include="IProcessEnvironment.cs" />
     <Compile Include="LittleEndianBitConverter.cs" />
     <Compile Include="Memory.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="NonClosingStreamWrapper.cs" />
-    <Compile Include="NullOutputter.cs" />
-    <Compile Include="OutputEventArgs.cs" />
-    <Compile Include="OutputHelper.cs" />
     <Compile Include="ParsedPath.cs" />
     <Compile Include="ParsedPathList.cs" />
     <Compile Include="PathUtility.cs" />
     <Compile Include="ProcessCycleStopwatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadOnlyDictionary.cs" />
-    <Compile Include="RemoteOutputter.cs" />
     <Compile Include="StreamUtility.cs" />
     <Compile Include="StringUtility.cs" />
-    <Compile Include="TraceOutputter.cs" />
     <Compile Include="CommandLineParserResources.cs" />
     <Compile Include="ConsoleUtilityResources.cs" />
-    <Compile Include="OutputterResources.cs" />
     <Compile Include="ForEach.cs" />
     <Compile Include="TextFileRegion.cs" />
     <Compile Include="ListRange.cs" />
-    <Compile Include="Algorithms.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildResources.sh" />
-    <None Include="OutputterResources.resx" />
     <None Include="ConsoleUtilityResources.resx" />
     <None Include="CommandLineParserResources.resx" />
     <None Include="..\ToolBelt.snk">
@@ -109,6 +99,5 @@
   <ItemGroup>
     <EmbeddedResource Include="CommandLineParserResources.resources" />
     <EmbeddedResource Include="ConsoleUtilityResources.resources" />
-    <EmbeddedResource Include="OutputterResources.resources" />
   </ItemGroup>
 </Project>

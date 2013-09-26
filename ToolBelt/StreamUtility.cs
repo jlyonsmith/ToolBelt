@@ -3,13 +3,10 @@ using System.IO;
 
 namespace ToolBelt
 {
-    /// <summary>
-    /// Collection of utility methods which operate on streams.
-    /// (With C# 3.0, these could well become extension methods on Stream.)
-    /// </summary>
+    // TODO: Make these extension methods
     public static class StreamUtility
     {
-        const int DefaultBufferSize = 8*1024;
+        const int DefaultBufferSize = 8 * 1024;
 
         /// <summary>
         /// Reads the given stream up to the end, returning the data as a byte

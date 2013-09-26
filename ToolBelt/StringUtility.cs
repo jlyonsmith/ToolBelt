@@ -93,6 +93,7 @@ namespace ToolBelt
         /// string (<see cref="string.Empty" />) is used instead.
         /// </para>
         /// </remarks>
+        /// 
         public static string Join(string separator, IList<string> value)
         {
             if (value == null) 

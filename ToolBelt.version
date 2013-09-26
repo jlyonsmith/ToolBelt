@@ -7,8 +7,8 @@
     <File>Tests/CommandTestProgram/Properties/AssemblyInfo.cs</File>
   </Files>
   <Major>1</Major>
-  <Minor>7</Minor>
-  <Build>20926</Build>
+  <Minor>8</Minor>
+  <Build>10926</Build>
   <Revision>0</Revision>
-  <StartYear>2012</StartYear>
+  <StartYear>2013</StartYear>
 </Version>
