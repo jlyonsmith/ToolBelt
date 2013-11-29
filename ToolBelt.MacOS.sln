@@ -4,9 +4,10 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EF60F8C0-BCDF-484C-9F81-1262C02A4315}"
 	ProjectSection(SolutionItems) = preProject
 		ToolBelt.version = ToolBelt.version
+		README.md = README.md
+		ToolBelt.nuspec = ToolBelt.nuspec
+		LICENSE.md = LICENSE.md
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.MacOS", "ToolBelt\ToolBelt.MacOS.csproj", "{2055D34D-3DF2-444B-937B-32CC1A6E11DF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.NUnit.MacOS", "ToolBelt.NUnit\ToolBelt.NUnit.MacOS.csproj", "{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}"
 EndProject
@@ -17,6 +18,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.Tests.MacOS", "Tests\ToolBelt.Tests\ToolBelt.Tests.MacOS.csproj", "{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitTestProgram.MacOS", "Tests\NUnitTestProgram\NUnitTestProgram.MacOS.csproj", "{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.MacOS", "ToolBelt\ToolBelt.MacOS.csproj", "{2055D34D-3DF2-444B-937B-32CC1A6E11DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +34,12 @@ Global
 		{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE}.Default|Any CPU.Build.0 = Debug|Any CPU
 		{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE}.Release|x86.ActiveCfg = Release|Any CPU
 		{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE}.Release|x86.Build.0 = Release|Any CPU
-		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Debug|x86.ActiveCfg = Debug|x86
-		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Debug|x86.Build.0 = Debug|x86
-		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|x86.ActiveCfg = Release|x86
-		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|x86.Build.0 = Release|x86
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Debug|x86.Build.0 = Debug|Any CPU
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Default|Any CPU.ActiveCfg = Debug|Any CPU
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Default|Any CPU.Build.0 = Debug|Any CPU
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|x86.ActiveCfg = Release|Any CPU
+		{2055D34D-3DF2-444B-937B-32CC1A6E11DF}.Release|x86.Build.0 = Release|Any CPU
 		{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}.Debug|x86.Build.0 = Debug|Any CPU
 		{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}.Default|Any CPU.ActiveCfg = Debug|Any CPU
@@ -60,7 +65,7 @@ Global
 		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622} = {07024690-13E6-40E8-9FEC-5541056517E1}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = ToolBelt\ToolBelt.MacOS.csproj
+		StartupItem = ToolBelt.NUnit\ToolBelt.NUnit.MacOS.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1
 		$1.FileWidth = 120
@@ -105,7 +110,6 @@ Global
 		$9.EventRemoveBraceStyle = NextLine
 		$9.StatementBraceStyle = NextLine
 		$9.ElseNewLinePlacement = NewLine
-		$9.ElseIfNewLinePlacement = SameLine
 		$9.CatchNewLinePlacement = NewLine
 		$9.FinallyNewLinePlacement = NewLine
 		$9.WhileNewLinePlacement = NewLine
