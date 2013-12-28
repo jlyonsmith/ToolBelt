@@ -2,8 +2,11 @@ using System;
 using System.IO;
 using MongoDB.Bson.IO;
 using ToolBelt;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson;
 
-namespace MongoDB.Bson.Serialization.Serializers
+namespace ToolBelt.MongoDB
 {
     /// <summary>
     /// Represents a serializer for ParsedPath.

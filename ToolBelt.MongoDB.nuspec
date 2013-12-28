@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package >
   <metadata>
-    <id>ToolBelt</id>
+    <id>ToolBelt.MongoDB</id>
     <version>1.8.11228.1</version>
     <authors>jlyonsmith</authors>
     <owners>jlyonsmith</owners>
     <licenseUrl>http://github.com/jlyonsmith/ToolBelt/blob/master/LICENSE.md</licenseUrl>
     <projectUrl>http://github.com/jlyonsmith/ToolBelt</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>An extremely useful collection of utility classes.</description>
-    <releaseNotes>This is the first official NuGet release. It is targeted and tested for Mono on OSX/Linux systems only.</releaseNotes>
+    <description>Serializers for ToolBelt classes.</description>
+    <releaseNotes>First NuGet release. Targeted and tested for Mono on OS X/Linux systems only.</releaseNotes>
     <copyright>Copyright (C) 2013 John Lyon-Smith</copyright>
-    <tags>utility path endian console localization commandline string extension mono osx linux</tags>
+    <tags>utility mongodb path endian console localization commandline string extension mono osx linux</tags>
   </metadata>
   <files>
-    <file src="ToolBelt/bin/Release/ToolBelt.dll" target="lib/net45" /> 
+    <file src="ToolBelt.MongoDB/bin/Release/ToolBelt.MongoDB.dll" target="lib/net45" /> 
   </files>
 </package>

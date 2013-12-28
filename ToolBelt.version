@@ -6,10 +6,11 @@
     <File>Tests/CommandTestProgram/Properties/AssemblyInfo.cs</File>
     <File>Tests/CommandTestProgram/Properties/AssemblyInfo.cs</File>
     <File>ToolBelt.nuspec</File>
+    <File>ToolBelt.MongoDB.nuspec</File>
   </Files>
   <Major>1</Major>
   <Minor>8</Minor>
   <Build>11228</Build>
-  <Revision>0</Revision>
+  <Revision>1</Revision>
   <StartYear>2013</StartYear>
 </Version>
