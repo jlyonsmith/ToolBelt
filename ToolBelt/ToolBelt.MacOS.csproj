@@ -70,7 +70,6 @@
     <None Include="..\ToolBelt.snk">
       <Link>ToolBelt.snk</Link>
     </None>
-    <None Include="LICENSE" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -2,18 +2,18 @@
 <package >
   <metadata>
     <id>ToolBelt</id>
-    <version>1.8.0</version>
+    <version>1.8.11129.1</version>
     <authors>jlyonsmith</authors>
     <owners>jlyonsmith</owners>
-    <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
+    <licenseUrl>http://github.com/jlyonsmith/ToolBelt/blob/master/LICENSE.md</licenseUrl>
     <projectUrl>http://github.com/jlyonsmith/ToolBelt</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>An extremely useful collection of utility classes.</description>
     <releaseNotes>This is the first official NuGet release. It is targetted and tested for Mono on OSX/Linux systems only.</releaseNotes>
     <copyright>Copyright (C) 2013 John Lyon-Smith</copyright>
     <tags>utility path endian console localization commandline string extension mono osx linux</tags>
-    <files>
-      <file src="ToolBelt\bin\Release\ToolBelt.dll" target="lib" /> 
-    </files>
   </metadata>
+  <files>
+    <file src="ToolBelt/bin/Release/ToolBelt.dll" target="lib/net45" /> 
+  </files>
 </package>

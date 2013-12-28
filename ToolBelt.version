@@ -5,10 +5,11 @@
     <File>Tests/ToolBelt.Tests/Properties/AssemblyInfo.cs</File>
     <File>Tests/CommandTestProgram/Properties/AssemblyInfo.cs</File>
     <File>Tests/CommandTestProgram/Properties/AssemblyInfo.cs</File>
+    <File>ToolBelt.nuspec</File>
   </Files>
   <Major>1</Major>
   <Minor>8</Minor>
-  <Build>10926</Build>
-  <Revision>0</Revision>
+  <Build>11129</Build>
+  <Revision>1</Revision>
   <StartYear>2013</StartYear>
 </Version>
