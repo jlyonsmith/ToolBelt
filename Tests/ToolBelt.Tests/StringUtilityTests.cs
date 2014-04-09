@@ -10,7 +10,7 @@ namespace ToolBelt
     [TestFixture]
     public class StringUtilsTests 
     {
-        [TestCase]
+        [Test]
         public void TestWordWrap() 
         {
                           //1234567890123456789012345678901234567890123456789012345678901234567890
@@ -39,7 +39,7 @@ namespace ToolBelt
             Assert.IsTrue(Array.TrueForAll<string>(lines, delegate(string s) { return s.Length <= 80; }));
         }
 
-        [TestCase]
+        [Test]
         public void TestReplaceTags()
         {
             var tagsCaseSensitive = new Dictionary<string, string>(StringComparer.InvariantCulture);

@@ -8,7 +8,7 @@ namespace ToolBelt
     [TestFixture] 
     public class PathExTests
     {
-        [TestCase] public void TestFindFileInPaths()
+        [Test] public void TestFindFileInPaths()
         {
             // TODO: Test FindFileInPaths
         }

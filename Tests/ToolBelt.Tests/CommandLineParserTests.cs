@@ -385,7 +385,7 @@ namespace ToolBelt
             }
         }
     
-        [TestCase]
+        [Test]
         public void TestBasicParsing()
         {
             ArgumentsBasicTarget target = new ArgumentsBasicTarget();
@@ -421,7 +421,7 @@ namespace ToolBelt
             Assert.AreEqual(" -arg1:valueForArg1 -arg2:One -arg2:Two -arg3:Alpha -arg3:Beta -arg4 -arg5:10 -arg7:a=1;b=2 -arg8:blah.txt -arg9:blah.txt something.txt", parser.Arguments);
         }
 
-        [TestCase]
+        [Test]
         public void TestGetTarget()
         {
             ArgumentsBasicTarget target = new ArgumentsBasicTarget();
@@ -457,7 +457,7 @@ namespace ToolBelt
             Assert.AreEqual(" -arg1:valueForArg1 -arg2:One -arg2:Two -arg3:Alpha -arg3:Beta -arg4 -arg5:10 -arg7:a=1;b=2 -arg8:blah.txt -arg9:blah.txt -arg11:0 something.txt", parser.Arguments);
         }
         
-        [TestCase]
+        [Test]
         public void TestCaseSensitiveParsing()
         {
             ArgumentsCaseSensitive target = new ArgumentsCaseSensitive();
@@ -474,7 +474,7 @@ namespace ToolBelt
             Assert.AreEqual(target.Arg2, "valueForArg2");
         }
 
-        [TestCase]
+        [Test]
         [ExpectedException(typeof(ArgumentException))]
         public void TestBadUnprocessedArgs()
         {
@@ -482,7 +482,7 @@ namespace ToolBelt
             new CommandLineParser(target.GetType());
         }
         
-        [TestCase]
+        [Test]
         public void TestUnprocessedArgs()
         {
             ArgumentsUnprocessedPart target = new ArgumentsUnprocessedPart();
@@ -501,7 +501,7 @@ namespace ToolBelt
             CollectionAssert.AreEqual(new string[] { "gomez", "-morestuff" }, target.Unprocessed);
         }
         
-        [TestCase]
+        [Test]
         public void TestMultiDefaultArgs()
         {
             ArgumentsMultiDefaultNoArgs target = new ArgumentsMultiDefaultNoArgs();
@@ -513,7 +513,7 @@ namespace ToolBelt
             CollectionAssert.AreEqual(new string[] { "one", "two" }, target.Default);
         }
         
-        [TestCase]
+        [Test]
         public void TestLogoBanner()
         {
             Regex regex = new Regex(
@@ -554,14 +554,14 @@ namespace ToolBelt
             Assert.IsTrue(regex.IsMatch(logoBanner));
         }
 
-        [TestCase]
+        [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void TestNoSpecificationType()
         {
             new CommandLineParser(null);
         }
 
-        [TestCase]
+        [Test]
         [ExpectedException(typeof(ArgumentException))]
         public void TestArgumentNoDescription()
         {
@@ -570,14 +570,14 @@ namespace ToolBelt
             new CommandLineParser(typeof(ArgumentsNoDescription)).ParseAndSetTarget(null, target);
         }
 
-        [TestCase]
+        [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void TestParserNoTarget()
         {
             new CommandLineParser(typeof(ArgumentsBasic)).ParseAndSetTarget(null, null);
         }
 
-        [TestCase]
+        [Test]
         [ExpectedException(typeof(ArgumentException))]
         public void TestBadTargetDerivation()
         {
@@ -585,14 +585,14 @@ namespace ToolBelt
             new CommandLineParser(typeof(ArgumentsBasic)).ParseAndSetTarget(null, target);
         }
 
-        [TestCase]
+        [Test]
         [ExpectedException(typeof(ArgumentException))]
         public void TestTooManyDefaultAttributes()
         {
             new CommandLineParser(typeof(ArgumentsTooManyDefaults)).Parse(null);
         }
 
-        [TestCase]
+        [Test]
         [ExpectedException(typeof(ArgumentException))]
         public void TestBadProperty()
         {
@@ -600,7 +600,7 @@ namespace ToolBelt
             new CommandLineParser(target.GetType());
         }
 
-        [TestCase]
+        [Test]
         public void TestUsage()
         {
             CommandLineParser parser = new CommandLineParser(typeof(ArgumentsBasic), CommandLineParserFlags.Default);
@@ -682,7 +682,7 @@ namespace ToolBelt
             }
         }
 
-        [TestCase]
+        [Test]
         [ExpectedException(typeof(CommandLineArgumentException))]
         public void TestBadCommand()
         {
@@ -693,7 +693,7 @@ namespace ToolBelt
             parser.Parse(args);
         }
 
-        [TestCase]
+        [Test]
         [ExpectedException(typeof(CommandLineArgumentException))]
         public void TestBadCommandArgument()
         {
@@ -704,7 +704,7 @@ namespace ToolBelt
             parser.Parse(args);
         }
 
-        [TestCase]
+        [Test]
         public void TestParsingFromResources()
         {
             ArgumentsFromResources target = new ArgumentsFromResources();
@@ -722,7 +722,7 @@ namespace ToolBelt
                 RegexOptions.Multiline | RegexOptions.ExplicitCapture));
         }
         
-        [TestCase]
+        [Test]
         public void TestCommandLineArgumentException()
         {
             Assert.DoesNotThrow(delegate { new CommandLineArgumentException(); });
@@ -730,7 +730,7 @@ namespace ToolBelt
             Assert.DoesNotThrow(delegate { new CommandLineArgumentException("Another message", new SystemException()); });
         }
 
-        [TestCase]
+        [Test]
         public void TestCommands()
         {
             ArgumentsWithCommand target = new ArgumentsWithCommand();

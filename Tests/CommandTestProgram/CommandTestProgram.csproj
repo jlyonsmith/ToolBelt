@@ -88,9 +88,9 @@
   </Target>
   -->
   <ItemGroup>
-    <ProjectReference Include="..\..\ToolBelt\ToolBelt.MacOS.csproj">
+    <ProjectReference Include="..\..\ToolBelt\ToolBelt.csproj">
       <Project>{2055D34D-3DF2-444B-937B-32CC1A6E11DF}</Project>
-      <Name>ToolBelt.MacOS</Name>
+      <Name>ToolBelt</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

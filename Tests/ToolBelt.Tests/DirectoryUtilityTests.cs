@@ -74,7 +74,7 @@ namespace ToolBelt
             }
         }
         
-        [TestCase] 
+        [Test] 
         public void GetFilesDirOnly() 
         {
             IList<ParsedPath> files = DirectoryUtility.GetFiles(
@@ -84,7 +84,7 @@ namespace ToolBelt
             Assert.AreEqual(files[0].FileAndExtension.ToString(), testFile);
         }
         
-        [TestCase] 
+        [Test] 
         public void GetFilesSubDir() 
         {
             IList<ParsedPath> files = DirectoryUtility.GetFiles( 
@@ -110,7 +110,7 @@ namespace ToolBelt
             }
         }
 
-        [TestCase] 
+        [Test] 
         public void GetFilesParentDirs() 
         {
             IList<FileInfo> fileInfos = DirectoryInfoUtility.GetFiles( 
@@ -120,7 +120,7 @@ namespace ToolBelt
             Assert.IsTrue(fileInfos[0].FullName.EndsWith(testFile));
         }
         
-        [TestCase] 
+        [Test] 
         public void GetDirectoriesDirOnly()
         {
             IList<DirectoryInfo> dirInfos = DirectoryInfoUtility.GetDirectories(
@@ -131,7 +131,7 @@ namespace ToolBelt
             Assert.IsTrue(dirInfos[0].FullName.EndsWith("child1"));
         }
         
-        [TestCase] 
+        [Test] 
         public void GetDirectoriesSubDirs()
         {
             // First check breadth first.  Also test the base directory parameter
@@ -159,7 +159,7 @@ namespace ToolBelt
             Assert.IsTrue(dirInfos[4].FullName.EndsWith("child1"));
         }
 
-        [TestCase] 
+        [Test] 
         public void GetDirectoriesParentDirs() 
         {
             IList<DirectoryInfo> dirInfos = DirectoryInfoUtility.GetDirectories(

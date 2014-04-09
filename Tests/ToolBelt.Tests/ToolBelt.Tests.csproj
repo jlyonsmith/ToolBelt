@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -62,13 +62,13 @@
     <Compile Include="StringUtilityTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\ToolBelt.NUnit\ToolBelt.NUnit.MacOS.csproj">
-      <Project>{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}</Project>
-      <Name>ToolBelt.NUnit.MacOS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ToolBelt\ToolBelt.MacOS.csproj">
+    <ProjectReference Include="..\..\ToolBelt\ToolBelt.csproj">
       <Project>{2055D34D-3DF2-444B-937B-32CC1A6E11DF}</Project>
-      <Name>ToolBelt.MacOS</Name>
+      <Name>ToolBelt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ToolBelt.NUnit\ToolBelt.NUnit.csproj">
+      <Project>{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}</Project>
+      <Name>ToolBelt.NUnit</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

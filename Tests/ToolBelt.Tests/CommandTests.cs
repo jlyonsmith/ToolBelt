@@ -21,7 +21,7 @@ namespace ToolBelt
             TestHelper.ProcessDeploymentItems(this.GetType());
         }
 
-        [TestCase]
+        [Test]
         public void TestNoCapture() 
         {
 #if MACOS
@@ -32,7 +32,7 @@ namespace ToolBelt
             Assert.IsTrue(Command.Run(shellCmd) == 0);
         }
 
-        [TestCase]
+        [Test]
         public void TestCaptureOutput() 
         {
             string output;
@@ -41,7 +41,7 @@ namespace ToolBelt
             Assert.IsTrue(output == "one arguments" + Environment.NewLine);
         }
 
-        [TestCase]
+        [Test]
         public void TestCaptureOutputAndError() 
         {
             string output;
@@ -52,7 +52,7 @@ namespace ToolBelt
             Assert.IsTrue(error == "error text" + Environment.NewLine);
         }
 
-        [TestCase]
+        [Test]
         public void TestQuotedContent() 
         {
             string output;
@@ -62,7 +62,7 @@ namespace ToolBelt
             Assert.IsTrue(output == "two arguments plus quoted string" + Environment.NewLine);
         }
 
-        [TestCase]
+        [Test]
         public void TestNonZeroExitCode()
         {
             string output;
@@ -71,7 +71,7 @@ namespace ToolBelt
             Assert.IsTrue(exitCode != 0);
         }
 
-        [TestCase]
+        [Test]
         public void TestDebugMode()
         {
             string output;

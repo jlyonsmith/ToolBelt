@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}</ProjectGuid>
     <OutputType>Exe</OutputType>
@@ -44,9 +44,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\..\ToolBelt.NUnit\ToolBelt.NUnit.MacOS.csproj">
+    <ProjectReference Include="..\..\ToolBelt.NUnit\ToolBelt.NUnit.csproj">
       <Project>{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}</Project>
-      <Name>ToolBelt.NUnit.MacOS</Name>
+      <Name>ToolBelt.NUnit</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

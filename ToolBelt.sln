@@ -9,19 +9,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		LICENSE.md = LICENSE.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.NUnit.MacOS", "ToolBelt.NUnit\ToolBelt.NUnit.MacOS.csproj", "{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.NUnit", "ToolBelt.NUnit\ToolBelt.NUnit.csproj", "{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{07024690-13E6-40E8-9FEC-5541056517E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandTestProgram.MacOS", "Tests\CommandTestProgram\CommandTestProgram.MacOS.csproj", "{BEEE8EE8-832C-4068-AA22-4CFE69F46044}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandTestProgram", "Tests\CommandTestProgram\CommandTestProgram.csproj", "{BEEE8EE8-832C-4068-AA22-4CFE69F46044}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.Tests.MacOS", "Tests\ToolBelt.Tests\ToolBelt.Tests.MacOS.csproj", "{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.Tests", "Tests\ToolBelt.Tests\ToolBelt.Tests.csproj", "{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitTestProgram.MacOS", "Tests\NUnitTestProgram\NUnitTestProgram.MacOS.csproj", "{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitTestProgram", "Tests\NUnitTestProgram\NUnitTestProgram.csproj", "{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.MongoDB.Tests", "Tests\ToolBelt.MongoDB.Tests\ToolBelt.MongoDB.Tests.csproj", "{85606A4E-E488-4C0A-8482-E27DB31FC7CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.MacOS", "ToolBelt\ToolBelt.MacOS.csproj", "{2055D34D-3DF2-444B-937B-32CC1A6E11DF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt", "ToolBelt\ToolBelt.csproj", "{2055D34D-3DF2-444B-937B-32CC1A6E11DF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.MongoDB", "ToolBelt.MongoDB\ToolBelt.MongoDB.csproj", "{9ED61F47-B679-4507-A32C-18E5362F8D95}"
 EndProject
@@ -82,7 +82,7 @@ Global
 		{85606A4E-E488-4C0A-8482-E27DB31FC7CA} = {07024690-13E6-40E8-9FEC-5541056517E1}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = ToolBelt.NUnit\ToolBelt.NUnit.MacOS.csproj
+		StartupItem = ToolBelt.NUnit\ToolBelt.NUnit.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1
 		$1.FileWidth = 120

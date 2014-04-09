@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{9ED61F47-B679-4507-A32C-18E5362F8D95}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -48,9 +48,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ToolBelt\ToolBelt.MacOS.csproj">
+    <ProjectReference Include="..\ToolBelt\ToolBelt.csproj">
       <Project>{2055D34D-3DF2-444B-937B-32CC1A6E11DF}</Project>
-      <Name>ToolBelt.MacOS</Name>
+      <Name>ToolBelt</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

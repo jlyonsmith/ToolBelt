@@ -9,7 +9,7 @@ namespace ToolBelt
     [TestFixture] 
     public class ParsedPathTests
     {
-        [TestCase] public void TestOperators()
+        [Test] public void TestOperators()
         {
             ParsedPath pp = new ParsedPath("file.txt", PathType.Unknown);
             
@@ -26,7 +26,7 @@ namespace ToolBelt
             Assert.IsFalse(pp == ParsedPath.Empty);
         }
 
-        [TestCase]
+        [Test]
         public void TestCompareTo()
         {
             ParsedPath ppA = new ParsedPath(@"c:\blah\a.txt", PathType.File);
@@ -56,7 +56,7 @@ namespace ToolBelt
             Assert.AreEqual(0, ppA.CompareTo(p));
         }
 
-        [TestCase] public void ConstructParsedPath() 
+        [Test] public void ConstructParsedPath() 
         {
             // Test some good paths
             AssertPathParts(@"\", PathType.Unknown, "", "", "", @"\", "", "");
@@ -129,7 +129,7 @@ namespace ToolBelt
             AssertBadPath(@"\\computer\\", PathType.Volume);
         }
 
-        [TestCase] public void MakeFullPath()
+        [Test] public void MakeFullPath()
         {
             // Test some good paths
 #if MACOS
@@ -176,7 +176,7 @@ namespace ToolBelt
             AssertBadPathFull(@"test\......\temp\.\abc.txt", @"c:\");  // Too many '....'s
         }
         
-        [TestCase] public void MakeRelativePath()
+        [Test] public void MakeRelativePath()
         {
             AssertPathPartsRelative(@"c:\a\p.q", @"c:\a\", @".\");
             AssertPathPartsRelative(@"c:\a\", @"c:\a\b\c\p.q", @"..\..\"); 
@@ -187,7 +187,7 @@ namespace ToolBelt
             AssertBadPathPartsRelative(@"a.txt", @"b");
         }
 
-        [TestCase] public void MakeParentPath()
+        [Test] public void MakeParentPath()
         {
             // Test going up one parent
             AssertParentPath(@"c:\a\b\c\p.q", -1, "", "", "c:", @"\a\b\", "p", ".q"); 
@@ -405,7 +405,7 @@ namespace ToolBelt
         }
         #endregion
 
-        [TestCase] public void TestPathTypes()
+        [Test] public void TestPathTypes()
         {
             Assert.IsTrue(new ParsedPath(@"c:\temp\", PathType.Unknown).IsDirectory);
             Assert.IsFalse(new ParsedPath(@"c:\temp", PathType.Unknown).IsDirectory);
@@ -426,7 +426,7 @@ namespace ToolBelt
             Assert.IsFalse(new ParsedPath(@"c:\a\..\thing.txt", PathType.Unknown).IsFullPath);
         }
 
-        [TestCase] public void TestSubDirectories()
+        [Test] public void TestSubDirectories()
         {
             Assert.AreEqual(4, new ParsedPath(@"c:\a\b\c\", PathType.Unknown).SubDirectories.Count);
             Assert.AreEqual(4, new ParsedPath(@"\\machine\share\a\b\c\", PathType.Unknown).SubDirectories.Count);
@@ -445,7 +445,7 @@ namespace ToolBelt
             Assert.AreEqual(PathUtility.DirectorySeparator, subDirs[0].ToString());
         }
 
-        [TestCase] public void TestAppend()
+        [Test] public void TestAppend()
         {
             ParsedPath pp1 = new ParsedPath(@"c:\blah\blah", PathType.Directory);
             ParsedPath ppCombine = pp1.Append("file.txt", PathType.File);
