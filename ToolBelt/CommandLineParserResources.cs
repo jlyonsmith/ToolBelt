@@ -1,5 +1,5 @@
 //
-// This file genenerated by the Buckle tool on 10/30/2012 at 3:13 PM. 
+// This file genenerated by the Buckle tool on 4/9/2014 at 4:37 PM. 
 //
 // Contains strongly typed wrappers for resources in CommandLineParserResources.resx
 //
@@ -42,7 +42,7 @@ public class CommandLineParserResources
     }
 
     /// <summary>
-    /// CommandLineCopyrightAttribute or AssemblyCopyrightAttribute not found
+    /// CommandLineCopyrightAttribute or AssemblyCopyrightAttribute not found.
     /// </summary>
     public static ToolBelt.Message CopyrightAttributesNotFound
     {
@@ -320,7 +320,7 @@ public class CommandLineParserResources
     }
 
     /// <summary>
-    /// AssemblyFileVersionAttribute not found
+    /// AssemblyFileVersionAttribute not found.
     /// </summary>
     public static ToolBelt.Message VersionAttributesNotFound
     {
