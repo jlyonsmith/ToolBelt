@@ -15,6 +15,6 @@ namespace ToolBelt
         /// </summary>
         /// <param name="userLevel"></param>
         /// <returns></returns>
-        void ProcessConfiguration(ConfigurationUserLevel userLevel);
+        void ProcessConfiguration();
     }
 }

@@ -25,6 +25,7 @@
         <Command type="BeforeBuild" command="/bin/bash ${SolutionDir}/bin/build_resources.sh" workingdir="${ProjectDir}" />
       </CustomCommands>
     </CustomCommands>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>false</Optimize>

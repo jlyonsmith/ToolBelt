@@ -87,6 +87,7 @@ namespace ToolBelt
             ParsedPath arg9;
             private string arg10;
             private int arg11;
+            int? arg12;
             string defArg;
 
             // Short name that is a prefix to the full name
@@ -168,6 +169,14 @@ namespace ToolBelt
             {
                 get { return arg11; }
                 set { arg11 = value; }
+            }
+
+            // Test Nullable types
+            [CommandLineArgument("arg12", Description = "Argument #12")]
+            public int? Arg12 
+            { 
+                get { return arg12; }
+                set { arg12 = value; }
             }
 
             [DefaultCommandLineArgument("default")]
@@ -419,6 +428,7 @@ namespace ToolBelt
             Assert.AreEqual("blah.txt", target.Arg9.ToString());
             Assert.AreEqual(11, parser.ArgumentCount);
             Assert.AreEqual(" -arg1:valueForArg1 -arg2:One -arg2:Two -arg3:Alpha -arg3:Beta -arg4 -arg5:10 -arg7:a=1;b=2 -arg8:blah.txt -arg9:blah.txt something.txt", parser.Arguments);
+            Assert.IsNull(target.Arg12);
         }
 
         [Test]
@@ -456,7 +466,21 @@ namespace ToolBelt
             Assert.AreEqual(13, parser.ArgumentCount);
             Assert.AreEqual(" -arg1:valueForArg1 -arg2:One -arg2:Two -arg3:Alpha -arg3:Beta -arg4 -arg5:10 -arg7:a=1;b=2 -arg8:blah.txt -arg9:blah.txt -arg11:0 something.txt", parser.Arguments);
         }
-        
+
+        [Test]
+        public void TestNullable()
+        {
+            ArgumentsBasicTarget target = new ArgumentsBasicTarget();
+            CommandLineParser parser = new CommandLineParser(typeof(ArgumentsBasic), null, CommandLineParserFlags.Default);
+            string[] args = new string[] 
+            { 
+                "-arg12:10"
+            };
+
+            parser.ParseAndSetTarget(args, target);
+            Assert.AreEqual(10, target.Arg12);
+        }
+
         [Test]
         public void TestCaseSensitiveParsing()
         {

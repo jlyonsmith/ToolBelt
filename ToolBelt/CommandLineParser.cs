@@ -396,10 +396,27 @@ namespace ToolBelt
                             CommandLineParserResources.InvalidValueForCommandLineArgumentWithValid(value, Name, s), ex);
                     }
                 }
+                else if (ValueType.IsGenericType && ValueType.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+                {
+                    // Check if this is a Nullable type, and get the underlying type if it is
+                    Type underlyingType = Nullable.GetUnderlyingType(ValueType);
+
+                    // Look for a public static Parse method on the type of the underlying property
+                    System.Reflection.MethodInfo parseMethod = underlyingType.GetMethod(
+                        "Parse", BindingFlags.Public | BindingFlags.Static, null,
+                        CallingConventions.Standard, new Type[] { typeof(string) }, null);
+
+                    if (parseMethod != null)
+                    {
+                        // Call the Parse method
+                        newValue = parseMethod.Invoke(null, BindingFlags.Default, null,
+                            new object[] { value }, CultureInfo.InvariantCulture);
+                    }
+                }
                 else
                 {
                     // Look for a public static Parse method on the type of the property
-                    System.Reflection.MethodInfo parseMethod = ValueType.GetMethod(
+                    System.Reflection.MethodInfo parseMethod = valueType.GetMethod(
                         "Parse", BindingFlags.Public | BindingFlags.Static, null,
                         CallingConventions.Standard, new Type[] { typeof(string) }, null);
 

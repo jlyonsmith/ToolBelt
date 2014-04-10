@@ -8,8 +8,6 @@
 .DS_Store
 *.nupkg
 msbuild.log
-obj/
-bin/
 ipch/
 Scratch/
 TestDeployment/
