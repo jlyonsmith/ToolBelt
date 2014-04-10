@@ -87,27 +87,6 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Xml" />
-    <Reference Include="Strapper">
-      <HintPath>..\packages\CSharpTools.2.0.20409.0\lib\net45\Strapper.exe</HintPath>
-    </Reference>
-    <Reference Include="Doozer">
-      <HintPath>..\packages\CSharpTools.2.0.20409.0\lib\net45\Doozer.exe</HintPath>
-    </Reference>
-    <Reference Include="Projector">
-      <HintPath>..\packages\CSharpTools.2.0.20409.0\lib\net45\Projector.exe</HintPath>
-    </Reference>
-    <Reference Include="Vamper">
-      <HintPath>..\packages\CSharpTools.2.0.20409.0\lib\net45\Vamper.exe</HintPath>
-    </Reference>
-    <Reference Include="Lindex">
-      <HintPath>..\packages\CSharpTools.2.0.20409.0\lib\net45\Lindex.exe</HintPath>
-    </Reference>
-    <Reference Include="Ender">
-      <HintPath>..\packages\CSharpTools.2.0.20409.0\lib\net45\Ender.exe</HintPath>
-    </Reference>
-    <Reference Include="Spacer">
-      <HintPath>..\packages\CSharpTools.2.0.20409.0\lib\net45\Spacer.exe</HintPath>
-    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

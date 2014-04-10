@@ -11,6 +11,7 @@ before_install:
  - sudo installer -pkg "MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg" -target /
 
 script:
+ - bin/travis_packages.sh
  - bin/travis_build.sh /property:Configuration=Debug ToolBelt.sln
  - bin/travis_build.sh /property:Configuration=Release ToolBelt.sln
  - bin/travis_test.sh Tests/ToolBelt.Tests/bin/Debug/ToolBelt.Tests.dll
