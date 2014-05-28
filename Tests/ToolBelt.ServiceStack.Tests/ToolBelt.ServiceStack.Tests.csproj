@@ -31,7 +31,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="nunit.framework" />
     <Reference Include="ServiceStack.Interfaces">
       <HintPath>..\..\packages\ServiceStack.Interfaces.4.0.20\lib\net40\ServiceStack.Interfaces.dll</HintPath>
     </Reference>
@@ -48,6 +47,9 @@
       <HintPath>..\..\packages\ServiceStack.4.0.20\lib\net40\ServiceStack.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

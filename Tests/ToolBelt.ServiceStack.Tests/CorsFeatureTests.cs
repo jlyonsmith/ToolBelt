@@ -10,7 +10,8 @@ namespace ToolBelt.ServiceStack.Tests
 {
     class TestAppHost : IAppHost
     {
-        List<Action<IRequest, IResponse, object>> globalRequestFilters = new List<Action<IRequest, IResponse, object>>();
+        List<Action<IRequest, IResponse>>  preRequestFilters = new List<Action<IRequest, IResponse>>();
+        List<Func<IHttpRequest, IHttpHandler>> rawHttpHandlers = new List<Func<IHttpRequest, IHttpHandler>>();
 
         #region IAppHost
         public void Register<T>(T instance)
@@ -67,14 +68,14 @@ namespace ToolBelt.ServiceStack.Tests
         {
             get
             {
-                throw new NotImplementedException();
+                return preRequestFilters;
             }
         }
         public List<Action<IRequest, IResponse, object>> GlobalRequestFilters
         {
             get
             {
-                return globalRequestFilters;
+                throw new NotImplementedException();
             }
         }
         public List<Action<IRequest, IResponse, object>> GlobalResponseFilters
@@ -123,7 +124,7 @@ namespace ToolBelt.ServiceStack.Tests
         {
             get
             {
-                throw new NotImplementedException();
+                return rawHttpHandlers;
             }
         }
         public List<global::ServiceStack.Host.HttpHandlerResolverDelegate> CatchAllHandlers
@@ -204,11 +205,11 @@ namespace ToolBelt.ServiceStack.Tests
 
             var appHost = new TestAppHost();
 
-            Assert.NotNull(appHost.GlobalRequestFilters);
+            Assert.NotNull(appHost.PreRequestFilters);
 
             corsFeature.Register(appHost);
 
-            Assert.AreEqual(1, appHost.GlobalRequestFilters.Count);
+            Assert.AreEqual(1, appHost.PreRequestFilters.Count);
 
             // TODO: Drive the filter according the to flow chart at 
             // http://www.html5rocks.com/static/images/cors_server_flowchart.png

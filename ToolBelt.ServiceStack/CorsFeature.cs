@@ -2,6 +2,8 @@
 using System;
 using System.Net;
 using ServiceStack;
+using ServiceStack.Host.Handlers;
+using ServiceStack.Web;
 
 namespace ToolBelt.ServiceStack
 {
@@ -36,6 +38,7 @@ namespace ToolBelt.ServiceStack
         private readonly bool allowCredentials;
         private readonly bool exposeHeaders;
         private readonly int? maxAgeSeconds;
+        private readonly bool autoHandleOptionsRequests;
         private static bool isInstalled = false;
 
         /// <summary>
@@ -49,7 +52,8 @@ namespace ToolBelt.ServiceStack
             string allowHeaders = DefaultHeaders, 
             int? maxAgeSeconds = null, 
             bool allowCredentials = false, 
-            bool exposeHeaders = false)
+            bool exposeHeaders = false,
+            bool autoHandleOptionsRequests = true)
         {
             if (allowOrigins == null)
                 this.allowOrigins = null;
@@ -78,6 +82,7 @@ namespace ToolBelt.ServiceStack
             this.allowCredentials = allowCredentials;
             this.maxAgeSeconds = maxAgeSeconds;
             this.exposeHeaders = exposeHeaders;
+            this.autoHandleOptionsRequests = autoHandleOptionsRequests;
         }
 
         public void Register(IAppHost appHost)
@@ -87,7 +92,7 @@ namespace ToolBelt.ServiceStack
 
             isInstalled = true;
 
-            appHost.GlobalRequestFilters.Add((httpReq, httpRes, requestDto) =>
+            Action<IRequest, IResponse> allowOriginFilter = (httpReq, httpRes) =>
             {
                 // Following the flow chart given at http://www.html5rocks.com/static/images/cors_server_flowchart.png
 
@@ -157,7 +162,30 @@ namespace ToolBelt.ServiceStack
                     httpRes.StatusCode = (int)HttpStatusCode.OK;
                     httpRes.Close();
                 }
-            });
+            };
+
+            appHost.PreRequestFilters.Add(allowOriginFilter);
+
+            if (autoHandleOptionsRequests)
+            {
+                CustomActionHandler handler = new CustomActionHandler((httpReq, httpRes) =>
+                {
+                    if (allowOriginFilter != null)
+                    {
+                        allowOriginFilter.Invoke(httpReq, httpRes);
+                    }
+
+                    httpRes.EndRequest();
+                });
+
+                appHost.RawHttpHandlers.Add((httpReq) => 
+                {
+                    if (httpReq.Verb != "OPTIONS")
+                        return null;
+
+                    return handler;
+                });
+            }
         }
     }
 }
