@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -8,13 +8,14 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("Release")]
 #endif
 
-[assembly: AssemblyTitle("ToolBelt")]
-[assembly: AssemblyDescription("Unit tests for the ToolBelt utility library")]
+[assembly: AssemblyTitle("ToolBest Unit Tests")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyCompany("John Lyon-Smith")]
 [assembly: AssemblyProduct("ToolBelt")]
-[assembly: AssemblyCopyright("Copyright © John Lyon-Smith 2013")]
+[assembly: AssemblyCopyright("Copyright © 2013, John Lyon-Smith.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: AssemblyVersion("1.8.0.0")]
-[assembly: AssemblyFileVersion("1.8.20409.0")]
+[assembly: AssemblyFileVersion("1.8.20528.2")]
+

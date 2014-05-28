@@ -540,6 +540,8 @@ namespace ToolBelt
         [Test]
         public void TestLogoBanner()
         {
+            // NOTE: This test requires the test assembly has version information
+            //
             Regex regex = new Regex(
                 @"^Command Line Program\. (?:Debug|Release) Version \d+\.\d+\.\d+\.\d+" + Environment.NewLine + 
                 @"Copyright \(c\) John Lyon-Smith\." + Environment.NewLine, 

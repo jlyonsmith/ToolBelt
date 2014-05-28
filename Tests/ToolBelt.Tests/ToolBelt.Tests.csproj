@@ -58,8 +58,8 @@
     <Compile Include="DirectoryUtilityTests.cs" />
     <Compile Include="ParsedPathTests.cs" />
     <Compile Include="PathUtilityTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringUtilityTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ToolBelt\ToolBelt.csproj">
@@ -75,5 +75,8 @@
     <EmbeddedResource Include="CommandLineParserTestsResources.resources">
       <LogicalName>ToolBelt.CommandLineParserTestsResources.resources</LogicalName>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 </Project>

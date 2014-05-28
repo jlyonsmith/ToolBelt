@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <package >
   <metadata>
     <id>ToolBelt.ServiceStack</id>
-    <version>1.8.20409.0</version>
+    <version>1.8.20528.2</version>
     <authors>jlyonsmith</authors>
     <owners>jlyonsmith</owners>
     <licenseUrl>http://github.com/jlyonsmith/ToolBelt/blob/master/LICENSE.md</licenseUrl>
