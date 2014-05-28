@@ -1,20 +1,18 @@
 ### ToolBelt Utility Library
 
-Every programmer has one!  This is mine.  At the last look it contains classes and tools for:
+This is my collection of .NET utility classes which works on both Microsoft and Mono implementations of .NET. Some of the highlights include:
 
-- String resource wrapper generation (Buckle.exe)
-- Collection helpers
-- Running "commands" i.e. command prompt stuff, and collecting the output
-- Console output with error, warning, "normal" formatting
-- Automatic command line parsing using attributed classes
-- Console utility stuff
-- Directory/file searching
-- Endian binary readers/writers
+- `Command` class for easily running external processes and capturing output
+- `ConsoleUtility` including standard formatting of messages, warnings and errors
+- `CommandLineParser` powerful yet easy command line parsing using attributes
+- `DirectoryUtility` for power file and directory searching.
+- Big & little endian binary readers/writers
 - Memory buffer management
-- Creating "task" classes including those for MSBuild
-- File/directory parsing using the ParsedPath class
-- Parsed path "lists", e.g. the PATH environment variable
-- String utilities, including word wrapping text
-- Process cycle stop watch
+- File/directory parsing using the `ParsedPath` class
+- `ParsedPathList` for lists of paths
+- `StringUtility`, including word wrapping text and tag substition
+- `ProcessCycleStopwatch` (Windows only) for CPU cycle timings
 
-Enjoy!
+Plus a host of other useful classes.  Enjoy!
+
+[![Build Status](https://travis-ci.org/jlyonsmith/ToolBelt.svg?branch=master)](https://travis-ci.org/jlyonsmith/ToolBelt)
