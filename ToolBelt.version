@@ -10,10 +10,11 @@
     <File>ToolBelt.nuspec</File>
     <File>ToolBelt.MongoDB.nuspec</File>
     <File>ToolBelt.ServiceStack.nuspec</File>
+    <File>ToolBelt.ServiceStack.Pcl.nuspec</File>
   </Files>
   <Major>1</Major>
   <Minor>8</Minor>
   <Build>20530</Build>
-  <Revision>0</Revision>
+  <Revision>5</Revision>
   <StartYear>2013</StartYear>
 </Version>
