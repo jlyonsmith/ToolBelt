@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug")]
@@ -14,4 +14,4 @@
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyVersion("1.8.0.0")]
-[assembly: AssemblyFileVersion("1.8.20528.3")]
+[assembly: AssemblyFileVersion("1.8.20530.0")]
