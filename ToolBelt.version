@@ -4,6 +4,7 @@
     <File>ToolBelt/Properties/AssemblyInfo.cs</File>
     <File>ToolBelt.MongoDB/Properties/AssemblyInfo.cs</File>
     <File>ToolBelt.ServiceStack/Properties/AssemblyInfo.cs</File>
+    <File>ToolBelt.ServiceStack.Pcl/Properties/AssemblyInfo.cs</File>
     <File>Tests/CommandTestProgram/Properties/AssemblyInfo.cs</File>
     <File>Tests/NUnitTestProgram/Properties/AssemblyInfo.cs</File>
     <File>ToolBelt.nuspec</File>

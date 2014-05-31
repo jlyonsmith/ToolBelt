@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>ToolBelt.ServiceStack.Pcl</id>
+    <version>1.8.20528.3</version>
+    <authors>jlyonsmith</authors>
+    <owners>jlyonsmith</owners>
+    <licenseUrl>http://github.com/jlyonsmith/ToolBelt/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>http://github.com/jlyonsmith/ToolBelt</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Portable utility classes for ServiceStack projects</description>
+    <releaseNotes>Targeted and tested for Mono on OS X and Linux systems.</releaseNotes>
+    <copyright>Copyright (c) 2014 John Lyon-Smith</copyright>
+    <tags>utility servicestack plugin cors copy mongodb mono osx linux pcl</tags>
+  </metadata>
+  <files>
+    <file src="ToolBelt.ServiceStack.Pcl/bin/Release/ToolBelt.ServiceStack.Pcl.dll" target="lib/portable-net45+monotouch10" /> 
+  </files>
+</package>
