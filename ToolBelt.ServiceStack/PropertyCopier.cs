@@ -17,6 +17,7 @@ namespace ToolBelt.ServiceStack
 
     public delegate object CopyPropertyDelegate(Type fromType, object fromData, Type toType, Func<PropertyInfo, bool> propInfoPredicate);
     public delegate object CopyListItemDelegate(object fromData);
+    public delegate object ChangeTypeDelegate(object fromValue, Type toType);
 
     public static class PropertyCopier
     {
@@ -32,6 +33,7 @@ namespace ToolBelt.ServiceStack
         }
 
         private static Dictionary<Tuple<Type, Type>, List<PropertyMapping>> typePropMappings = new Dictionary<Tuple<Type, Type>, List<PropertyMapping>>();
+        private static Dictionary<Tuple<Type, Type>, ChangeTypeDelegate> typeConverters = new Dictionary<Tuple<Type, Type>, ChangeTypeDelegate>();
 
         public static T CopyAsNew<T>(object fromObj) where T : new()
         {
@@ -75,6 +77,14 @@ namespace ToolBelt.ServiceStack
                 fromTypeInfo.ImplementedInterfaces.Contains(typeof(IList)) || 
                 fromTypeInfo.ImplementedInterfaces.Any(i => 
                 { var typeInfo = i.GetTypeInfo(); return typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(IList<>); });
+        }
+
+        // This is needed for value types where there is no suitable IConvertible method on the 
+        // source type.  This happens frequently for UDTs from two unrelated class libraries, 
+        // e.g. Rql and MongoDB
+        public static void AddTypeConverter(Type fromType, Type toType, ChangeTypeDelegate changeType)
+        {
+            typeConverters.Add(new Tuple<Type, Type>(fromType, toType), changeType);
         }
 
         public static List<PropertyInfo> GetProperties(Type type, bool writeable = false)
@@ -298,7 +308,12 @@ namespace ToolBelt.ServiceStack
             }
             else if (IsValueType(toItemType) && IsValueType(fromItemType))
             {
-                return (fromValue) => Convert.ChangeType(fromValue, toItemType);
+                ChangeTypeDelegate changeType;
+                
+                if (typeConverters.TryGetValue(new Tuple<Type, Type>(fromItemType, toItemType), out changeType))
+                    return (fromValue) => changeType(fromValue, toItemType);
+                else
+                    return (fromValue) => Convert.ChangeType(fromValue, toItemType);
             }
             else
             {
@@ -362,6 +377,7 @@ namespace ToolBelt.ServiceStack
             Type fromItemType = GetArrayOrListItemType(fromType);
             Type toItemType = GetArrayOrListItemType(toType);
 
+            // TODO: Pull this up higher and store it; once calculated it never changes
             var listItemCopier = GetListItemCopier(fromItemType, toItemType);
 
             if (toType.IsArray)
