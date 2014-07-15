@@ -8,7 +8,7 @@
     <licenseUrl>http://github.com/jlyonsmith/ToolBelt/blob/master/LICENSE.md</licenseUrl>
     <projectUrl>http://github.com/jlyonsmith/ToolBelt</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Plugins and utility classes for ServiceStack projects</description>
+    <description>Plugins and utility classes for ServiceStack projects.  This release has permformance and feature enhancements for PropertyCopier to handle user defined value types.</description>
     <releaseNotes>Targeted and tested for Mono on OS X/Linux systems.</releaseNotes>
     <copyright>Copyright (c) 2014 John Lyon-Smith</copyright>
     <tags>utility servicestack plugin cors copy mongodb mono osx linux</tags>

@@ -9,7 +9,7 @@
     <projectUrl>http://github.com/jlyonsmith/ToolBelt</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>An extremely useful collection of utility classes.</description>
-    <releaseNotes>This is the first official NuGet release. It is targeted and tested for Mono on OSX/Linux systems only.</releaseNotes>
+    <releaseNotes>This release adds more unit tests and minor bug fixes..</releaseNotes>
     <copyright>Copyright (C) 2013 John Lyon-Smith</copyright>
     <tags>utility path endian console localization commandline string extension mono osx linux</tags>
   </metadata>
