@@ -59,5 +59,9 @@
       <Project>{2055D34D-3DF2-444B-937B-32CC1A6E11DF}</Project>
       <Name>ToolBelt</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\ToolBelt.ServiceStack\ToolBelt.ServiceStack.csproj">
+      <Project>{C3AA3397-E427-443C-B9FE-2F2D5998A938}</Project>
+      <Name>ToolBelt.ServiceStack</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

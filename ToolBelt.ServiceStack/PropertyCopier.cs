@@ -16,8 +16,8 @@ namespace ToolBelt.ServiceStack
     }
 
     public delegate object CopyPropertyDelegate(Type fromType, object fromData, Type toType, Func<PropertyInfo, bool> propInfoPredicate);
-    public delegate object CopyListItemDelegate(object fromData);
-    public delegate object ChangeTypeDelegate(object fromValue, Type toType);
+    public delegate object CopyItemDelegate(object fromData);
+    public delegate object ChangeTypeDelegate(object fromValue);
 
     public static class PropertyCopier
     {
@@ -60,7 +60,12 @@ namespace ToolBelt.ServiceStack
 
             if (IsArrayOrList(fromType))
             {
-                CopyListItems(fromType, (IList)fromObj, toType, (IList)toObj, propInfoPredicate);
+                var itemCopier = GetListItemCopier(fromType, toType);
+
+                if (toType.IsArray)
+                    CopyArrayItems((IList)fromObj, (IList)toObj, itemCopier); 
+                else
+                    CopyListItems((IList)fromObj, (IList)toObj, itemCopier);
             }
             else
             {
@@ -82,9 +87,14 @@ namespace ToolBelt.ServiceStack
         // This is needed for value types where there is no suitable IConvertible method on the 
         // source type.  This happens frequently for UDTs from two unrelated class libraries, 
         // e.g. Rql and MongoDB
-        public static void AddTypeConverter(Type fromType, Type toType, ChangeTypeDelegate changeType)
+        public static void AddTypeConverter<T1, T2>(ChangeTypeDelegate changeType)
         {
-            typeConverters.Add(new Tuple<Type, Type>(fromType, toType), changeType);
+            typeConverters.Add(new Tuple<Type, Type>(typeof(T1), typeof(T2)), changeType);
+        }
+
+        public static void ClearTypeConverters()
+        {
+            typeConverters.Clear();
         }
 
         public static List<PropertyInfo> GetProperties(Type type, bool writeable = false)
@@ -230,7 +240,16 @@ namespace ToolBelt.ServiceStack
             {
                 if (IsValueType(fromPropType))
                 {
-                    copyProperty = (type, value, otherType, propInfoPredicate) => Convert.ChangeType(value, otherType);
+                    ChangeTypeDelegate changeType;
+
+                    if (typeConverters.TryGetValue(new Tuple<Type, Type>(fromPropType, toPropType), out changeType))
+                    {
+                        copyProperty = (type, value, otherType, propInfoPredicate) => changeType(value);
+                    }
+                    else
+                    {
+                        copyProperty = (type, value, otherType, propInfoPredicate) => Convert.ChangeType(value, otherType);
+                    }
                 }
                 else if (fromPropType == typeof(string))
                 {
@@ -249,13 +268,15 @@ namespace ToolBelt.ServiceStack
                 if (!IsArrayOrList(toPropType))
                     throw new InvalidCastException("Can only map T[], IList or IList<T> to T[], IList or IList<T>");
 
+                var itemCopier = GetListItemCopier(fromPropType, toPropType);
+
                 if (toPropType.IsArray)
                 {
                     copyProperty = (type, value, otherType, propInfoPredicate) =>
                     {
                         // Create a new instance of the to array and copy over the from array/list
                         object otherValue = Array.CreateInstance(otherType.GetElementType(), ((IList)value).Count);
-                        CopyListItems(type, (IList)value, otherType, (IList)otherValue, propInfoPredicate);
+                        CopyArrayItems((IList)value, (IList)otherValue, itemCopier);
                         return otherValue;
                     };
                 }
@@ -265,7 +286,7 @@ namespace ToolBelt.ServiceStack
                     {
                         // Create a new instance of the to list and copy over the from list
                         object otherValue = Activator.CreateInstance(otherType);
-                        CopyListItems(type, (IList)value, otherType, (IList)otherValue, propInfoPredicate);
+                        CopyListItems((IList)value, (IList)otherValue, itemCopier);
                         return otherValue;
                     };
                 }
@@ -292,8 +313,11 @@ namespace ToolBelt.ServiceStack
             return copyProperty;
         }
 
-        public static CopyListItemDelegate GetListItemCopier(Type fromItemType, Type toItemType)
+        public static CopyItemDelegate GetListItemCopier(Type fromType, Type toType)
         {
+            Type fromItemType = GetArrayOrListItemType(fromType);
+            Type toItemType = GetArrayOrListItemType(toType);
+
             if (toItemType == fromItemType)
             {
                 return (fromValue) => fromValue;
@@ -311,7 +335,7 @@ namespace ToolBelt.ServiceStack
                 ChangeTypeDelegate changeType;
                 
                 if (typeConverters.TryGetValue(new Tuple<Type, Type>(fromItemType, toItemType), out changeType))
-                    return (fromValue) => changeType(fromValue, toItemType);
+                    return (fromValue) => changeType(fromValue);
                 else
                     return (fromValue) => Convert.ChangeType(fromValue, toItemType);
             }
@@ -372,32 +396,24 @@ namespace ToolBelt.ServiceStack
             }
         }
 
-        private static void CopyListItems(Type fromType, IList fromList, Type toType, IList toList, Func<PropertyInfo, bool> propInfoPredicate)
+        private static void CopyArrayItems(IList fromList, IList toList, CopyItemDelegate itemCopier)
         {
-            Type fromItemType = GetArrayOrListItemType(fromType);
-            Type toItemType = GetArrayOrListItemType(toType);
+            int i = 0;
+            Array arr = (Array)toList;
 
-            // TODO: Pull this up higher and store it; once calculated it never changes
-            var listItemCopier = GetListItemCopier(fromItemType, toItemType);
-
-            if (toType.IsArray)
+            foreach (var fromValue in fromList)
             {
-                int i = 0;
-                Array arr = (Array)toList;
+                object obj = itemCopier(fromValue);
 
-                foreach (var fromValue in fromList)
-                {
-                    object obj = listItemCopier(fromValue);
-
-                    arr.SetValue(obj, i++);
-                }
+                arr.SetValue(obj, i++);
             }
-            else
+        }
+
+        private static void CopyListItems(IList fromList, IList toList, CopyItemDelegate itemCopier)
+        {
+            foreach (var fromValue in fromList)
             {
-                foreach (var fromValue in fromList)
-                {
-                    toList.Add(listItemCopier(fromValue));
-                }
+                toList.Add(itemCopier(fromValue));
             }
         }
     }
