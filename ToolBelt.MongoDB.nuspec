@@ -9,7 +9,7 @@
     <projectUrl>http://github.com/jlyonsmith/ToolBelt</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Serializers for ToolBelt classes.</description>
-    <releaseNotes>First NuGet release. Targeted and tested for Mono on OS X/Linux systems only.</releaseNotes>
+    <releaseNotes>Serializers using ToolBelt types with MongoDB</releaseNotes>
     <copyright>Copyright (C) 2013 John Lyon-Smith</copyright>
     <tags>utility mongodb path endian console localization commandline string extension mono osx linux</tags>
   </metadata>

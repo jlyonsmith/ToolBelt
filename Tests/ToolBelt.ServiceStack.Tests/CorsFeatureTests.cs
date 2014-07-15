@@ -14,6 +14,25 @@ namespace ToolBelt.ServiceStack.Tests
         List<Func<IHttpRequest, IHttpHandler>> rawHttpHandlers = new List<Func<IHttpRequest, IHttpHandler>>();
 
         #region IAppHost
+
+        public global::ServiceStack.Host.ServiceMetadata Metadata
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+        public List<Action<IAppHost>> AfterInitCallbacks
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
         public void Register<T>(T instance)
         {
             throw new NotImplementedException();
