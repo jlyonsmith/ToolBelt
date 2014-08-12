@@ -8,7 +8,7 @@ using ToolBelt;
 namespace ToolBelt
 {
     /// <summary>
-    /// Class for running command line tools
+    /// Class for running shell commands and scripts
     /// </summary>
     public class Command
     {
@@ -18,16 +18,16 @@ namespace ToolBelt
         /// executed and return 0.
         /// </summary>
         public bool DebugMode { get; set; }
-        public string ProgramAndArgs { get; private set; }
+        public string Script { get; private set; }
         public TextWriter OutputWriter { get; private set; }
         public TextWriter ErrorWriter { get; private set; }
 
         #endregion
 
         #region Construction
-        public Command(string programAndArgs, TextWriter outputWriter, TextWriter errorWriter, bool debugMode)
+        public Command(string script, TextWriter outputWriter, TextWriter errorWriter, bool debugMode)
         {
-            this.ProgramAndArgs = programAndArgs;
+            this.Script = script;
             this.OutputWriter = outputWriter;
             this.ErrorWriter = errorWriter;
             this.DebugMode = debugMode;
@@ -35,13 +35,13 @@ namespace ToolBelt
         #endregion
 
         #region Private Methods
-        private string CreateScriptFile(string programAndArgs)
+        private string CreateScriptFile(string script)
         {
 #if WINDOWS
             string scriptContents = String.Format("@echo off\r\n{0}\r\n", programAndArgs);
             ParsedPath scriptFileName = new ParsedPath(Path.GetTempFileName(), PathType.File).WithExtension(".bat");
 #elif MACOS
-            string scriptContents = String.Format("{0}\nexit $?", programAndArgs);
+            string scriptContents = String.Format("{0}\nexit $?", script);
             ParsedPath scriptFileName = new ParsedPath(Path.GetTempFileName(), PathType.File).WithExtension(".sh");
 #else
 #error Unsupported OS
@@ -67,9 +67,9 @@ namespace ToolBelt
         /// </summary>
         /// <param name="programAndArgs">The command to pass to the shell.</param>
         /// <returns>The exit code of the process.</returns>
-        public static int Run(string programAndArgs)
+        public static int Run(string script)
         {
-            return Run(programAndArgs, Console.Out, Console.Error, false);  // DO NOT change this behavior!
+            return Run(script, Console.Out, Console.Error, false);  // DO NOT change this behavior!
         }
 
         /// <summary>
@@ -79,9 +79,9 @@ namespace ToolBelt
         /// <param name="programAndArgs">The command to pass to the shell.</param>
         /// <param name="output">Interleaved results from standard output and standard error streams.</param>
         /// <returns>The exit code of the process.</returns>
-        public static int Run(string programAndArgs, out string output)
+        public static int Run(string script, out string output)
         {
-            return Run(programAndArgs, out output, false);
+            return Run(script, out output, false);
         }
 
         public static int Run(string programAndArgs, out string output, bool debugMode)
@@ -106,7 +106,7 @@ namespace ToolBelt
         /// <param name="output">Results from standard output stream.</param>
         /// <param name="error">Results from standard error stream.</param>
         /// <returns>The exit code of the process.</returns>
-        public static int Run(string programAndArgs, out string output, out string error)
+        public static int Run(string script, out string output, out string error)
         {
             StringBuilder outputString = new StringBuilder();
             StringWriter outputWriter = new StringWriter(outputString);
@@ -114,7 +114,7 @@ namespace ToolBelt
             StringBuilder errorString = new StringBuilder();
             StringWriter errorWriter = new StringWriter(errorString);
 
-            int exitCode = Run(programAndArgs, outputWriter, errorWriter, false);
+            int exitCode = Run(script, outputWriter, errorWriter, false);
 
             outputWriter.Close();
             errorWriter.Close();
@@ -133,9 +133,9 @@ namespace ToolBelt
         /// <param name="errorWriter">The stream to which the standard error stream will be redirected.</param>
         /// <param name="debugMode">Debug mode</param>
         /// <returns>The exit code of the process.</returns>
-        public static int Run(string programAndArgs, TextWriter outputWriter, TextWriter errorWriter, bool debugMode)
+        public static int Run(string script, TextWriter outputWriter, TextWriter errorWriter, bool debugMode)
         {
-            return new Command(programAndArgs, outputWriter, errorWriter, debugMode).Run();
+            return new Command(script, outputWriter, errorWriter, debugMode).Run();
         }
             
         public int Run()
@@ -145,11 +145,11 @@ namespace ToolBelt
 
             try
             {
-                scriptFileName = CreateScriptFile(this.ProgramAndArgs);
+                scriptFileName = CreateScriptFile(this.Script);
 
                 if (this.DebugMode)
                 {
-                    this.OutputWriter.WriteLine(this.ProgramAndArgs);
+                    this.OutputWriter.WriteLine(this.Script);
                     return 0;
                 }
 

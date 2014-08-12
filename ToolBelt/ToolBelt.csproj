@@ -70,9 +70,9 @@
     <Compile Include="StringUtility.cs" />
     <Compile Include="CommandLineParserResources.cs" />
     <Compile Include="ConsoleUtilityResources.cs" />
-    <Compile Include="ForEach.cs" />
     <Compile Include="TextFileRegion.cs" />
     <Compile Include="ListRange.cs" />
+    <Compile Include="EnumerationExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildResources.sh" />

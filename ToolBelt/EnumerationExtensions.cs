@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Playroom
+namespace ToolBelt
 {
-    public static class EnumerationHelper
+    public static class EnumerationExtensions
     {
         public static void ForEach<T>(this IEnumerable<T> enumeration, Action<T> action)
         {

@@ -230,11 +230,20 @@ namespace ToolBelt.ServiceStack
 
             if (toPropType == typeof(string))
             {
-                copyProperty = (type, value, otherType, propInfoPredicate) => value.ToString();
+                copyProperty = (type, value, toType, propInfoPredicate) => value.ToString();
             }
             else if (IsEnumType(toPropType))
             {
-                copyProperty = (type, value, otherType, propInfoPredicate) => Enum.ToObject(type, value);
+                if (IsValueType(fromPropType))
+                {
+                    copyProperty = (type, value, toType, propInfoPredicate) => Enum.ToObject(toType, value);
+                }
+                else if (fromPropType == typeof(string))
+                {
+                    copyProperty = (type, value, toType, propInfoPredicate) => Enum.Parse(toType, (string)value);
+                }
+                else
+                    throw new InvalidCastException("Can only map enum to value type or string");
             }
             else if (IsValueType(toPropType))
             {
@@ -244,11 +253,11 @@ namespace ToolBelt.ServiceStack
 
                     if (typeConverters.TryGetValue(new Tuple<Type, Type>(fromPropType, toPropType), out changeType))
                     {
-                        copyProperty = (type, value, otherType, propInfoPredicate) => changeType(value);
+                        copyProperty = (type, value, toType, propInfoPredicate) => changeType(value);
                     }
                     else
                     {
-                        copyProperty = (type, value, otherType, propInfoPredicate) => Convert.ChangeType(value, otherType);
+                        copyProperty = (type, value, toType, propInfoPredicate) => Convert.ChangeType(value, toType);
                     }
                 }
                 else if (fromPropType == typeof(string))
@@ -258,7 +267,7 @@ namespace ToolBelt.ServiceStack
                     if (staticParseMethod == null)
                         throw new InvalidCastException("Target type needs static T Parse(string) method");
 
-                    copyProperty = (type, value, otherType, propInfoPredicate) => staticParseMethod.Invoke(null, new object[] { (string)value });
+                    copyProperty = (type, value, toType, propInfoPredicate) => staticParseMethod.Invoke(null, new object[] { (string)value });
                 }
                 else
                     throw new InvalidCastException("Can only map value type or string");
@@ -272,20 +281,20 @@ namespace ToolBelt.ServiceStack
 
                 if (toPropType.IsArray)
                 {
-                    copyProperty = (type, value, otherType, propInfoPredicate) =>
+                    copyProperty = (type, value, toType, propInfoPredicate) =>
                     {
                         // Create a new instance of the to array and copy over the from array/list
-                        object otherValue = Array.CreateInstance(otherType.GetElementType(), ((IList)value).Count);
+                        object otherValue = Array.CreateInstance(toType.GetElementType(), ((IList)value).Count);
                         CopyArrayItems((IList)value, (IList)otherValue, itemCopier);
                         return otherValue;
                     };
                 }
                 else
                 {
-                    copyProperty = (type, value, otherType, propInfoPredicate) =>
+                    copyProperty = (type, value, toType, propInfoPredicate) =>
                     {
                         // Create a new instance of the to list and copy over the from list
-                        object otherValue = Activator.CreateInstance(otherType);
+                        object otherValue = Activator.CreateInstance(toType);
                         CopyListItems((IList)value, (IList)otherValue, itemCopier);
                         return otherValue;
                     };
@@ -293,20 +302,20 @@ namespace ToolBelt.ServiceStack
             }
             else if (IsClass(toPropInfo.PropertyType) && IsClass(fromPropInfo.PropertyType))
             {
-                copyProperty = (type, value, otherType, propInfoPredicate) =>
+                copyProperty = (type, value, toType, propInfoPredicate) =>
                 {
                     // Create a new instance of the to class property and recursively copy it
                     object otherValue = Activator.CreateInstance(toPropInfo.PropertyType);
-                    CopyObject(type, value, otherType, otherValue, propInfoPredicate);
+                    CopyObject(type, value, toType, otherValue, propInfoPredicate);
                     return otherValue;
                 };
             }
             else
             {
                 // If we can't copy, create a default instance of the other value
-                copyProperty = (type, value, otherType, propInfoPredicate) =>
+                copyProperty = (type, value, toType, propInfoPredicate) =>
                 {
-                    return Activator.CreateInstance(otherType);
+                    return Activator.CreateInstance(toType);
                 };
             }
 
@@ -328,7 +337,10 @@ namespace ToolBelt.ServiceStack
             }
             else if (IsEnumType(toItemType))
             {
-                return (fromValue) => Enum.ToObject(toItemType, fromValue);
+                if (fromItemType == typeof(string))
+                    return (fromValue) => Enum.Parse(toItemType, (string)fromValue);
+                else
+                    return (fromValue) => Enum.ToObject(toItemType, fromValue);
             }
             else if (IsValueType(toItemType) && IsValueType(fromItemType))
             {

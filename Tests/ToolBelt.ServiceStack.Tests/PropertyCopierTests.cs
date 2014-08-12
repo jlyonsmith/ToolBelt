@@ -8,6 +8,13 @@ namespace Property
     [TestFixture()]
     public class PropertyCopierTests
     {
+        enum MyEnum
+        {
+            First,
+            Second,
+            Third
+        }
+
         class ServiceThing
         {
             public override bool Equals(object obj)
@@ -45,6 +52,10 @@ namespace Property
             public List<ServiceThing> Things { get; set; }
             public Dictionary<string, string> Mapping { get; set; }
             public string Contents { get; set; }
+            public string Enum { get; set; }
+            public List<string> Enums { get; set; }
+            public int HiddenEnum { get; set; }
+            public List<int> HiddenEnums { get; set; }
         }
 
         class DataThing
@@ -71,6 +82,10 @@ namespace Property
             public Dictionary<string, string> Mapping { get; set; }
             public object SomeId { get; set; }
             public string Contents { get; set; }
+            public MyEnum Enum { get; set; }
+            public List<MyEnum> Enums { get; set; }
+            public MyEnum HiddenEnum { get; set; }
+            public List<MyEnum> HiddenEnums { get; set; }
         }
 
         [Test()]
@@ -97,7 +112,11 @@ namespace Property
                     { "B", "2" },
                     { "C", "2" }
                 },
-                Contents = "{ \"list\" : [\"1\", \"2\", \"3\"], \"anotherList\" : [\"A\", \"B\", \"C\"] }"
+                Contents = "{ \"list\" : [\"1\", \"2\", \"3\"], \"anotherList\" : [\"A\", \"B\", \"C\"] }",
+                Enum = "First",
+                Enums = new List<string> { "First", "Second" },
+                HiddenEnum = 2,
+                HiddenEnums = new List<int> { 1, 2 }
             };
 
             var data = service1.CopyAsNew<DataClass>();
@@ -118,6 +137,8 @@ namespace Property
             CollectionAssert.AreEqual(service1.Things, service2.Things);
             CollectionAssert.AreEqual(service1.Mapping, service2.Mapping);
             Assert.AreEqual(service1.Contents, service2.Contents);
+            Assert.AreEqual(service1.Enum, service2.Enum);
+            CollectionAssert.AreEqual(service1.Enums, service2.Enums);
         }
     }
 }
