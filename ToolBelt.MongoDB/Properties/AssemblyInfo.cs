@@ -15,4 +15,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyVersion("1.8.0.0")]
-[assembly: AssemblyFileVersion("1.8.20715.0")]
+[assembly: AssemblyFileVersion("1.8.20812.0")]
