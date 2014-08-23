@@ -12,9 +12,9 @@
     <File>ToolBelt.ServiceStack.nuspec</File>
     <File>ToolBelt.ServiceStack.Pcl.nuspec</File>
   </Files>
-  <Major>1</Major>
-  <Minor>8</Minor>
-  <Build>20812</Build>
+  <Major>2</Major>
+  <Minor>0</Minor>
+  <Build>0</Build>
   <Revision>0</Revision>
-  <StartYear>2013</StartYear>
+  <StartYear>2014</StartYear>
 </Version>
