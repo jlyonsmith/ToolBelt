@@ -14,5 +14,5 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCopyright("(c) 2014, John Lyon-Smith")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("1.8.0.0")]
-[assembly: AssemblyFileVersion("1.8.20812.0")]
+[assembly: AssemblyVersion("2.0.0.0")]
+[assembly: AssemblyFileVersion("2.0.10823.0")]
