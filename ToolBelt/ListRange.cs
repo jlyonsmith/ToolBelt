@@ -10,14 +10,29 @@ namespace ToolBelt
         private IList<T> original;
         private int start;
 
-
-        public ListRange(IList<T> original, int start, int count)
+        public ListRange(IList<T> list, int start)
         {
-            this.original = original;
+            if (start >= list.Count)
+                throw new ArgumentOutOfRangeException("start");
+
+            this.original = list;
+            this.start = start;
+            Count = original.Count - start;
+        }
+
+        public ListRange(IList<T> list, int start, int count)
+        {
+            if (start >= list.Count)
+                throw new ArgumentOutOfRangeException("start");
+
+            if (count < 0)
+                throw new ArgumentOutOfRangeException("count");
+
+            this.original = list;
             this.start = start;
             Count = count;
         }
-        
+
         public T this[int index] 
         {
             get 

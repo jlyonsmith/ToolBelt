@@ -4,7 +4,7 @@ using NUnit.Framework;
 using ToolBelt;
 using System.Collections.Generic;
 
-namespace ToolBelt
+namespace ToolBelt.Tests
 {
     [TestFixture] 
     public class ParsedPathTests

@@ -1,5 +1,5 @@
 //
-// This file genenerated by the Buckle tool on 4/9/2014 at 4:37 PM. 
+// This file genenerated by the Buckle tool on 8/23/2014 at 2:15 PM. 
 //
 // Contains strongly typed wrappers for resources in CommandLineParserResources.resx
 //
@@ -392,6 +392,15 @@ public class CommandLineParserResources
         {
             return new ToolBelt.Message("TitleAttributesNotFound", typeof(CommandLineParserResources), ResourceManager, null);
         }
+    }
+
+    /// <summary>
+    /// Property '{0}' is an array which is not supported. Please change it to a mutable ICollection derived type.
+    /// </summary>
+    public static ToolBelt.Message ArraysAreNotSupported(object param0)
+    {
+        Object[] o = { param0 };
+        return new ToolBelt.Message("ArraysAreNotSupported", typeof(CommandLineParserResources), ResourceManager, o);
     }
 }
 }

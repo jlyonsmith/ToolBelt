@@ -5,7 +5,7 @@ using System.Collections.Specialized;
 using ToolBelt;
 using NUnit.Framework;
 
-namespace ToolBelt
+namespace ToolBelt.Tests
 {
     [TestFixture]
     public class StringUtilsTests 

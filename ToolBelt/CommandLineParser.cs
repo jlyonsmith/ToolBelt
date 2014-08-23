@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Security.Permissions;
 using System.Runtime.Serialization;
+using System.Linq;
 
 namespace ToolBelt
 {
@@ -16,75 +17,17 @@ namespace ToolBelt
     /// </summary>
     public class CommandLineArgument
     {
-        #region Public Instance Constructors
+        #region Fields
 
-        /// <summary>
-        /// Constructs a new command line argument.
-        /// </summary>
-        /// <param name="attribute">The attribute that defines the argument</param>
-        /// <param name="propertyInfo">The arguments property information</param>
-        public CommandLineArgument(CommandLineArgumentAttribute attribute, PropertyInfo propertyInfo)
-        {
-            // Set these two things first
-            this.attribute = attribute;
-            this.propertyInfo = propertyInfo;
-
-            if (this.IsArray)
-            {
-                // Get an element type if the argument is an array
-                valueType = propertyInfo.PropertyType.GetElementType();
-                
-                if (valueType == typeof(object))
-                {
-                    throw new NotSupportedException(CommandLineParserResources.PropertyIsNotAStronglyTypedArray(propertyInfo.Name));
-                }
-            }
-            else if (this.IsCollection)
-            {
-                // Locate Add method with 1 parameter that is not System.Object
-                foreach (MethodInfo method in propertyInfo.PropertyType.GetMethods(BindingFlags.Public | BindingFlags.Instance))
-                {
-                    if (method.Name == "Add" && method.GetParameters().Length == 1)
-                    {
-                        ParameterInfo parameter = method.GetParameters()[0];
-
-                        if (parameter.ParameterType != typeof(object))
-                        {
-                            addMethod = method;
-                            valueType = parameter.ParameterType;
-                        }
-                    }
-                    
-                    if (method.Name == "GetEnumerator" && method.GetParameters().Length == 0 && typeof(IEnumerator).IsAssignableFrom(method.ReturnType))
-                    {
-                        getEnumeratorMethod = method;
-                    }
-                    
-                    if (addMethod != null && getEnumeratorMethod != null)
-                        break;
-                }
-
-                // If we didn't find an appropriate Add method we can't write to the collection
-                if (addMethod == null)
-                {
-                    throw new NotSupportedException(CommandLineParserResources.PropertyHasNoAddMethodWithNonObjectParameter(propertyInfo.Name));
-                }
-
-                // The collection derives from ICollection, so it would be really surprising if it didn't implement GetEnumerator
-                Debug.Assert(getEnumeratorMethod != null);
-            }
-            else
-            {
-                // The argument is not an array or collection, so it's safe to take the property type as the value type
-                this.valueType = propertyInfo.PropertyType;
-            }
-
-            this.values = new ArrayList(AllowMultiple ? 4 : 1);
-        }
+        private object argTarget;
+        private Type argType;
+        private PropertyInfo argPropertyInfo;
+        private MethodInfo argAddMethod;
+        private CommandLineArgumentAttribute argAttribute;
 
         #endregion
 
-        #region Public Instance Properties
+        #region Properties
 
         /// <summary>
         /// Gets the underlying <see cref="Type" /> of the argument.
@@ -93,9 +36,34 @@ namespace ToolBelt
         /// If the <see cref="Type" /> of the argument is a collection type,
         /// this property will returns the underlying type of the collection.
         /// </remarks>
-        public Type ValueType
+        public Type ArgType
         {
-            get { return valueType; }
+            get { return argType; }
+        }
+
+        /// <summary>
+        /// Gets the current argument value.
+        /// </summary>
+        /// <value>The argument value.</value>
+        public object Value
+        {
+            get 
+            {
+                return argPropertyInfo.GetValue(argTarget,
+                    BindingFlags.Default, null, null, CultureInfo.InvariantCulture);
+            }
+        }
+
+        /// <summary>
+        /// Gets the current argument value <see cref="ICollection"/> if the argument allows multiple instances, otherwise <code>null</code>
+        /// </summary>
+        /// <value>The argument value collection.</value>
+        public ICollection ValueCollection
+        {
+            get 
+            {
+                return Value as ICollection;
+            }
         }
 
         /// <summary>
@@ -104,7 +72,7 @@ namespace ToolBelt
         /// <value>The long name of the argument.</value>
         public string Name
         {
-            get { return attribute.Name; }
+            get { return argAttribute.Name; }
         }
 
         /// <summary>
@@ -112,7 +80,7 @@ namespace ToolBelt
         /// </summary>
         public string ShortName
         {
-            get { return attribute.ShortName; }
+            get { return argAttribute.ShortName; }
         }
 
         /// <summary>
@@ -120,7 +88,7 @@ namespace ToolBelt
         /// </summary>
         public string Description
         {
-            get { return attribute.Description; }
+            get { return argAttribute.Description; }
         }
 
         /// <summary>
@@ -128,15 +96,24 @@ namespace ToolBelt
         /// </summary>
         public string ValueHint
         {
-            get { return attribute.ValueHint; }
+            get { return argAttribute.ValueHint; }
         }
 
         /// <summary>
-        /// Gets a value indicating whether an instance of this argument is set.
+        /// Gets a value indicating whether an instance of this argument is set.  A <see cref="ValueType"/> argument is always 
+        /// considered not set.  
         /// </summary>
-        public bool HasArgumentValue
+        public bool HasValue
         {
-            get { return Count > 0; }
+            get 
+            { 
+                if (AllowsMultiple)
+                    return (ValueCollection != null && ValueCollection.Count > 0);
+                else if (!ArgType.IsValueType || Nullable.GetUnderlyingType(ArgType) != null)
+                    return Value != null;
+                else
+                    return true;
+            }
         }
 
         /// <summary>
@@ -146,10 +123,10 @@ namespace ToolBelt
         {
             get
             {
-                if (values != null)
-                    return values.Count;
+                if (ValueCollection != null)
+                    return ValueCollection.Count;
                 else
-                    return 0;
+                    return 1;
             }
         }
 
@@ -160,94 +137,243 @@ namespace ToolBelt
         /// <see langword="true" /> if the argument may be specified multiple 
         /// times; otherwise, <see langword="false" />.
         /// </value>
-        public bool AllowMultiple
+        public bool AllowsMultiple
         {
-            get { return valueType != null && (IsCollection || IsArray); }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the argument is collection-based.
-        /// </summary>
-        /// <value>
-        /// <see langword="true" /> if the argument is collection-based; otherwise, 
-        /// <see langword="false" />.
-        /// </value>
-        public bool IsCollection
-        {
-            get { return typeof(ICollection).IsAssignableFrom(propertyInfo.PropertyType); }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the argument is array-based.
-        /// </summary>
-        public bool IsArray
-        {
-            get { return propertyInfo.PropertyType.IsArray; }
+            get { return typeof(ICollection).IsAssignableFrom(argPropertyInfo.PropertyType); }
         }
 
         /// <summary>
         /// Gets a value indicating whether the argument is the default argument.
         /// </summary>
-        public bool IsDefault
+        public bool IsDefaultArg
         {
-            get { return attribute is DefaultCommandLineArgumentAttribute; }
+            get { return argAttribute is DefaultCommandLineArgumentAttribute; }
         }
 
         /// <summary>
         /// Gets a value indicating whether the argument is the unprocessed argument.
         /// </summary>
-        public bool IsUnprocessed
+        public bool IsUnprocessedArg
         {
-            get { return attribute is UnprocessedCommandLineArgumentAttribute; }
+            get { return argAttribute is UnprocessedCommandLineArgumentAttribute; }
         }
 
         /// <summary>
         /// Gets a value indicating whether the argument is the command argument.
         /// </summary>
-        public bool IsCommand
+        public bool IsCommandArg
         {
-            get { return attribute is CommandCommandLineArgumentAttribute; }
+            get { return argAttribute is CommandCommandLineArgumentAttribute; }
         }
 
         #endregion
 
-        #region Public Instance Methods
+        #region Constructors
 
         /// <summary>
-        /// This method pushes the value from this argument into the matching property into the target object.
+        /// Constructs a new command line argument.
         /// </summary>
-        /// <param name="target">The object on which the value of the argument should be set.</param>
-        public void SetTargetValue(object target)
+        /// <param name="attribute">The attribute that defines the argument</param>
+        /// <param name="propertyInfo">The arguments property information</param>
+        internal CommandLineArgument(object argTarget, CommandLineArgumentAttribute argAttribute, PropertyInfo argPropertyInfo)
         {
-            try 
+            // Set these two things first
+            this.argTarget = argTarget;
+            this.argType = argPropertyInfo.PropertyType;
+            this.argPropertyInfo = argPropertyInfo;
+            this.argAttribute = argAttribute;
+
+            if (typeof(ICollection).IsAssignableFrom(argType))
             {
-                if (IsArray)
+                if (argType.IsArray)
+                    throw new NotSupportedException(CommandLineParserResources.ArraysAreNotSupported(argPropertyInfo.Name));
+
+                // Locate Add method with 1 parameter that is not System.Object
+                foreach (MethodInfo method in argPropertyInfo.PropertyType.GetMethods(BindingFlags.Public | BindingFlags.Instance))
                 {
-                    propertyInfo.SetValue(target, values.ToArray(valueType), BindingFlags.Default, null, null, CultureInfo.InvariantCulture);
-                }
-                else if (IsCollection)
-                {
-                    object value = propertyInfo.GetValue(target,
-                        BindingFlags.Default, null, null, CultureInfo.InvariantCulture);
-    
-                    // If value of property is null, create new instance of collection 
-                    if (value == null)
+                    if (method.Name == "Add" && method.GetParameters().Length == 1)
                     {
-                        value = Activator.CreateInstance(propertyInfo.PropertyType,
-                            BindingFlags.Public | BindingFlags.Instance, null, null, CultureInfo.InvariantCulture);
-    
-                        propertyInfo.SetValue(target, value, BindingFlags.Default,
-                            null, null, CultureInfo.InvariantCulture);
+                        ParameterInfo parameter = method.GetParameters()[0];
+
+                        if (parameter.ParameterType != typeof(object))
+                        {
+                            argAddMethod = method;
+                            argType = parameter.ParameterType;
+                            break;
+                        }
                     }
-    
+                }
+
+                // If we didn't find an appropriate Add method we can't write to the collection
+                if (argAddMethod == null)
+                {
+                    throw new NotSupportedException(CommandLineParserResources.PropertyHasNoAddMethodWithNonObjectParameter(argPropertyInfo.Name));
+                }
+            }
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Parse string value and assign to the target object property 
+        /// </summary>
+        /// <param name="value">The value that should be assigned to the argument.</param>
+        /// <exception cref="CommandLineArgumentException">
+        /// <para>Duplicate argument OR invalid value.</para>
+        /// </exception>
+        public void ParseAndSetTarget(string argString)
+        {
+            if (HasValue && !AllowsMultiple && !argPropertyInfo.PropertyType.IsValueType)
+            {
+                throw new CommandLineArgumentException(CommandLineParserResources.DuplicateCommandLineArgument(Name));
+            }
+
+            // Specifically not initialized so we can see if the big if block below has any holes
+            object value = null;
+
+            try
+            {
+                // Don't do any processing if this is to be an unprocessed argument list (which by definition must 
+                // be an array or a collection)
+                if (IsUnprocessedArg)
+                {
+                    value = argString;
+                }
+                else if ((argString == null && argType != typeof(bool)) || (argString != null && argString.Length == 0))
+                {
+                    // Null is only valid for bool variables.  Empty string is never valid
+                    throw new CommandLineArgumentException(CommandLineParserResources.InvalidValueForCommandLineArgument(argString, Name));
+                }
+                else if (this.argAttribute.Initializer != null)
+                {
+                    // If there is an initializer type/method use it.
+                    // Look for a public static Parse method on the initializer class
+                    System.Reflection.MethodInfo parseMethod = argAttribute.Initializer.GetMethod(
+                                                                   this.argAttribute.MethodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static, null,
+                                                                   CallingConventions.Standard, new Type[] { typeof(string) }, null);
+
+                    if (parseMethod != null)
+                    {
+                        // Call the Parse method
+                        value = parseMethod.Invoke(null, BindingFlags.Default, null,
+                            new object[] { argString }, CultureInfo.InvariantCulture);
+                    }
+                    else
+                    {
+                        throw new CommandLineArgumentException(
+                            CommandLineParserResources.InvalidInitializerClassForCommandLineArgument(argAttribute.Initializer.ToString(), Name));
+                    }
+                }
+                else if (argType == typeof(string))
+                {
+                    value = argString;
+                }
+                else if (argType == typeof(bool))
+                {
+                    value = (object)true;
+                }
+                else if (argType.IsEnum)
+                {
                     try
                     {
-                        // Invoke the Add method a bunch of times to add the elements
-                        foreach (object item in values)
+                        value = Enum.Parse(argType, argString, true);
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        string t = String.Empty;
+                            
+                        foreach (object obj in Enum.GetValues(ArgType))
                         {
-                            addMethod.Invoke(value, BindingFlags.Default, null,
-                                new object[] { item }, CultureInfo.InvariantCulture);
+                            t += obj.ToString() + ", ";
                         }
+                            
+                        // strip last ,
+                        t = t.Substring(0, argString.Length - 2) + ".";
+                            
+                        throw new CommandLineArgumentException(
+                            CommandLineParserResources.InvalidValueForCommandLineArgumentWithValid(t, Name, t), ex);
+                    }
+                }
+                else if (argType.IsGenericType && argType.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+                {
+                    // Check if this is a Nullable type, and get the underlying type if it is
+                    Type underlyingType = Nullable.GetUnderlyingType(argType);
+
+                    // Look for a public static Parse method on the type of the underlying property
+                    System.Reflection.MethodInfo parseMethod = underlyingType.GetMethod(
+                                                                   "Parse", BindingFlags.Public | BindingFlags.Static, null,
+                                                                   CallingConventions.Standard, new Type[] { typeof(string) }, null);
+
+                    if (parseMethod != null)
+                    {
+                        // Call the Parse method
+                        value = parseMethod.Invoke(null, BindingFlags.Default, null,
+                            new object[] { argString }, CultureInfo.InvariantCulture);
+                    }
+                }
+                else
+                {
+                    // Look for a public static Parse method on the type of the property
+                    System.Reflection.MethodInfo parseMethod = argType.GetMethod(
+                                                                   "Parse", BindingFlags.Public | BindingFlags.Static, null,
+                                                                   CallingConventions.Standard, new Type[] { typeof(string) }, null);
+
+                    if (parseMethod != null)
+                    {
+                        // Call the Parse method
+                        value = parseMethod.Invoke(null, BindingFlags.Default, null,
+                            new object[] { argString }, CultureInfo.InvariantCulture);
+                    }
+                    else if (argType.IsClass)
+                    {
+                        // Search for a constructor that takes a string argument
+                        ConstructorInfo stringArgumentConstructor =
+                            ArgType.GetConstructor(new Type[] { typeof(string) });
+
+                        if (stringArgumentConstructor != null)
+                        {
+                            value = stringArgumentConstructor.Invoke(BindingFlags.Default, null, new object[] { argString }, CultureInfo.InvariantCulture);
+                        }
+                    }
+                }
+
+                if (value == null)
+                {
+                    throw new CommandLineArgumentException(CommandLineParserResources.NoWayToInitializeTypeFromString(ArgType.Name, Name));
+                }
+            }
+            catch (Exception e)
+            {
+                if (!(e is CommandLineArgumentException))
+                {
+                    throw new CommandLineArgumentException(CommandLineParserResources.InvalidValueForCommandLineArgument(argString, Name), e);
+                }
+                else
+                    throw;
+            }
+                
+            try
+            {
+                if (AllowsMultiple)
+                {
+                    var collection = ValueCollection;
+
+                    // If value of property is null, create new instance of collection 
+                    if (collection == null)
+                    {
+                        collection = (ICollection)Activator.CreateInstance(argPropertyInfo.PropertyType,
+                            BindingFlags.Public | BindingFlags.Instance, null, null, CultureInfo.InvariantCulture);
+
+                        argPropertyInfo.SetValue(argTarget, collection, BindingFlags.Default,
+                            null, null, CultureInfo.InvariantCulture);
+                    }
+
+                    try
+                    {
+                        argAddMethod.Invoke(collection, BindingFlags.Default, null,
+                            new object[] { value }, CultureInfo.InvariantCulture);
                     }
                     catch (Exception ex)
                     {
@@ -260,11 +386,8 @@ namespace ToolBelt
                 }
                 else
                 {
-                    if (values.Count > 0)
-                    {
-                        propertyInfo.SetValue(target, values[0],
-                            BindingFlags.Default, null, null, CultureInfo.InvariantCulture);
-                    }
+                    argPropertyInfo.SetValue(argTarget, value,
+                        BindingFlags.Default, null, null, CultureInfo.InvariantCulture);
                 }
             }
             catch (TargetInvocationException e)
@@ -273,186 +396,10 @@ namespace ToolBelt
                 // is one way the user can check for correct command line arguments
                 if (e.InnerException != null && e.InnerException is CommandLineArgumentException)
                     throw e.InnerException;
-                    
-                // Otherwise just keep on throwing
+
+                // Otherwise just keep on throwing up
                 throw;
             }
-        }
-
-        /// <summary>
-        /// This method pulls the values from the matching property in the target into this argument.  Existing values are
-        /// overwritten.
-        /// </summary>
-        /// <param name="target">The object from which the value of the argument should be set.</param>
-        public void GetTargetValue(object target)
-        {
-            values.Clear();
-
-            object value = propertyInfo.GetValue(target, BindingFlags.Default, null, null, CultureInfo.InvariantCulture);
-            
-            if (value == null)
-                return;
-        
-            if (IsArray)
-            {
-                values.AddRange((ICollection)value);
-            }
-            else if (IsCollection)
-            {
-                IEnumerator enumerator = (IEnumerator)getEnumeratorMethod.Invoke(
-                    value, BindingFlags.Default, null, null, CultureInfo.InvariantCulture);
-                
-                while (enumerator.MoveNext())
-                {
-                    values.Add(enumerator.Current);
-                }
-            }
-            else
-            {
-                values.Add(value);
-            }
-        }
-
-        /// <summary>
-        /// Assigns the specified value to the argument.
-        /// </summary>
-        /// <param name="value">The value that should be assigned to the argument.</param>
-        /// <exception cref="CommandLineArgumentException">
-        /// <para>Duplicate argument OR invalid value.</para>
-        /// </exception>
-        public void SetArgumentValue(string value)
-        {
-            if (HasArgumentValue && !AllowMultiple)
-            {
-                throw new CommandLineArgumentException(CommandLineParserResources.DuplicateCommandLineArgument(Name));
-            }
-
-            // Don't do any processing if this is to be an unprocessed argument list (which by definition must 
-            // be an array or a collection)
-            if (IsUnprocessed)
-            {
-                values.Add(value);
-                return;
-            }
-            
-            // Specifically not initialized so we can see if the big if block below has any holes
-            object newValue = null;
-
-            // Null is only valid for bool variables.  Empty string is never valid
-            if ((value == null && ValueType != typeof(bool)) || (value != null && value.Length == 0))
-            {
-                throw new CommandLineArgumentException(CommandLineParserResources.InvalidValueForCommandLineArgument(value, Name));
-            }
-            
-            try
-            {
-                // If there is an initializer type/method use it 
-                if (this.attribute.Initializer != null)
-                {
-                    // Look for a public static Parse method on the initializer class
-                    System.Reflection.MethodInfo parseMethod = attribute.Initializer.GetMethod(
-                        this.attribute.MethodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static, null,
-                        CallingConventions.Standard, new Type[] { typeof(string) }, null);
-
-                    if (parseMethod != null)
-                    {
-                        // Call the Parse method
-                        newValue = parseMethod.Invoke(null, BindingFlags.Default, null,
-                            new object[] { value }, CultureInfo.InvariantCulture);
-                    }
-                    else
-                    {
-                        throw new CommandLineArgumentException(
-                            CommandLineParserResources.InvalidInitializerClassForCommandLineArgument(attribute.Initializer.ToString(), Name));
-                    }
-                }
-                else if (ValueType == typeof(string))
-                {
-                    newValue = value;
-                }
-                else if (ValueType == typeof(bool))
-                {
-                    newValue = (object)true;
-                }
-                else if (ValueType.IsEnum)
-                {
-                    try
-                    {
-                        newValue = Enum.Parse(ValueType, value, true);
-                    }
-                    catch (ArgumentException ex)
-                    {
-                        string s = String.Empty;
-                            
-                        foreach (object obj in Enum.GetValues(ValueType))
-                        {
-                            s += obj.ToString() + ", ";
-                        }
-                            
-                        // strip last ,
-                        s = s.Substring(0, s.Length - 2) + ".";
-                            
-                        throw new CommandLineArgumentException(
-                            CommandLineParserResources.InvalidValueForCommandLineArgumentWithValid(value, Name, s), ex);
-                    }
-                }
-                else if (ValueType.IsGenericType && ValueType.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
-                {
-                    // Check if this is a Nullable type, and get the underlying type if it is
-                    Type underlyingType = Nullable.GetUnderlyingType(ValueType);
-
-                    // Look for a public static Parse method on the type of the underlying property
-                    System.Reflection.MethodInfo parseMethod = underlyingType.GetMethod(
-                        "Parse", BindingFlags.Public | BindingFlags.Static, null,
-                        CallingConventions.Standard, new Type[] { typeof(string) }, null);
-
-                    if (parseMethod != null)
-                    {
-                        // Call the Parse method
-                        newValue = parseMethod.Invoke(null, BindingFlags.Default, null,
-                            new object[] { value }, CultureInfo.InvariantCulture);
-                    }
-                }
-                else
-                {
-                    // Look for a public static Parse method on the type of the property
-                    System.Reflection.MethodInfo parseMethod = valueType.GetMethod(
-                        "Parse", BindingFlags.Public | BindingFlags.Static, null,
-                        CallingConventions.Standard, new Type[] { typeof(string) }, null);
-
-                    if (parseMethod != null)
-                    {
-                        // Call the Parse method
-                        newValue = parseMethod.Invoke(null, BindingFlags.Default, null,
-                            new object[] { value }, CultureInfo.InvariantCulture);
-                    }
-                    else if (ValueType.IsClass)
-                    {
-                        // Search for a constructor that takes a string argument
-                        ConstructorInfo stringArgumentConstructor =
-                            ValueType.GetConstructor(new Type[] { typeof(string) });
-
-                        if (stringArgumentConstructor != null)
-                        {
-                            newValue = stringArgumentConstructor.Invoke(BindingFlags.Default, null, new object[] { value }, CultureInfo.InvariantCulture);
-                        }
-                    }
-                }
-
-                if (newValue == null)
-                {
-                    throw new CommandLineArgumentException(CommandLineParserResources.NoWayToInitializeTypeFromString(value, Name));
-                }
-            }
-            catch (Exception e)
-            {
-                if (!(e is CommandLineArgumentException))
-                {
-                    throw new CommandLineArgumentException(CommandLineParserResources.InvalidValueForCommandLineArgument(value, Name), e);
-                }
-            }
-                
-            values.Add(newValue);
         }
 
         /// <summary>
@@ -460,25 +407,28 @@ namespace ToolBelt
         /// </summary>
         public override string ToString()
         {
-            if (values.Count == 0)
-            {
+            if (!HasValue)
                 return String.Empty;
-            }
-            else if (this.IsDefault || this.IsUnprocessed || this.IsCommand)
+
+            if (this.IsDefaultArg || this.IsUnprocessedArg || this.IsCommandArg)
             {
+                // These args need to be left unformatted
                 StringBuilder sb = new StringBuilder();
-                IEnumerator enumerator = values.GetEnumerator();
-                bool more = enumerator.MoveNext();
 
-                while (more)
+                if (AllowsMultiple)
                 {
-                    object value = enumerator.Current;
+                    IEnumerator enumerator = ValueCollection.GetEnumerator();
+                    bool more = enumerator.MoveNext();
 
-                    more = enumerator.MoveNext();
-
-                    bool quote = (value.ToString().IndexOf(' ') != -1);
-
-                    sb.AppendFormat(CultureInfo.InvariantCulture, quote ? "\"{0}\"{1}" : "{0}{1}", value, more ? " " : "");
+                    while (more)
+                    {
+                        more = enumerator.MoveNext();
+                        sb.AppendFormat(CultureInfo.InvariantCulture, "{0}{1}", MaybeQuoteString(enumerator.Current.ToString()), more ? " " : "");
+                    }
+                }
+                else
+                {
+                    sb.Append(MaybeQuoteString(Value.ToString()));
                 }
 
                 return sb.ToString();
@@ -486,29 +436,41 @@ namespace ToolBelt
             else
             {
                 StringBuilder sb = new StringBuilder();
-                IEnumerator enumerator = values.GetEnumerator();
-                bool more = enumerator.MoveNext();
-                
-                while (more)
+
+                if (AllowsMultiple)
                 {
-                    object value = enumerator.Current;
+                    IEnumerator enumerator = ValueCollection.GetEnumerator();
+                    bool more = enumerator.MoveNext();
                     
-                    more = enumerator.MoveNext();
-
-                    if (ValueType == typeof(bool))
+                    while (more)
                     {
-                        // Only append a boolean flag if it's true
-                        if ((bool)value)
-                            sb.AppendFormat(CultureInfo.InvariantCulture, "-{0}{1}", Name, more ? " " : "");
-                    }
-                    else 
-                    {
-                        bool quote = (value.ToString().IndexOf(' ') != -1);
+                        var value = enumerator.Current;
+                        more = enumerator.MoveNext();
 
-                        sb.AppendFormat(CultureInfo.InvariantCulture, quote ? "-{0}:\"{1}\"{2}" : "-{0}:{1}{2}", Name, value, more ? " " : "");
+                        if (ArgType == typeof(bool))
+                        {
+                            if ((bool)value)
+                                sb.AppendFormat(CultureInfo.InvariantCulture, "-{0}{1}", Name, more ? " " : "");
+                        }
+                        else
+                        {
+                            sb.AppendFormat(CultureInfo.InvariantCulture, "-{0}:{1}{2}", Name, MaybeQuoteString(value.ToString()), more ? " " : "");
+                        }
                     }
                 }
-                
+                else
+                {
+                    if (ArgType == typeof(bool))
+                    {
+                        if ((bool)Value)
+                            sb.AppendFormat(CultureInfo.InvariantCulture, "-{0}", Name);
+                    }
+                    else
+                    {
+                        sb.AppendFormat(CultureInfo.InvariantCulture, "-{0}:{1}", Name, MaybeQuoteString(Value.ToString()));
+                    }
+                }
+
                 return sb.ToString();
             }
         }
@@ -518,183 +480,71 @@ namespace ToolBelt
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        public bool IsValidCommand(string command)
+        public bool IsValidForCommand(string command)
         {
             if (String.IsNullOrEmpty(command))
                 return true;
             
-            if (attribute.Commands == null)
+            if (argAttribute.Commands == null)
                 return false;
 
-            string[] commands = attribute.Commands.Split(',', ';');
+            string[] commands = argAttribute.Commands.Split(',', ';');
             
             for (int i = 0; i < commands.Length; i++)
                 commands[i] = commands[i].Trim().ToLower(CultureInfo.InvariantCulture); // commands are not localized
                 
-            return Array.Exists<string>(commands, delegate(string item) { return String.CompareOrdinal(item, command) == 0; });
+            return Array.Exists<string>(commands, delegate(string item)
+            {
+                return String.CompareOrdinal(item, command) == 0;
+            });
         }
 
         #endregion
 
-        #region Private Instance Fields
+        #region Private Methods
+        string MaybeQuoteString(string value)
+        {
+            bool quote = (value.ToString().IndexOf(' ') != -1);
 
-        private ArrayList values;
-        private PropertyInfo propertyInfo;
-        private MethodInfo addMethod;
-        private MethodInfo getEnumeratorMethod;
-        private Type valueType;
-        private CommandLineArgumentAttribute attribute;
-
+            return quote ? "\"" + value + "\"" : value;
+        }
         #endregion
     }
 
     /// <summary>
     /// Command line parser.
     /// </summary>
-    public class CommandLineParser 
+    public class CommandLineParser
     {
-        #region Public Instance Constructors
+        #region Fields
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommandLineParser" /> class.  See <see cref="CommandLineParser(Type, Type, CommandLineParserFlags)"/> 
-        /// for full description of arguments.
-        /// </summary>
-        /// <param name="argumentSpecificationType">The <see cref="Type" /> in which the command line arguments are defined.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="argumentSpecificationType" /> is a null reference.</exception>
-        public CommandLineParser(Type argumentSpecificationType)
-            : this(argumentSpecificationType, null, CommandLineParserFlags.Default)
-        {
-        }
+        private Type argTargetType;
+        private List<CommandLineArgument> argumentCollection;
+        private CommandLineArgument defaultArgument;
+        private CommandLineArgument unprocessedArgument;
+        private CommandLineArgument commandArgument;
+        private Type resourceReaderType;
+        private CommandLineParserFlags flags;
+        private string copyright;
+        private string configuration;
+        private string version;
+        private string title;
+        private string description;
+        private string commandName;
+        private Stack<string> responseFiles;
+        private const int maxResponseFileDepth = 10;
+        private Dictionary<string, string[]> commandArguments;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommandLineParser" /> class.  See <see cref="CommandLineParser(Type, Type, CommandLineParserFlags)"/> 
-        /// for full description of arguments.
-        /// </summary>
-        /// <param name="argumentSpecificationType">The <see cref="Type" /> from which the possible command line arguments should be retrieved.</param>
-        /// <param name="flags">See <see cref="CommandLineParserFlags"/>.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="argumentSpecificationType" /> is a null reference.</exception>
-        public CommandLineParser(Type argumentSpecificationType, CommandLineParserFlags flags) : 
-            this(argumentSpecificationType, null, flags) 
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommandLineParser" /> class.  See <see cref="CommandLineParser(Type, Type, CommandLineParserFlags)"/> 
-        /// for full description of arguments.
-        /// </summary>
-        /// <param name="argumentSpecificationType">The <see cref="Type" /> in which the command line arguments are defined.</param>
-        /// <param name="resourceReaderType">A resource reader object with a <code>GetString</code> method</param>
-        /// <exception cref="ArgumentNullException"><paramref name="argumentSpecificationType" /> is a null reference.</exception>
-        public CommandLineParser(Type argumentSpecificationType, Type resourceReaderType) :
-            this(argumentSpecificationType, resourceReaderType, CommandLineParserFlags.Default)
-        {
-        } 
-        
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommandLineParser" /> class.  Provides a resource reader for localization of the command 
-        /// line arguments.  String specified in the command line attributes are used to look up corresponding localized strings in the resources.
-        /// Also provides flags to control parsing.
-        /// </summary>
-        /// <param name="argumentSpecificationType">The <see cref="Type" />  in which the command line arguments are defined.</param>
-        /// <param name="resourceReaderType">A resource reader object with a <code>GetString</code> method</param>
-        /// <param name="flags">See <see cref="CommandLineParserFlags"/>.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="argumentSpecificationType" /> is a null reference.</exception>
-        public CommandLineParser(Type argumentSpecificationType, Type resourceReaderType, CommandLineParserFlags flags) 
-        {
-            if (argumentSpecificationType == null) 
-            {
-                throw new ArgumentNullException("argumentSpecificationType");
-            }
-
-            this.argumentSpecificationType = argumentSpecificationType;
-            this.resourceReaderType = resourceReaderType;
-            this.flags= flags;
-            this.responseFiles = new Stack<string>();
-
-            argumentCollection = new List<CommandLineArgument>();
-
-            // Look ONLY for public instance properties.  NOTE: Don't change this behavior!
-            foreach (PropertyInfo propertyInfo in argumentSpecificationType.GetProperties(BindingFlags.Instance | BindingFlags.Public)) 
-            {
-                object[] attributes = propertyInfo.GetCustomAttributes(typeof(CommandLineArgumentAttribute), true);
-                CommandLineArgumentAttribute attribute;
-
-                // Ignore properties that don't have a CommandLineArgumentAttribute
-                if (attributes.Length == 1)
-                    attribute = (CommandLineArgumentAttribute)attributes[0];
-                else
-                    continue;
-
-                // Ensure that the property is readable and writeable
-                if (!(propertyInfo.CanWrite && propertyInfo.CanRead))
-                    throw new ArgumentException(
-                        CommandLineParserResources.PropertyShouldBeReadableAndWriteable(propertyInfo.Name));
-
-                attribute.ValueHint = ExternalGetString(attribute.ValueHint);
-
-                if (attribute is DefaultCommandLineArgumentAttribute) 
-                {
-                    if (HasDefaultArgument)
-                        throw new ArgumentException(CommandLineParserResources.DefaultArgumentAlreadyDefined);
-                    
-                    defaultArgument = new CommandLineArgument(attribute, propertyInfo);
-                }
-                else if (attribute is UnprocessedCommandLineArgumentAttribute)
-                {
-                    if (HasUnprocessedArgument)
-                        throw new ArgumentException(CommandLineParserResources.UnprocessedArgumentAlreadyDefined);
-                        
-                    unprocessedArgument = new CommandLineArgument(attribute, propertyInfo);
-                    
-                    if (!unprocessedArgument.AllowMultiple)
-                        throw new ArgumentException(CommandLineParserResources.UnprocessedArgumentMustBeArrayOrCollection);
-                }
-                else if (attribute is CommandCommandLineArgumentAttribute)
-                {
-                    if (HasCommandArgument)
-                        throw new ArgumentException(CommandLineParserResources.CommandArgumentAlreadyDefined);
-                        
-                    commandArgument = new CommandLineArgument(attribute, propertyInfo);
-                } 
-                else
-                {
-                    attribute.Description = ExternalGetString(attribute.Description);
-                    
-                    if (attribute.Description == null)
-                    {
-                        throw new ArgumentException(
-                            CommandLineParserResources.PropertyDoesNotHaveAValueForDescription(propertyInfo.Name));
-                    }
-                    
-                    // If not being case sensitive, make everything lower case.
-                    if (!CaseSensitive)
-                    {
-                        attribute.Name = attribute.Name.ToLower(CultureInfo.InvariantCulture);
-                    
-                        if (attribute.ShortName != null)
-                            attribute.ShortName = attribute.ShortName.ToLower(CultureInfo.InvariantCulture);
-                    }
-                
-                    argumentCollection.Add(new CommandLineArgument(attribute, propertyInfo));
-                }
-            }
-            
-            if (HasUnprocessedArgument && !HasDefaultArgument)
-            {
-                throw new ArgumentException(CommandLineParserResources.UnprocessedRequiresDefaultArguments);
-            }
-        }
-        
         #endregion
 
-        #region Public Instance Properties
+        #region Properties
 
         /// <summary>
         /// Gets a logo banner for the program.
         /// </summary>
-        public virtual string LogoBanner 
+        public virtual string LogoBanner
         {
-            get 
+            get
             {
                 StringBuilder sb = new StringBuilder();
                 StringWriter wr = new StringWriter(sb, CultureInfo.CurrentCulture);
@@ -714,7 +564,7 @@ namespace ToolBelt
                     wr.Write(".");
                 wr.WriteLine();
                 wr.Flush();
-                
+
                 return sb.ToString();
             }
         }
@@ -729,7 +579,7 @@ namespace ToolBelt
             {
                 if (commandName == null)
                     commandName = ProcessName;
-                
+
                 return commandName;
             }
             set
@@ -754,37 +604,11 @@ namespace ToolBelt
         /// associated descriptions.
         /// </summary>
         /// <value>The usage instructions.</value>
-        public virtual string Usage 
+        public virtual string Usage
         {
-            get 
+            get
             {
                 return GetUsage(null, -1);
-            }
-        }
-
-        /// <summary>
-        /// Gets the total number of processed arguments.
-        /// </summary>
-        public int ArgumentCount
-        {
-            get 
-            {
-                int count = 0;
-                
-                foreach(CommandLineArgument argument in argumentCollection) 
-                {
-                    if (argument.HasArgumentValue) 
-                    {
-                        count += argument.Count;
-                    }
-                }
-
-                if (HasDefaultArgument) 
-                {
-                    count += defaultArgument.Count;
-                }
-                
-                return count;
             }
         }
 
@@ -810,8 +634,8 @@ namespace ToolBelt
             {
                 if (copyright == null)
                 {
-                    object[] copyrightAttributes = argumentSpecificationType.GetCustomAttributes(typeof(CommandLineCopyrightAttribute), true);
-                    
+                    object[] copyrightAttributes = argTargetType.GetCustomAttributes(typeof(CommandLineCopyrightAttribute), true);
+
                     if (copyrightAttributes.Length > 0)
                     {
                         CommandLineCopyrightAttribute copyrightAttribute = (CommandLineCopyrightAttribute)copyrightAttributes[0];
@@ -821,7 +645,7 @@ namespace ToolBelt
                     }
                     else
                     {
-                        copyrightAttributes = argumentSpecificationType.Assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), true);
+                        copyrightAttributes = argTargetType.Assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), true);
 
                         if (copyrightAttributes.Length > 0)
                         {
@@ -839,8 +663,8 @@ namespace ToolBelt
 
                 return copyright.Replace("\xA9", "(c)");
             }
-            
-            set 
+
+            set
             {
                 copyright = value;
             }
@@ -857,7 +681,7 @@ namespace ToolBelt
             {
                 if (configuration == null)
                 {
-                    object[] configurationAttributes = argumentSpecificationType.GetCustomAttributes(typeof(CommandLineConfigurationAttribute), true);
+                    object[] configurationAttributes = argTargetType.GetCustomAttributes(typeof(CommandLineConfigurationAttribute), true);
 
                     if (configurationAttributes.Length > 0)
                     {
@@ -868,8 +692,8 @@ namespace ToolBelt
                     }
                     else
                     {
-                        configurationAttributes = argumentSpecificationType.Assembly.GetCustomAttributes(typeof(AssemblyConfigurationAttribute), true);
-                        
+                        configurationAttributes = argTargetType.Assembly.GetCustomAttributes(typeof(AssemblyConfigurationAttribute), true);
+
                         if (configurationAttributes.Length > 0)
                         {
                             AssemblyConfigurationAttribute configurationAttribute = (AssemblyConfigurationAttribute)configurationAttributes[0];
@@ -904,7 +728,7 @@ namespace ToolBelt
             {
                 if (version == null)
                 {
-                    Assembly assembly = argumentSpecificationType.Assembly;
+                    Assembly assembly = argTargetType.Assembly;
                     object[] versionAttributes = assembly.GetCustomAttributes(typeof(AssemblyFileVersionAttribute), true);
 
                     if (versionAttributes.Length > 0)
@@ -918,7 +742,7 @@ namespace ToolBelt
                         throw new ArgumentException(CommandLineParserResources.VersionAttributesNotFound);
                     }
                 }
-                
+
                 return version;
             }
 
@@ -939,7 +763,7 @@ namespace ToolBelt
             {
                 if (description == null)
                 {
-                    object[] descriptionAttributes = argumentSpecificationType.GetCustomAttributes(typeof(CommandLineDescriptionAttribute), true);
+                    object[] descriptionAttributes = argTargetType.GetCustomAttributes(typeof(CommandLineDescriptionAttribute), true);
 
                     if (descriptionAttributes.Length > 0)
                     {
@@ -950,7 +774,7 @@ namespace ToolBelt
                     }
                     else
                     {
-                        descriptionAttributes = argumentSpecificationType.Assembly.GetCustomAttributes(typeof(AssemblyDescriptionAttribute), true);
+                        descriptionAttributes = argTargetType.Assembly.GetCustomAttributes(typeof(AssemblyDescriptionAttribute), true);
 
                         if (descriptionAttributes.Length > 0)
                         {
@@ -965,11 +789,11 @@ namespace ToolBelt
                         }
                     }
                 }
-                
+
                 return description;
             }
-            
-            set 
+
+            set
             {
                 description = value;
             }
@@ -986,7 +810,7 @@ namespace ToolBelt
             {
                 if (title == null)
                 {
-                    object[] titleAttributes = argumentSpecificationType.GetCustomAttributes(typeof(CommandLineTitleAttribute), true);
+                    object[] titleAttributes = argTargetType.GetCustomAttributes(typeof(CommandLineTitleAttribute), true);
 
                     if (titleAttributes.Length > 0)
                     {
@@ -997,7 +821,7 @@ namespace ToolBelt
                     }
                     else
                     {
-                        titleAttributes = argumentSpecificationType.Assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), true);
+                        titleAttributes = argTargetType.Assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), true);
 
                         if (titleAttributes.Length > 0)
                         {
@@ -1022,54 +846,6 @@ namespace ToolBelt
             }
         }
 
-        /// <summary>
-        /// Gets the command line arguments in cannonical form.  If there are any arguments, the string
-        /// begins with a space and each argument is separated by a space, otherwise it is empty.
-        /// </summary>
-        public string Arguments
-        {
-            get
-            {
-                StringBuilder sb = new StringBuilder();
-                List<CommandLineArgument>.Enumerator enumerator = argumentCollection.GetEnumerator();
-
-                if (HasCommandArgument)
-                {
-                    sb.Append(" " + commandArgument.ToString());
-                }
-
-                while (enumerator.MoveNext())
-                {
-                    CommandLineArgument argument = enumerator.Current;
-                    if (!HasCommandArgument || argument.IsValidCommand(commandArgument.ToString()))
-                    {
-                        string s = argument.ToString();
-    
-                        if (s.Length > 0)
-                            sb.AppendFormat(" " + s);
-                    }
-                }
-                
-                if (HasDefaultArgument && (!HasCommandArgument || defaultArgument.IsValidCommand(commandArgument.ToString())))
-                {
-                    string s = defaultArgument.ToString();
-                    
-                    if (s.Length > 0)
-                        sb.Append(" " + s);
-                }
-
-                if (HasUnprocessedArgument && (!HasCommandArgument || unprocessedArgument.IsValidCommand(commandArgument.ToString())))
-                {
-                    string s = unprocessedArgument.ToString();
-                    
-                    if (s.Length > 0)
-                        sb.Append(" " + s);
-                }
-
-                return sb.ToString();
-            }
-        }
-        
         /// <summary>
         /// Gets a boolean indicating if the parser has a default command line argument.
         /// </summary>
@@ -1105,275 +881,285 @@ namespace ToolBelt
 
         #endregion
 
-        #region Public Instance Methods
+        #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandLineParser" /> class.  Provides a resource reader for localization of the command 
+        /// line arguments.  String specified in the command line attributes are used to look up corresponding localized strings in the resources.
+        /// Also provides flags to control parsing.
+        /// </summary>
+        /// <param name="argTarget">The <see cref="object"/> into which the command line arguments are placed.</param>
+        /// <param name="resourceReaderType">A resource reader object with a <code>GetString</code> method</param>
+        /// <param name="flags">See <see cref="CommandLineParserFlags"/>.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="argTargetType" /> is a null reference.</exception>
+        public CommandLineParser(object argTarget, Type resourceReaderType = null, CommandLineParserFlags flags = CommandLineParserFlags.Default)
+        {
+            if (argTarget == null)
+            {
+                throw new ArgumentNullException("argTarget");
+            }
+
+            this.argTargetType = argTarget.GetType();
+            this.resourceReaderType = resourceReaderType;
+            this.flags = flags;
+            this.responseFiles = new Stack<string>();
+
+            argumentCollection = new List<CommandLineArgument>();
+
+            // Look ONLY for public instance properties.  NOTE: Don't change this behavior!
+            foreach (PropertyInfo propertyInfo in argTargetType.GetProperties(BindingFlags.Instance | BindingFlags.Public))
+            {
+                object[] attributes = propertyInfo.GetCustomAttributes(typeof(CommandLineArgumentAttribute), true);
+                CommandLineArgumentAttribute attribute;
+
+                // Ignore properties that don't have a CommandLineArgumentAttribute
+                if (attributes.Length == 1)
+                    attribute = (CommandLineArgumentAttribute)attributes[0];
+                else
+                    continue;
+
+                // Ensure that the property is readable and writeable
+                if (!(propertyInfo.CanWrite && propertyInfo.CanRead))
+                    throw new ArgumentException(
+                        CommandLineParserResources.PropertyShouldBeReadableAndWriteable(propertyInfo.Name));
+
+                attribute.ValueHint = ExternalGetString(attribute.ValueHint);
+
+                if (attribute is DefaultCommandLineArgumentAttribute)
+                {
+                    if (HasDefaultArgument)
+                        throw new ArgumentException(CommandLineParserResources.DefaultArgumentAlreadyDefined);
+                    
+                    defaultArgument = new CommandLineArgument(argTarget, attribute, propertyInfo);
+                }
+                else if (attribute is UnprocessedCommandLineArgumentAttribute)
+                {
+                    if (HasUnprocessedArgument)
+                        throw new ArgumentException(CommandLineParserResources.UnprocessedArgumentAlreadyDefined);
+                        
+                    unprocessedArgument = new CommandLineArgument(argTarget, attribute, propertyInfo);
+                    
+                    if (!unprocessedArgument.AllowsMultiple)
+                        throw new ArgumentException(CommandLineParserResources.UnprocessedArgumentMustBeArrayOrCollection);
+                }
+                else if (attribute is CommandCommandLineArgumentAttribute)
+                {
+                    if (HasCommandArgument)
+                        throw new ArgumentException(CommandLineParserResources.CommandArgumentAlreadyDefined);
+                        
+                    commandArgument = new CommandLineArgument(argTarget, attribute, propertyInfo);
+                }
+                else
+                {
+                    attribute.Description = ExternalGetString(attribute.Description);
+                    
+                    if (attribute.Description == null)
+                    {
+                        throw new ArgumentException(
+                            CommandLineParserResources.PropertyDoesNotHaveAValueForDescription(propertyInfo.Name));
+                    }
+                    
+                    // If not being case sensitive, make everything lower case.
+                    if (!CaseSensitive)
+                    {
+                        attribute.Name = attribute.Name.ToLower(CultureInfo.InvariantCulture);
+                    
+                        if (attribute.ShortName != null)
+                            attribute.ShortName = attribute.ShortName.ToLower(CultureInfo.InvariantCulture);
+                    }
+                
+                    argumentCollection.Add(new CommandLineArgument(argTarget, attribute, propertyInfo));
+                }
+            }
+            
+            if (HasUnprocessedArgument && !HasDefaultArgument)
+            {
+                throw new ArgumentException(CommandLineParserResources.UnprocessedRequiresDefaultArguments);
+            }
+        }
+
+        #endregion
+
+        #region Methods
 
         /// <summary>
-        /// Parse command line arguments and set a target type instance with argument values.
+        /// Parses the program argument strings from <see cref="System.Environment.GetCommandLineArgs()"/> and sets the target object properties.
+        /// </summary>
+        /// <param name="argStrings">Argument strings.</param>
+        public void ParseAndSetTarget()
+        {
+            ParseAndSetTarget(new ListRange<string>(Environment.GetCommandLineArgs(), 1));
+        }
+
+        /// <summary>
+        /// Parses the supplied command line arguments and sets the target objects properties.
         /// </summary>
         /// <param name="args"></param>
         /// <param name="target"></param>
-        public void ParseAndSetTarget(string[] args, object target)
+        public void ParseAndSetTarget(IEnumerable<string> argStrings)
         {
-            Parse(args);
-            SetTarget(target);
-        }
-
-        /// <summary>
-        /// Parses an argument list.
-        /// </summary>
-        /// <param name="args">The arguments to parse.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="target" /> is a null reference.</exception>
-        /// <exception cref="ArgumentException">The <see cref="Type" /> of <paramref name="target" /> does not match the argument specification that was used to initialize the parser.</exception>
-        public void Parse(IList<string> args)
-        {
-            if (args == null || args.Count == 0)
+            if (argStrings == null || argStrings.Count() == 0)
                 return;
 
-            foreach (string argument in args)
+            foreach (string argString in argStrings)
             {
-                if (argument.Length == 0)
+                if (argString.Length == 0)
                     continue;
 
-                if (HasDefaultArgument && defaultArgument.HasArgumentValue && HasUnprocessedArgument)
+                if (HasDefaultArgument && defaultArgument.HasValue && HasUnprocessedArgument)
                 {
                     // We have a default argument now, everything else should be left unprocessed
-                    unprocessedArgument.SetArgumentValue(argument);
+                    unprocessedArgument.ParseAndSetTarget(argString);
                     continue;
                 }
 
-                switch (argument[0])
+                switch (argString[0])
                 {
-                    case '@':
+                case '@':
+                    {
+                        // handle response file
+                        if (responseFiles.Count >= maxResponseFileDepth)
                         {
-                            // handle response file
-                            if (responseFiles.Count >= maxResponseFileDepth)
-                            {
-                                StringWriter error = new StringWriter(CultureInfo.CurrentCulture);
-                                error.WriteLine(CommandLineParserResources.ResponseFilesTooDeep);
+                            StringWriter error = new StringWriter(CultureInfo.CurrentCulture);
+                            error.WriteLine(CommandLineParserResources.ResponseFilesTooDeep);
 
-                                foreach (string fname in responseFiles.ToArray())
-                                    error.WriteLine("\t@" + fname);
+                            foreach (string fname in responseFiles.ToArray())
+                                error.WriteLine("\t@" + fname);
 
-                                throw new CommandLineArgumentException(error.ToString());
-                            }
-                            string path = argument.Substring(1);
-                            try
-                            {
-                                string rspFileName = Path.GetFullPath(path);
-                                using (TextReader rspFile = new StreamReader(rspFileName))
-                                {
-                                    // read all the lines as one argument each
-                                    List<string> rspArgs = new List<string>();
-                                    string nextLine = null;
-                                    while ((nextLine = rspFile.ReadLine()) != null)
-                                        rspArgs.Add(nextLine);
-
-                                    // recursively call parse; any exceptions will be propagated up
-                                    responseFiles.Push(rspFileName);
-                                    Parse(rspArgs);
-                                    responseFiles.Pop();
-                                }
-                            }
-                            catch (CommandLineArgumentException)
-                            {
-                                // We want to catch argument exceptions from the block, but we don't want to catch
-                                // recursive CommandLineArgumentExceptions
-                                throw;
-                            }
-                            catch (ArgumentException ex)
-                            {
-                                throw new CommandLineArgumentException(
-                                    CommandLineParserResources.ResponseFileUnopened(path), ex);
-                            }
-                            catch (IOException ex)
-                            {
-                                throw new CommandLineArgumentException(
-                                    CommandLineParserResources.ResponseFileUnopened(path), ex);
-                            }
-
-                            break;
+                            throw new CommandLineArgumentException(error.ToString());
                         }
-                    case '-':
+                        string path = argString.Substring(1);
+                        try
+                        {
+                            string rspFileName = Path.GetFullPath(path);
+                            using (TextReader rspFile = new StreamReader(rspFileName))
+                            {
+                                // Read all the lines as one argument per line
+                                List<string> responseArgs = new List<string>();
+                                string nextLine = null;
+
+                                while ((nextLine = rspFile.ReadLine()) != null)
+                                    responseArgs.Add(nextLine);
+
+                                // Recursively call parse; any exceptions will be propagated up
+                                responseFiles.Push(rspFileName);
+                                ParseAndSetTarget(responseArgs);
+                                responseFiles.Pop();
+                            }
+                        }
+                        catch (CommandLineArgumentException)
+                        {
+                            // As soon as we get one of these propagate it upwards
+                            throw;
+                        }
+                        catch (ArgumentException ex)
+                        {
+                            throw new CommandLineArgumentException(
+                                CommandLineParserResources.ResponseFileUnopened(path), ex);
+                        }
+                        catch (IOException ex)
+                        {
+                            throw new CommandLineArgumentException(
+                                CommandLineParserResources.ResponseFileUnopened(path), ex);
+                        }
+
+                        break;
+                    }
+                case '-':
 #if WINDOWS
-                    case '/':
+                case '/':
 #endif
-                        int endIndex = argument.IndexOfAny(new char[] { ':', '+', '-' }, 1);
-                        string argumentName = argument.Substring(1, endIndex == -1 ? argument.Length - 1 : endIndex - 1);
-                        string argumentValue;
+                    int endIndex = argString.IndexOfAny(new char[] { ':', '+', '-' }, 1);
+                    string argumentName = argString.Substring(1, endIndex == -1 ? argString.Length - 1 : endIndex - 1);
+                    string argumentValue;
 
-                        if (argumentName.Length + 1 == argument.Length)
-                        {
-                            // There's nothing left for a value
-                            argumentValue = null;
-                        }
-                        else if (argument.Length > 1 + argumentName.Length && argument[1 + argumentName.Length] == ':')
-                        {
-                            argumentValue = argument.Substring(argumentName.Length + 2);
-                        }
-                        else
-                        {
-                            argumentValue = argument.Substring(argumentName.Length + 1);
-                        }
+                    if (argumentName.Length + 1 == argString.Length)
+                    {
+                        // There's nothing left for a value
+                        argumentValue = null;
+                    }
+                    else if (argString.Length > 1 + argumentName.Length && argString[1 + argumentName.Length] == ':')
+                    {
+                        argumentValue = argString.Substring(argumentName.Length + 2);
+                    }
+                    else
+                    {
+                        argumentValue = argString.Substring(argumentName.Length + 1);
+                    }
 
-                        if (!CaseSensitive)
-                        {
-                            argumentName = argumentName.ToLower(CultureInfo.InvariantCulture);
-                        }
+                    if (!CaseSensitive)
+                    {
+                        argumentName = argumentName.ToLower(CultureInfo.InvariantCulture);
+                    }
 
-                        CommandLineArgument arg;
+                    CommandLineArgument arg;
 
-                        // By this point the strings have either been made the same case or not, and 
-                        // we only care about equality, so an ordinal comparison is fine.
+                    // By this point the strings have either been made the same case or not, and 
+                    // we only care about equality, so an ordinal comparison is fine.
+                    if (HasCommandArgument)
+                    {
+                        string command;
+                            
+                        // If the cammand has not yet been set then the command string is assumed to be default
+                        // or empty command, otherwise it is whatever the command value is.
                         if (HasCommandArgument)
-                        {
-                            string command;
-                            
-                            // If the cammand has not yet been set then the command string is assumed to be default
-                            // or empty command, otherwise it is whatever the command value is.
-                            if (HasCommandArgument)
-                                command = commandArgument.ToString().ToLower(CultureInfo.InvariantCulture);
-                            else
-                                command = String.Empty;
+                            command = commandArgument.ToString().ToLower(CultureInfo.InvariantCulture);
+                        else
+                            command = String.Empty;
                         
-                            // Needed for the use of the parser in the lambda
-                            CommandLineParser parser = this;
+                        // Needed for the use of the parser in the lambda
+                        CommandLineParser parser = this;
 
-                            arg = argumentCollection.Find(
-                                item =>
-                                {
-                                    return
-                                        parser.IsValidArgumentForCommand(item, command) &&
-                                        String.CompareOrdinal(item.Name, argumentName) == 0 ||
-                                        String.CompareOrdinal(item.ShortName, argumentName) == 0;
-                                });
-                        }
-                        else
-                        {
-                            arg = argumentCollection.Find(
-                                item =>
-                                {
-                                    return
-                                        String.CompareOrdinal(item.Name, argumentName) == 0 ||
-                                        String.CompareOrdinal(item.ShortName, argumentName) == 0;
-                                });
-                        }
-
-                        if (arg == null)
-                        {
-                            throw new CommandLineArgumentException(CommandLineParserResources.UnknownArgument(argument));
-                        }
-                        else
-                        {
-                            arg.SetArgumentValue(argumentValue);
-                        }
-                        break;
-                    default:
-                        if (HasCommandArgument && !commandArgument.HasArgumentValue)
-                        {
-                            string command = argument.ToLower(CultureInfo.InvariantCulture);
-                            
-                            if (!IsValidCommand(command))
+                        arg = argumentCollection.Find(
+                            item =>
                             {
-                                throw new CommandLineArgumentException(CommandLineParserResources.UnknownCommandArgument(command));
-                            }
+                                return
+                                    parser.IsValidArgumentForCommand(item, command) &&
+                                    String.CompareOrdinal(item.Name, argumentName) == 0 ||
+                                    String.CompareOrdinal(item.ShortName, argumentName) == 0;
+                            });
+                    }
+                    else
+                    {
+                        arg = argumentCollection.Find(
+                            item =>
+                            {
+                                return
+                                    String.CompareOrdinal(item.Name, argumentName) == 0 ||
+                                    String.CompareOrdinal(item.ShortName, argumentName) == 0;
+                            });
+                    }
+
+                    if (arg == null)
+                    {
+                        throw new CommandLineArgumentException(CommandLineParserResources.UnknownArgument(arg));
+                    }
+                    else
+                    {
+                        arg.ParseAndSetTarget(argumentValue);
+                    }
+                    break;
+                default:
+                    if (HasCommandArgument && !commandArgument.HasValue)
+                    {
+                        string command = argString.ToLower(CultureInfo.InvariantCulture);
                             
-                            commandArgument.SetArgumentValue(command);
-                        }
-                        else if (HasDefaultArgument)
+                        if (!IsValidCommand(command))
                         {
-                            defaultArgument.SetArgumentValue(argument);
+                            throw new CommandLineArgumentException(CommandLineParserResources.UnknownCommandArgument(command));
                         }
-                        else
-                        {
-                            throw new CommandLineArgumentException(CommandLineParserResources.UnknownArgument(argument));
-                        }
-                        break;
+                            
+                        commandArgument.ParseAndSetTarget(command);
+                    }
+                    else if (HasDefaultArgument)
+                    {
+                        defaultArgument.ParseAndSetTarget(argString);
+                    }
+                    else
+                    {
+                        throw new CommandLineArgumentException(CommandLineParserResources.UnknownArgument(argString));
+                    }
+                    break;
                 }
-            }
-        }
-        
-        /// <summary>
-        /// Initialize a target type instance from parsed arguments.
-        /// </summary>
-        /// <param name="target">The target type to initialize</param>
-        public void SetTarget(object target)
-        {
-            // NOTE: We typically do this two part parsing because of arrays.  If the target type is an array, there is no efficient 
-            // way to keep adding entries to the array as arguments are seen.  Hence we gather them all up and blast them in at once.
-            // But it also useful for MSBuild tasks where you don't have a textual command line at all, and for serializing command 
-            // line arguments in a standard way.
-
-            if (target == null)
-            {
-                throw new ArgumentNullException("target");
-            }
-
-            // Ensure that the target type is the same as the specification type or derived from it
-            if (!argumentSpecificationType.IsAssignableFrom(target.GetType()))
-            {
-                throw new ArgumentException(
-                    CommandLineParserResources.TypeNotDerivedFromType(target.GetType().ToString(), argumentSpecificationType.GetType().ToString()));
-            }
-
-            foreach (CommandLineArgument arg in argumentCollection)
-            {
-                arg.SetTargetValue(target);
-            }
-
-            // These arguments are not part of the main collection
-            if (HasCommandArgument)
-            {
-                commandArgument.SetTargetValue(target);
-            }
-
-            if (HasDefaultArgument)
-            {
-                defaultArgument.SetTargetValue(target);
-            }
-
-            if (HasUnprocessedArgument)
-            {
-                unprocessedArgument.SetTargetValue(target);
-            }
-        }
-
-        /// <summary>
-        /// Initialize parsed arguments from a target type instance.
-        /// </summary>
-        /// <param name="target">The target type to initialize</param>
-        public void GetTargetArguments(object target)
-        {
-            if (target == null)
-            {
-                throw new ArgumentNullException("target");
-            }
-
-            // Ensure that the target type is the same as the specification type or derived from it
-            if (!argumentSpecificationType.IsAssignableFrom(target.GetType()))
-            {
-                throw new ArgumentException(
-                    CommandLineParserResources.TypeNotDerivedFromType(target.GetType().ToString(), argumentSpecificationType.GetType().ToString()));
-            }
-
-            foreach (CommandLineArgument arg in argumentCollection)
-            {
-                arg.GetTargetValue(target);
-            }
-
-            // These three arguments are not part of the main collection
-            if (HasCommandArgument)
-            {
-                commandArgument.GetTargetValue(target);
-            }
-
-            if (HasDefaultArgument)
-            {
-                defaultArgument.GetTargetValue(target);
-            }
-
-            if (HasUnprocessedArgument)
-            {
-                unprocessedArgument.GetTargetValue(target);
             }
         }
 
@@ -1444,10 +1230,55 @@ namespace ToolBelt
             return helpText.ToString().TrimEnd('\r', '\n');
         }
 
+        /// <summary>
+        /// Gets all set arguments in the target as a valid command line string
+        /// </summary>
+        public string GetArgumentString()
+        {
+            StringBuilder sb = new StringBuilder();
+            List<CommandLineArgument>.Enumerator enumerator = argumentCollection.GetEnumerator();
+
+            if (HasCommandArgument && commandArgument.HasValue)
+            {
+                sb.Append(" " + commandArgument.ToString());
+            }
+
+            while (enumerator.MoveNext())
+            {
+                CommandLineArgument argument = enumerator.Current;
+
+                if (!HasCommandArgument || argument.IsValidForCommand(commandArgument.ToString()))
+                {
+                    string s = argument.ToString();
+
+                    if (s.Length > 0)
+                        sb.AppendFormat(" " + s);
+                }
+            }
+
+            if (HasDefaultArgument && (!HasCommandArgument || defaultArgument.IsValidForCommand(commandArgument.ToString())))
+            {
+                string s = defaultArgument.ToString();
+
+                if (s.Length > 0)
+                    sb.Append(" " + s);
+            }
+
+            if (HasUnprocessedArgument && (!HasCommandArgument || unprocessedArgument.IsValidForCommand(commandArgument.ToString())))
+            {
+                string s = unprocessedArgument.ToString();
+
+                if (s.Length > 0)
+                    sb.Append(" " + s);
+            }
+
+            return sb.ToString();
+        }
+
         #endregion
 
-        #region Private Instance Methods
-        
+        #region Private Methods
+
         private void GetSyntaxHelpLine(string command, StringBuilder helpText)
         {
             Debug.Assert(command != null);  // ... but zero length command is OK
@@ -1492,7 +1323,7 @@ namespace ToolBelt
                     // We can only have unprocessed arguments with a default argument
                     if (!HasUnprocessedArgument)
                     {
-                        if (defaultArgument.AllowMultiple)
+                        if (defaultArgument.AllowsMultiple)
                         {
                             // Add additional default arguments
                             helpText.Append(" [");
@@ -1529,7 +1360,7 @@ namespace ToolBelt
             // Add switches to help text
             helpText.AppendFormat("{0}{1}{1}", CommandLineParserResources.Commands_Propercase, System.Environment.NewLine);
 
-            object[] attributes = this.argumentSpecificationType.GetCustomAttributes(typeof(CommandLineCommandDescriptionAttribute), true);
+            object[] attributes = this.argTargetType.GetCustomAttributes(typeof(CommandLineCommandDescriptionAttribute), true);
             List<string> commands = new List<string>(attributes.Length);
             
             // Build a list of all the commands
@@ -1558,7 +1389,7 @@ namespace ToolBelt
                     {
                         if (command.Length > 22 - 3)
                             helpText.AppendFormat(CultureInfo.CurrentCulture, "  {0}{1}{2}{3}{1}", command, Environment.NewLine, indent, descriptionLines[i]);
-                    else
+                        else
                             helpText.AppendFormat(CultureInfo.CurrentCulture, "  {0}{1}{2}{3}", command, indent.Substring(0, 22 - 2 - command.Length), descriptionLines[i], Environment.NewLine);
                     }
                     else
@@ -1597,25 +1428,25 @@ namespace ToolBelt
                     if (argument.ValueHint != String.Empty)
                         valueText = ":" + argument.ValueHint;
                 }
-                else if (argument.ValueType == typeof(string))
+                else if (argument.ArgType == typeof(string))
                 {
                     valueText = ":<" + CommandLineParserResources.Text_LowerCase + ">";
                 }
                 else if (
-                    argument.ValueType == typeof(FileInfo) ||
-                    argument.ValueType == typeof(ParsedPath))
+                    argument.ArgType == typeof(FileInfo) ||
+                    argument.ArgType == typeof(ParsedPath))
                 {
                     valueText = ":<" + CommandLineParserResources.FileName_Lowercase + ">";
                 }
                 else if (
-                    argument.ValueType == typeof(int) ||
-                    argument.ValueType == typeof(uint) ||
-                    argument.ValueType == typeof(short) ||
-                    argument.ValueType == typeof(ushort))
+                    argument.ArgType == typeof(int) ||
+                    argument.ArgType == typeof(uint) ||
+                    argument.ArgType == typeof(short) ||
+                    argument.ArgType == typeof(ushort))
                 {
                     valueText = ":<" + CommandLineParserResources.Number_Lowercase + ">";
                 }
-                else if (argument.ValueType != typeof(bool))
+                else if (argument.ArgType != typeof(bool))
                 {
                     valueText = ":<" + CommandLineParserResources.Value_Lowercase + ">";
                 }
@@ -1677,7 +1508,7 @@ namespace ToolBelt
                 if (commandArgument != null && command.Length != 0)
                 {
                     // Print the command description
-                    object[] attributes = this.argumentSpecificationType.GetCustomAttributes(typeof(CommandLineCommandDescriptionAttribute), true);
+                    object[] attributes = this.argTargetType.GetCustomAttributes(typeof(CommandLineCommandDescriptionAttribute), true);
 
                     foreach (CommandLineCommandDescriptionAttribute attribute in attributes)
                     {
@@ -1691,7 +1522,7 @@ namespace ToolBelt
             }
             else
             {
-                object[] attributes = this.argumentSpecificationType.GetCustomAttributes(typeof(CommandLineDescriptionAttribute), true);
+                object[] attributes = this.argTargetType.GetCustomAttributes(typeof(CommandLineDescriptionAttribute), true);
 
                 if (attributes.Length > 0)
                 {
@@ -1720,7 +1551,7 @@ namespace ToolBelt
 
         private void GetExampleHelpLines(int lineLength, StringBuilder helpText)
         {
-            object[] attributes = this.argumentSpecificationType.GetCustomAttributes(typeof(CommandLineExampleAttribute), true);
+            object[] attributes = this.argTargetType.GetCustomAttributes(typeof(CommandLineExampleAttribute), true);
 
             if (attributes.Length == 0)
                 return;
@@ -1765,7 +1596,7 @@ namespace ToolBelt
         {
             Debug.Assert(command != null);
 
-            object[] attributes = this.argumentSpecificationType.GetCustomAttributes(typeof(CommandLineCommandDescriptionAttribute), true);
+            object[] attributes = this.argTargetType.GetCustomAttributes(typeof(CommandLineCommandDescriptionAttribute), true);
 
             foreach (CommandLineCommandDescriptionAttribute attribute in attributes)
             {
@@ -1782,7 +1613,7 @@ namespace ToolBelt
         {
             Debug.Assert(command != null);
 
-            object[] attributes = this.argumentSpecificationType.GetCustomAttributes(typeof(CommandLineCommandDescriptionAttribute), true);
+            object[] attributes = this.argTargetType.GetCustomAttributes(typeof(CommandLineCommandDescriptionAttribute), true);
 
             foreach (CommandLineCommandDescriptionAttribute attribute in attributes)
             {
@@ -1817,7 +1648,6 @@ namespace ToolBelt
                 return obj.ToString();
         }
 
-
         /// <summary>
         /// Is this a valid command.
         /// </summary>
@@ -1825,7 +1655,7 @@ namespace ToolBelt
         /// <returns></returns>
         private bool IsValidCommand(string command)
         {
-            if (HasCommandArgument && commandArgument.IsValidCommand(command))
+            if (HasCommandArgument && commandArgument.IsValidForCommand(command))
                 return true;
 
             LazyGenerateCommandArguments();
@@ -1841,20 +1671,23 @@ namespace ToolBelt
         /// <returns></returns>
         private bool IsValidArgumentForCommand(CommandLineArgument argument, string command)
         {
-            if (argument.IsValidCommand(command))
+            if (argument.IsValidForCommand(command))
                 return true;
 
             LazyGenerateCommandArguments();
 
             return Array.Exists(commandArguments[command],
-                delegate(string s) { return string.CompareOrdinal(s, argument.Name) == 0; });
+                delegate(string s)
+                {
+                    return string.CompareOrdinal(s, argument.Name) == 0;
+                });
         }
 
         private void LazyGenerateCommandArguments()
         {
             if (commandArguments == null)
             {
-                object[] attributes = this.argumentSpecificationType.GetCustomAttributes(typeof(CommandLineCommandDescriptionAttribute), true);
+                object[] attributes = this.argTargetType.GetCustomAttributes(typeof(CommandLineCommandDescriptionAttribute), true);
                 commandArguments = new Dictionary<string, string[]>(attributes.Length);
 
                 // Build a list of all the commands
@@ -1866,27 +1699,6 @@ namespace ToolBelt
             }
         }
 
-
-        #endregion
-
-        #region Private Instance Fields
-
-        private List<CommandLineArgument> argumentCollection; 
-        private CommandLineArgument defaultArgument;
-        private CommandLineArgument unprocessedArgument;
-        private CommandLineArgument commandArgument;
-        private Type argumentSpecificationType;
-        private Type resourceReaderType;
-        private CommandLineParserFlags flags;
-        private string copyright;
-        private string configuration;
-        private string version;
-        private string title;
-        private string description;
-        private string commandName;
-        private Stack<string> responseFiles;
-        private const int maxResponseFileDepth = 10;
-        private Dictionary<string, string[]> commandArguments; // map of command -> arguments it supports
 
         #endregion
     }
@@ -1944,6 +1756,7 @@ namespace ToolBelt
     public sealed class CommandLineTitleAttribute : Attribute
     {
         #region Instance Constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandLineDescriptionAttribute" />.
         /// </summary>
@@ -1956,6 +1769,7 @@ namespace ToolBelt
         #endregion
 
         #region Instance Properties
+
         /// <summary>
         /// Gets or sets the title of the command line tool.
         /// </summary>
@@ -1965,6 +1779,7 @@ namespace ToolBelt
         /// Private resource reader
         /// </summary>
         public Type ResourceReader { get; private set; }
+
         #endregion
     }
 
@@ -1988,6 +1803,7 @@ namespace ToolBelt
         #endregion
 
         #region Instance Properties
+
         /// <summary>
         /// Gets or sets the description of the command line tool.
         /// </summary>
@@ -2008,6 +1824,7 @@ namespace ToolBelt
     public sealed class CommandLineExampleAttribute : Attribute
     {
         #region Instance Constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandLineDescriptionAttribute" />.
         /// </summary>
@@ -2016,9 +1833,11 @@ namespace ToolBelt
         {
             Example = example;
         }
+
         #endregion
 
         #region Instance Properties
+
         /// <summary>
         /// Gets or sets the description of the command line tool.
         /// </summary>
@@ -2028,6 +1847,7 @@ namespace ToolBelt
         /// Private resource reader
         /// </summary>
         public Type ResourceReader { get; set; }
+
         #endregion
     }
 
@@ -2051,6 +1871,7 @@ namespace ToolBelt
         #endregion
 
         #region Instance Properties
+
         /// <summary>
         /// Gets or sets the description of the command line command.
         /// </summary>
@@ -2104,6 +1925,7 @@ namespace ToolBelt
         #endregion
 
         #region Instance Properties
+
         /// <summary>
         /// Gets or sets the copyright argument.
         /// </summary>
@@ -2138,6 +1960,7 @@ namespace ToolBelt
         #endregion
 
         #region Instance Properties
+
         /// <summary>
         /// Gets or sets the configuration name.
         /// </summary>
@@ -2169,7 +1992,7 @@ namespace ToolBelt
         {
             if (String.IsNullOrEmpty(name))
                 throw new ArgumentNullException("name");
-            
+
             this.Name = name;
             this.MethodName = "Parse"; // Default
         }
@@ -2274,7 +2097,7 @@ namespace ToolBelt
         /// <summary>
         /// All switches are matched case sensitively.
         /// </summary>
-        CaseSensitive = 1<<0,
+        CaseSensitive = 1 << 0,
         /// <summary>
         /// Normal parsing.  All switches are matched case insensitive.
         /// </summary>

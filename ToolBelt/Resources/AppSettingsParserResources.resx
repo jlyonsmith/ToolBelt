@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="InvalidValueForAppSettingArgument" xml:space="preserve">
+		<value>Invalid value '{0}' for appSetting '{1}'</value>
+	</data>
+	<data name="InvalidInitializerClassForAppSettingArgument" xml:space="preserve">
+		<value>Invalid Initializer class '{0}' for appSetting '{1}'</value>
+	</data>
+	<data name="InvalidValueForAppSettingArgumentWithValid" xml:space="preserve">
+		<value>Invalid value {0} for appSetting '{1}'. Valid values are: {2}</value>
+	</data>
+	<data name="NoWayToInitializeTypeFromString" xml:space="preserve">
+		<value>No way found to initialize type '{0}' for appSetting '{1}' from a String</value>
+	</data>
+	<data name="PropertyIsNotAStronglyTypedArray" xml:space="preserve">
+		<value>Property '{0}' is not a strongly typed array</value>
+	</data>
+	<data name="ProblemInvokingAddMethod" xml:space="preserve">
+		<value>Problem invoking the Add method for argument '{0}'</value>
+	</data>
+	<data name="PropertyShouldBeReadableAndWriteable" xml:space="preserve">
+		<value>Property '{0}' should be readable and writeable</value>
+	</data>
+	<data name="PropertyDoesNotHaveAValueForDescription" xml:space="preserve">
+		<value>Property {0} does not have a value for Description</value>
+	</data>
+	<data name="PropertyHasNoAddMethodWithNonObjectParameter" xml:space="preserve">
+		<value>Property '{0}' has no Add method with non-object parameter type.</value>
+	</data>
+	<data name="ArraysAreNotSupported" xml:space="preserve">
+		<value>Property '{0}' is an array which is not supported. Please change it to a mutable ICollection derived type.</value>
+	</data>
+</root>

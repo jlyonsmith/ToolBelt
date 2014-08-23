@@ -3,7 +3,7 @@ using System.IO;
 using ToolBelt;
 using NUnit.Framework;
 
-namespace ToolBelt
+namespace ToolBelt.Tests
 {
     [TestFixture] 
     public class PathExTests

@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Tests</RootNamespace>
+    <RootNamespace>ToolBelt.Tests</RootNamespace>
     <AssemblyName>ToolBelt.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -22,7 +22,7 @@
     <ConsolePause>false</ConsolePause>
     <CustomCommands>
       <CustomCommands>
-        <Command type="BeforeBuild" command="/bin/bash ${SolutionDir}/bin/build_resources.sh" workingdir="${ProjectDir}" />
+        <Command type="BeforeBuild" command="/usr/bin/make" workingdir="${ProjectDir}/Resources" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -34,7 +34,7 @@
     <ConsolePause>false</ConsolePause>
     <CustomCommands>
       <CustomCommands>
-        <Command type="BeforeBuild" command="/bin/bash ${SolutionDir}/bin/build_resources.sh" workingdir="${ProjectDir}" />
+        <Command type="BeforeBuild" command="/usr/bin/make" workingdir="${ProjectDir}/Resources" />
       </CustomCommands>
     </CustomCommands>
     <DefineConstants>MACOS</DefineConstants>
@@ -47,19 +47,20 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <None Include="BuildResources.sh" />
-    <None Include="CommandLineParserTestsResources.resx" />
     <None Include="packages.config" />
+    <None Include="Resources\CommandLineParserTestsResources.resx" />
+    <None Include="Resources\makefile" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandLineParserTests.cs" />
-    <Compile Include="CommandLineParserTestsResources.cs" />
     <Compile Include="CommandTests.cs" />
     <Compile Include="DirectoryUtilityTests.cs" />
     <Compile Include="ParsedPathTests.cs" />
     <Compile Include="PathUtilityTests.cs" />
     <Compile Include="StringUtilityTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\CommandLineParserTestsResources.cs" />
+    <Compile Include="CommandLineParserTests.cs" />
+    <Compile Include="AppSettingsParserTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ToolBelt\ToolBelt.csproj">
@@ -72,11 +73,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CommandLineParserTestsResources.resources">
+    <EmbeddedResource Include="Resources\CommandLineParserTestsResources.resources">
       <LogicalName>ToolBelt.CommandLineParserTestsResources.resources</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+    <Folder Include="Resources\" />
   </ItemGroup>
 </Project>

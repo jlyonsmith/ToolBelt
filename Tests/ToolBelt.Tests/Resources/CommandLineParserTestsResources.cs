@@ -1,10 +1,10 @@
 //
-// This file genenerated by the Buckle tool on 6/4/2013 at 10:16 AM. 
+// This file genenerated by the Buckle tool on 8/23/2014 at 3:01 PM. 
 //
 // Contains strongly typed wrappers for resources in CommandLineParserTestsResources.resx
 //
 
-namespace ToolBelt {
+namespace ToolBelt.Tests {
 using System;
 using System.Reflection;
 using System.Resources;
@@ -31,7 +31,7 @@ public class CommandLineParserTestsResources
     }
 
     /// <summary>
-    /// &lt;file&gt;
+    /// FILE
     /// </summary>
     public static ToolBelt.Message SwitchArg1ValueHint
     {

@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using NUnit.Framework;
 
-namespace ToolBelt
+namespace ToolBelt.Tests
 {
     [TestFixture]
     public class CommandLineParserTests
@@ -77,7 +77,7 @@ namespace ToolBelt
         class ArgumentsBasic
         {
             string arg1;
-            string[] arg2;
+            List<int> arg2;
             List<string> arg3;
             bool arg4;
             int arg5;
@@ -98,9 +98,8 @@ namespace ToolBelt
                 set { arg1 = value; }
             }
 
-            // Short name that is not a prefix to the full name
-            [CommandLineArgument("arg2", Description = "Argument #2", ShortName = "a2")]
-            public string[] Arg2
+            [CommandLineArgument("arg2", Description = "Argument #2", ShortName="a2", ValueHint = "<num>")]
+            public List<int> Arg2
             {
                 get { return arg2; }
                 set { arg2 = value; }
@@ -187,6 +186,13 @@ namespace ToolBelt
             }
         }
 
+        class ArgumentsWithArray
+        {
+            // Short name that is not a prefix to the full name
+            [CommandLineArgument("arg2", Description = "Argument #2", ShortName = "a2")]
+            public string[] Arg2 { get; set; }
+        }
+
         class ArgumentsFromResources
         {
             private string file;
@@ -202,13 +208,13 @@ namespace ToolBelt
         class ArgumentsMultiDefaultNoArgs
         {
             [DefaultCommandLineArgument("default", ValueHint = "<file>")]
-            public string[] Default
+            public List<string> Default
             {
                 get { return defArgs; }
                 set { defArgs = value; }
             }
 
-            private string[] defArgs;
+            private List<string> defArgs;
         }
 
         class ArgumentsBasicTarget : ArgumentsBasic
@@ -268,7 +274,7 @@ namespace ToolBelt
             }
         }
 
-        class ArgumentsBadDerivation
+        class ArgumentsNoAttributes
         {
         }
 
@@ -283,10 +289,10 @@ namespace ToolBelt
 
         class ArgumentsBadUnprocessedPart
         {
-            private string[] unprocessed;
+            private List<string> unprocessed;
 
             [UnprocessedCommandLineArgument("unprocessed")]
-            public string[] Unprocessed
+            public List<string> Unprocessed
             {
                 get { return unprocessed; }
                 set { unprocessed = value; }
@@ -296,7 +302,7 @@ namespace ToolBelt
         class ArgumentsUnprocessedPart
         {
             private string arg;
-            private string[] unprocessed;
+            private List<string> unprocessed;
             private string def;
 
             [CommandLineArgument("arg", Description = "Only argument")]
@@ -314,7 +320,7 @@ namespace ToolBelt
             }
 
             [UnprocessedCommandLineArgument("unprocessed")]
-            public string[] Unprocessed
+            public List<string> Unprocessed
             {
                 get { return unprocessed; }
                 set { unprocessed = value; }
@@ -343,7 +349,7 @@ namespace ToolBelt
         class ArgumentsWithCommand
         {
             string arg1;
-            string[] arg2;
+            List<string> arg2;
             bool arg3;
             bool help;
             string command;
@@ -359,7 +365,7 @@ namespace ToolBelt
 
             // Short name that is not a prefix to the full name
             [CommandLineArgument("arg2", Description = "Argument #2", ShortName = "a2", Commands = "start,stop")]
-            public string[] Arg2
+            public List<string> Arg2
             {
                 get { return arg2; }
                 set { arg2 = value; }
@@ -398,12 +404,12 @@ namespace ToolBelt
         public void TestBasicParsing()
         {
             ArgumentsBasicTarget target = new ArgumentsBasicTarget();
-            CommandLineParser parser = new CommandLineParser(typeof(ArgumentsBasic), null, CommandLineParserFlags.Default);
+            CommandLineParser parser = new CommandLineParser(target, flags: CommandLineParserFlags.Default);
             string[] args = new string[] 
             { 
                 "-arg1:valueForArg1", 
-                "-a2:One", 
-                "-arg2:Two", 
+                "-a2:1", 
+                "-arg2:2", 
                 "-arg3:Alpha", 
                 "-arg3:Beta", 
                 "-arg4+", 
@@ -414,10 +420,10 @@ namespace ToolBelt
                 "something.txt"             
             };
             
-            parser.ParseAndSetTarget(args, target);
+            parser.ParseAndSetTarget(args);
 
             Assert.AreEqual(target.Arg1, "valueForArg1");
-            CollectionAssert.AreEqual(new string[] { "One", "Two" }, target.Arg2);
+            CollectionAssert.AreEqual(new List<int> { 1, 2 }, target.Arg2);
             CollectionAssert.AreEqual(new string[] { "Alpha", "Beta" }, target.Arg3);
             Assert.AreEqual(true, target.Arg4);
             Assert.AreEqual(10, target.Arg5);
@@ -426,58 +432,23 @@ namespace ToolBelt
                 { new KeyValuePair<string, string>("a", "1"), new KeyValuePair<string, string>("b", "2") }, target.Arg7.Parameters);
             Assert.AreEqual("blah.txt", target.Arg8.ToString());
             Assert.AreEqual("blah.txt", target.Arg9.ToString());
-            Assert.AreEqual(11, parser.ArgumentCount);
-            Assert.AreEqual(" -arg1:valueForArg1 -arg2:One -arg2:Two -arg3:Alpha -arg3:Beta -arg4 -arg5:10 -arg7:a=1;b=2 -arg8:blah.txt -arg9:blah.txt something.txt", parser.Arguments);
+            Assert.AreEqual(
+                " -arg1:valueForArg1 -arg2:1 -arg2:2 -arg3:Alpha -arg3:Beta -arg4 -arg5:10 -arg7:a=1;b=2 -arg8:blah.txt -arg9:blah.txt -arg11:0 something.txt", 
+                parser.GetArgumentString());
             Assert.IsNull(target.Arg12);
-        }
-
-        [Test]
-        public void TestGetTarget()
-        {
-            ArgumentsBasicTarget target = new ArgumentsBasicTarget();
-            CommandLineParser parser = new CommandLineParser(typeof(ArgumentsBasic), null, CommandLineParserFlags.Default);
-
-            target.Arg1 = "valueForArg1";
-            target.Arg2 = new string[] { "One", "Two" };
-            
-            List<string> arg3 = new List<string>();
-            arg3.Add("Alpha");
-            arg3.Add("Beta");
-            
-            target.Arg3 = arg3;
-            target.Arg4 = true;
-            target.Arg5 = 10;
-            target.Arg6 = false;
-            
-            CustomType arg7 = new CustomType();
-            
-            arg7.Parameters.Add("a", "1");
-            arg7.Parameters.Add("b", "2");
-            
-            target.Arg7 = arg7;
-            target.Arg8 = new FileInfo("blah.txt");
-            target.Arg9 = new ParsedPath("blah.txt", PathType.File);
-            target.Default = "something.txt"; 
-
-            parser.GetTargetArguments(target);
-            
-            // NOTE: Not setting arguments #10 and #11
-
-            Assert.AreEqual(13, parser.ArgumentCount);
-            Assert.AreEqual(" -arg1:valueForArg1 -arg2:One -arg2:Two -arg3:Alpha -arg3:Beta -arg4 -arg5:10 -arg7:a=1;b=2 -arg8:blah.txt -arg9:blah.txt -arg11:0 something.txt", parser.Arguments);
         }
 
         [Test]
         public void TestNullable()
         {
             ArgumentsBasicTarget target = new ArgumentsBasicTarget();
-            CommandLineParser parser = new CommandLineParser(typeof(ArgumentsBasic), null, CommandLineParserFlags.Default);
+            CommandLineParser parser = new CommandLineParser(target, flags: CommandLineParserFlags.Default);
             string[] args = new string[] 
             { 
                 "-arg12:10"
             };
 
-            parser.ParseAndSetTarget(args, target);
+            parser.ParseAndSetTarget(args);
             Assert.AreEqual(10, target.Arg12);
         }
 
@@ -485,14 +456,14 @@ namespace ToolBelt
         public void TestCaseSensitiveParsing()
         {
             ArgumentsCaseSensitive target = new ArgumentsCaseSensitive();
-            CommandLineParser parser = new CommandLineParser(typeof(ArgumentsCaseSensitive), null, CommandLineParserFlags.CaseSensitive);
+            CommandLineParser parser = new CommandLineParser(target, null, CommandLineParserFlags.CaseSensitive);
             string[] args = new string[] 
             { 
                 "-Tp:valueForArg1", 
                 "-TP:valueForArg2", 
             };
 
-            parser.ParseAndSetTarget(args, target);
+            parser.ParseAndSetTarget(args);
 
             Assert.AreEqual(target.Arg1, "valueForArg1");
             Assert.AreEqual(target.Arg2, "valueForArg2");
@@ -503,22 +474,29 @@ namespace ToolBelt
         public void TestBadUnprocessedArgs()
         {
             ArgumentsBadUnprocessedPart target = new ArgumentsBadUnprocessedPart();
-            new CommandLineParser(target.GetType());
+            new CommandLineParser(target);
         }
-        
+
+        [Test]
+        [ExpectedException(typeof(NotSupportedException))]
+        public void TestArgIsArray()
+        {
+            var target = new ArgumentsWithArray();
+            new CommandLineParser(target);
+        }
+
         [Test]
         public void TestUnprocessedArgs()
         {
             ArgumentsUnprocessedPart target = new ArgumentsUnprocessedPart();
-            CommandLineParser parser = new CommandLineParser(
-                typeof(ArgumentsUnprocessedPart));
+            CommandLineParser parser = new CommandLineParser(target);
                 
             string[] args = new string[]
             {
                 "-arg:blah", "thing", "gomez", "-morestuff"
             };
 
-            parser.ParseAndSetTarget(args, target);
+            parser.ParseAndSetTarget(args);
             
             Assert.AreEqual("blah", target.Arg);
             Assert.AreEqual("thing", target.Default);
@@ -529,10 +507,10 @@ namespace ToolBelt
         public void TestMultiDefaultArgs()
         {
             ArgumentsMultiDefaultNoArgs target = new ArgumentsMultiDefaultNoArgs();
-            CommandLineParser parser = new CommandLineParser(typeof(ArgumentsMultiDefaultNoArgs), null, CommandLineParserFlags.Default);
+            CommandLineParser parser = new CommandLineParser(target, flags: CommandLineParserFlags.Default);
             string[] args = new string[] { "one", "two"};
 
-            parser.ParseAndSetTarget(args, target);
+            parser.ParseAndSetTarget(args);
 
             CollectionAssert.AreEqual(new string[] { "one", "two" }, target.Default);
         }
@@ -547,7 +525,7 @@ namespace ToolBelt
                 @"Copyright \(c\) John Lyon-Smith\." + Environment.NewLine, 
                 RegexOptions.Multiline);
             
-            CommandLineParser parser = new CommandLineParser(typeof(ArgumentsBasic), null, CommandLineParserFlags.Default);
+            CommandLineParser parser = new CommandLineParser(new ArgumentsBasic(), flags: CommandLineParserFlags.Default);
             
             string logoBanner = parser.LogoBanner;
 
@@ -568,7 +546,7 @@ namespace ToolBelt
             Assert.IsTrue(regex.IsMatch(logoBanner));
             
             // A parser with no attributes to get the code coverage
-            parser = new CommandLineParser(typeof(ArgumentsForLogoBanner));
+            parser = new CommandLineParser(new ArgumentsForLogoBanner());
             
             logoBanner = parser.LogoBanner;
 
@@ -591,31 +569,28 @@ namespace ToolBelt
         [ExpectedException(typeof(ArgumentException))]
         public void TestArgumentNoDescription()
         {
-            ArgumentsBasicTarget target = new ArgumentsBasicTarget();
             // The target object is not derived from the given argument specification type...
-            new CommandLineParser(typeof(ArgumentsNoDescription)).ParseAndSetTarget(null, target);
+            new CommandLineParser(new ArgumentsNoDescription()).ParseAndSetTarget(null);
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void TestParserNoTarget()
         {
-            new CommandLineParser(typeof(ArgumentsBasic)).ParseAndSetTarget(null, null);
+            new CommandLineParser(null).ParseAndSetTarget(null);
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public void TestBadTargetDerivation()
+        public void TestNoAttributes()
         {
-            ArgumentsBadDerivation target = new ArgumentsBadDerivation();
-            new CommandLineParser(typeof(ArgumentsBasic)).ParseAndSetTarget(null, target);
+            new CommandLineParser(new ArgumentsNoAttributes()).ParseAndSetTarget(new string[] {});
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentException))]
         public void TestTooManyDefaultAttributes()
         {
-            new CommandLineParser(typeof(ArgumentsTooManyDefaults)).Parse(null);
+            new CommandLineParser(new ArgumentsTooManyDefaults()).ParseAndSetTarget(new string[0]);
         }
 
         [Test]
@@ -623,13 +598,13 @@ namespace ToolBelt
         public void TestBadProperty()
         {
             ArgumentsPropertyNotReadWrite target = new ArgumentsPropertyNotReadWrite();
-            new CommandLineParser(target.GetType());
+            new CommandLineParser(target);
         }
 
         [Test]
         public void TestUsage()
         {
-            CommandLineParser parser = new CommandLineParser(typeof(ArgumentsBasic), CommandLineParserFlags.Default);
+            CommandLineParser parser = new CommandLineParser(new ArgumentsBasic(), flags: CommandLineParserFlags.Default);
 
             string usage = parser.Usage;
             string nl = Environment.NewLine;
@@ -649,14 +624,14 @@ namespace ToolBelt
             Assert.AreEqual(parser.CommandName, "AnythingYouWant");
             
             // Test multiple default arguments
-            parser = new CommandLineParser(typeof(ArgumentsMultiDefaultNoArgs), null, CommandLineParserFlags.Default);
+            parser = new CommandLineParser(new ArgumentsMultiDefaultNoArgs(), null, CommandLineParserFlags.Default);
 
             Assert.IsTrue(Regex.IsMatch(parser.Usage,
                 @"Syntax:\s*.+? <file> \[<file> \.\.\.\]",
                 RegexOptions.Multiline | RegexOptions.ExplicitCapture));
                 
             // Test command based command line
-            parser = new CommandLineParser(typeof(ArgumentsWithCommand));
+            parser = new CommandLineParser(new ArgumentsWithCommand());
 
             // Capture the value or it's really hard to debug...
             usage = parser.GetUsage(null, 79);
@@ -690,10 +665,13 @@ namespace ToolBelt
                 @"))+(^\s+.+)",
                 RegexOptions.Multiline | RegexOptions.ExplicitCapture));
 
-            ArgumentsWithCommand target = new ArgumentsWithCommand();
+            var target = new ArgumentsWithCommand();
+
+            parser = new CommandLineParser(target);
+
             string[] args = { "help", "unknown" };
 
-            parser.ParseAndSetTarget(args, target);
+            parser.ParseAndSetTarget(args);
 
             Assert.AreEqual("help", target.Command);
             Assert.AreEqual("unknown", target.Default);
@@ -712,11 +690,10 @@ namespace ToolBelt
         [ExpectedException(typeof(CommandLineArgumentException))]
         public void TestBadCommand()
         {
-            ArgumentsWithCommand target = new ArgumentsWithCommand();
-            CommandLineParser parser = new CommandLineParser(target.GetType());
+            CommandLineParser parser = new CommandLineParser(new ArgumentsWithCommand());
             string[] args = { "unknown" };
 
-            parser.Parse(args);
+            parser.ParseAndSetTarget(args);
         }
 
         [Test]
@@ -725,20 +702,19 @@ namespace ToolBelt
         {
             string[] args = { "start", "-arg1" };
 
-            CommandLineParser parser = new CommandLineParser(typeof(ArgumentsWithCommand));
+            CommandLineParser parser = new CommandLineParser(new ArgumentsWithCommand());
 
-            parser.Parse(args);
+            parser.ParseAndSetTarget(args);
         }
 
         [Test]
         public void TestParsingFromResources()
         {
             ArgumentsFromResources target = new ArgumentsFromResources();
-            CommandLineParser parser = new CommandLineParser(
-                typeof(ArgumentsFromResources), typeof(CommandLineParserTestsResources));
+            CommandLineParser parser = new CommandLineParser(target, typeof(CommandLineParserTestsResources));
             string[] args = new string[] { "-a:file.txt" };
 
-            parser.ParseAndSetTarget(args, target);
+            parser.ParseAndSetTarget(args);
 
             Assert.AreEqual("file.txt", target.File);
             Assert.IsTrue(Regex.IsMatch(
@@ -760,7 +736,7 @@ namespace ToolBelt
         public void TestCommands()
         {
             ArgumentsWithCommand target = new ArgumentsWithCommand();
-            CommandLineParser parser = new CommandLineParser(typeof(ArgumentsWithCommand));
+            CommandLineParser parser = new CommandLineParser(target);
             string[] args1 = new string[]
             {
                 "start",
@@ -768,7 +744,7 @@ namespace ToolBelt
                 "-arg2:blah"
             };
             
-            parser.ParseAndSetTarget(args1, target);
+            parser.ParseAndSetTarget(args1);
             
             Assert.AreEqual("start", target.Command);
             Assert.AreEqual("default", target.Default);

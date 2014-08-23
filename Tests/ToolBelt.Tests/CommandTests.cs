@@ -4,7 +4,7 @@ using ToolBelt;
 using NUnit.Framework;
 using ToolBelt.NUnit;
 
-namespace ToolBelt
+namespace ToolBelt.Tests
 {
     [TestFixture]
     [DeploymentItem(@"$(SolutionDir)\Tests\CommandTestProgram\bin\$(Configuration)\CommandTestProgram.exe")]

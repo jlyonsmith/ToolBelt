@@ -67,9 +67,9 @@ namespace ToolBelt
         /// </summary>
         /// <param name="programAndArgs">The command to pass to the shell.</param>
         /// <returns>The exit code of the process.</returns>
-        public static int Run(string script)
+        public static int Run(string programAndArgs)
         {
-            return Run(script, Console.Out, Console.Error, false);  // DO NOT change this behavior!
+            return Run(programAndArgs, Console.Out, Console.Error, false);  // Please DO NOT change this behavior!
         }
 
         /// <summary>
@@ -79,9 +79,9 @@ namespace ToolBelt
         /// <param name="programAndArgs">The command to pass to the shell.</param>
         /// <param name="output">Interleaved results from standard output and standard error streams.</param>
         /// <returns>The exit code of the process.</returns>
-        public static int Run(string script, out string output)
+        public static int Run(string programAndArgs, out string output)
         {
-            return Run(script, out output, false);
+            return Run(programAndArgs, out output, false);
         }
 
         public static int Run(string programAndArgs, out string output, bool debugMode)
@@ -106,7 +106,7 @@ namespace ToolBelt
         /// <param name="output">Results from standard output stream.</param>
         /// <param name="error">Results from standard error stream.</param>
         /// <returns>The exit code of the process.</returns>
-        public static int Run(string script, out string output, out string error)
+        public static int Run(string programAndArgs, out string output, out string error)
         {
             StringBuilder outputString = new StringBuilder();
             StringWriter outputWriter = new StringWriter(outputString);
@@ -114,7 +114,7 @@ namespace ToolBelt
             StringBuilder errorString = new StringBuilder();
             StringWriter errorWriter = new StringWriter(errorString);
 
-            int exitCode = Run(script, outputWriter, errorWriter, false);
+            int exitCode = Run(programAndArgs, outputWriter, errorWriter, false);
 
             outputWriter.Close();
             errorWriter.Close();
@@ -126,16 +126,16 @@ namespace ToolBelt
         }
 
         /// <summary>
-        /// Run the specified command through the shell specified in the COMSPEC environment variable.
+        /// Run the specified command through the shell specified in the COMSPEC or SHELL environment variable.
         /// </summary>
         /// <param name="programAndArgs">The command to pass to the shell.</param>
         /// <param name="outputWriter">The stream to which the standard output stream will be redirected.</param>
         /// <param name="errorWriter">The stream to which the standard error stream will be redirected.</param>
         /// <param name="debugMode">Debug mode</param>
         /// <returns>The exit code of the process.</returns>
-        public static int Run(string script, TextWriter outputWriter, TextWriter errorWriter, bool debugMode)
+        public static int Run(string programAndArgs, TextWriter outputWriter, TextWriter errorWriter, bool debugMode)
         {
-            return new Command(script, outputWriter, errorWriter, debugMode).Run();
+            return new Command(programAndArgs, outputWriter, errorWriter, debugMode).Run();
         }
             
         public int Run()
@@ -154,14 +154,14 @@ namespace ToolBelt
                 }
 
 #if WINDOWS
-                string shell = System.Environment.GetEnvironmentVariable("COMSPEC");
-                string argString = "/c \"" + scriptFileName + "\"";
-#elif MACOS
-                string shell = "/bin/bash";
-                string argString = "\"" + scriptFileName + "\"";
+                var shellVar = "COMSPEC";
+#elif MACOS || UNIX
+                var shellVar = "SHELL";
 #else 
                 throw new NotImplementedException();
 #endif
+                string shell = System.Environment.GetEnvironmentVariable(shellVar);
+                string argString = "\"" + scriptFileName + "\"";
 
                 Process p = new Process();
 

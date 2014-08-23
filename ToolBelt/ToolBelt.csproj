@@ -22,7 +22,7 @@
     <DefineConstants>MONO,MACOS</DefineConstants>
     <CustomCommands>
       <CustomCommands>
-        <Command type="BeforeBuild" command="/bin/bash ${SolutionDir}/bin/build_resources.sh" workingdir="${ProjectDir}" />
+        <Command type="BeforeBuild" command="/usr/bin/make" workingdir="${ProjectDir}/Resources" />
       </CustomCommands>
     </CustomCommands>
     <DebugSymbols>true</DebugSymbols>
@@ -34,7 +34,7 @@
     <DefineConstants>MONO,MACOS</DefineConstants>
     <CustomCommands>
       <CustomCommands>
-        <Command type="BeforeBuild" command="/bin/bash ${SolutionDir}/bin/build_resources.sh" workingdir="${ProjectDir}" />
+        <Command type="BeforeBuild" command="/usr/bin/make" workingdir="${ProjectDir}/Resources" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -42,7 +42,6 @@
     <Compile Include="BigEndianBitConverter.cs" />
     <Compile Include="CollectionHelper.cs" />
     <Compile Include="Command.cs" />
-    <Compile Include="CommandLineParser.cs" />
     <Compile Include="ConsoleUtility.cs" />
     <Compile Include="DirectoryInfoUtility.cs" />
     <Compile Include="DirectoryUtility.cs" />
@@ -68,20 +67,24 @@
     <Compile Include="ReadOnlyDictionary.cs" />
     <Compile Include="StreamUtility.cs" />
     <Compile Include="StringUtility.cs" />
-    <Compile Include="CommandLineParserResources.cs" />
-    <Compile Include="ConsoleUtilityResources.cs" />
     <Compile Include="TextFileRegion.cs" />
     <Compile Include="ListRange.cs" />
     <Compile Include="EnumerationExtensions.cs" />
+    <Compile Include="CommandLineParser.cs" />
+    <Compile Include="AppSettingsParser.cs" />
+    <Compile Include="Resources\CommandLineParserResources.cs" />
+    <Compile Include="Resources\ConsoleUtilityResources.cs" />
+    <Compile Include="Resources\AppSettingsParserResources.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="BuildResources.sh" />
-    <None Include="ConsoleUtilityResources.resx" />
-    <None Include="CommandLineParserResources.resx" />
     <None Include="..\ToolBelt.snk">
       <Link>ToolBelt.snk</Link>
     </None>
     <None Include="packages.config" />
+    <None Include="Resources\CommandLineParserResources.resx" />
+    <None Include="Resources\ConsoleUtilityResources.resx" />
+    <None Include="Resources\makefile" />
+    <None Include="Resources\AppSettingsParserResources.resx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -90,7 +93,17 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <EmbeddedResource Include="CommandLineParserResources.resources" />
-    <EmbeddedResource Include="ConsoleUtilityResources.resources" />
+    <EmbeddedResource Include="Resources\CommandLineParserResources.resources">
+      <LogicalName>ToolBelt.CommandLineParserResources.resources</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\ConsoleUtilityResources.resources">
+      <LogicalName>ToolBelt.ConsoleUtilityResources.resources</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\AppSettingsParserResources.resources">
+      <LogicalName>ToolBelt.AppSettingsParserResources.resources</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
 </Project>
