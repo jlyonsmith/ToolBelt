@@ -225,11 +225,6 @@ namespace ToolBelt
         /// </exception>
         public void ParseAndSetTarget(string argString)
         {
-            if (HasValue && !AllowsMultiple && !argPropertyInfo.PropertyType.IsValueType)
-            {
-                throw new CommandLineArgumentException(CommandLineParserResources.DuplicateCommandLineArgument(Name));
-            }
-
             // Specifically not initialized so we can see if the big if block below has any holes
             object value = null;
 
@@ -403,6 +398,34 @@ namespace ToolBelt
         }
 
         /// <summary>
+        /// Tests if the given command is valid.  A null or empty command is always valid.
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public bool IsValidForCommand(string command)
+        {
+            if (String.IsNullOrEmpty(command))
+                return true;
+            
+            if (argAttribute.Commands == null)
+                return false;
+
+            string[] commands = argAttribute.Commands.Split(',', ';');
+            
+            for (int i = 0; i < commands.Length; i++)
+                commands[i] = commands[i].Trim().ToLower(CultureInfo.InvariantCulture); // commands are not localized
+                
+            return Array.Exists<string>(commands, delegate(string item)
+            {
+                return String.CompareOrdinal(item, command) == 0;
+            });
+        }
+
+        #endregion
+
+        #region Overrides
+
+        /// <summary>
         /// Returns the value of the argument as a string
         /// </summary>
         public override string ToString()
@@ -441,7 +464,7 @@ namespace ToolBelt
                 {
                     IEnumerator enumerator = ValueCollection.GetEnumerator();
                     bool more = enumerator.MoveNext();
-                    
+
                     while (more)
                     {
                         var value = enumerator.Current;
@@ -475,30 +498,6 @@ namespace ToolBelt
             }
         }
 
-        /// <summary>
-        /// Tests if the given command is valid.  A null or empty command is always valid.
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        public bool IsValidForCommand(string command)
-        {
-            if (String.IsNullOrEmpty(command))
-                return true;
-            
-            if (argAttribute.Commands == null)
-                return false;
-
-            string[] commands = argAttribute.Commands.Split(',', ';');
-            
-            for (int i = 0; i < commands.Length; i++)
-                commands[i] = commands[i].Trim().ToLower(CultureInfo.InvariantCulture); // commands are not localized
-                
-            return Array.Exists<string>(commands, delegate(string item)
-            {
-                return String.CompareOrdinal(item, command) == 0;
-            });
-        }
-
         #endregion
 
         #region Private Methods
@@ -519,7 +518,7 @@ namespace ToolBelt
         #region Fields
 
         private Type argTargetType;
-        private List<CommandLineArgument> argumentCollection;
+        private List<CommandLineArgument> argCollection;
         private CommandLineArgument defaultArgument;
         private CommandLineArgument unprocessedArgument;
         private CommandLineArgument commandArgument;
@@ -534,6 +533,7 @@ namespace ToolBelt
         private Stack<string> responseFiles;
         private const int maxResponseFileDepth = 10;
         private Dictionary<string, string[]> commandArguments;
+        private Dictionary<string, bool> setStates;
 
         #endregion
 
@@ -879,6 +879,18 @@ namespace ToolBelt
             }
         }
 
+        /// <summary>
+        /// Gets the argument extracted from the target object.
+        /// </summary>
+        /// <value>The argument collection.</value>
+        public IEnumerable<CommandLineArgument> ArgumentCollection
+        {
+            get 
+            {
+                return argCollection;
+            }
+        }
+
         #endregion
 
         #region Constructors
@@ -902,8 +914,9 @@ namespace ToolBelt
             this.resourceReaderType = resourceReaderType;
             this.flags = flags;
             this.responseFiles = new Stack<string>();
+            this.setStates = new Dictionary<string, bool>();
 
-            argumentCollection = new List<CommandLineArgument>();
+            argCollection = new List<CommandLineArgument>();
 
             // Look ONLY for public instance properties.  NOTE: Don't change this behavior!
             foreach (PropertyInfo propertyInfo in argTargetType.GetProperties(BindingFlags.Instance | BindingFlags.Public))
@@ -923,20 +936,21 @@ namespace ToolBelt
                         CommandLineParserResources.PropertyShouldBeReadableAndWriteable(propertyInfo.Name));
 
                 attribute.ValueHint = ExternalGetString(attribute.ValueHint);
+                CommandLineArgument arg = null;
 
                 if (attribute is DefaultCommandLineArgumentAttribute)
                 {
                     if (HasDefaultArgument)
                         throw new ArgumentException(CommandLineParserResources.DefaultArgumentAlreadyDefined);
                     
-                    defaultArgument = new CommandLineArgument(argTarget, attribute, propertyInfo);
+                    arg = defaultArgument = new CommandLineArgument(argTarget, attribute, propertyInfo);
                 }
                 else if (attribute is UnprocessedCommandLineArgumentAttribute)
                 {
                     if (HasUnprocessedArgument)
                         throw new ArgumentException(CommandLineParserResources.UnprocessedArgumentAlreadyDefined);
                         
-                    unprocessedArgument = new CommandLineArgument(argTarget, attribute, propertyInfo);
+                    arg = unprocessedArgument = new CommandLineArgument(argTarget, attribute, propertyInfo);
                     
                     if (!unprocessedArgument.AllowsMultiple)
                         throw new ArgumentException(CommandLineParserResources.UnprocessedArgumentMustBeArrayOrCollection);
@@ -946,17 +960,11 @@ namespace ToolBelt
                     if (HasCommandArgument)
                         throw new ArgumentException(CommandLineParserResources.CommandArgumentAlreadyDefined);
                         
-                    commandArgument = new CommandLineArgument(argTarget, attribute, propertyInfo);
+                    arg = commandArgument = new CommandLineArgument(argTarget, attribute, propertyInfo);
                 }
                 else
                 {
                     attribute.Description = ExternalGetString(attribute.Description);
-                    
-                    if (attribute.Description == null)
-                    {
-                        throw new ArgumentException(
-                            CommandLineParserResources.PropertyDoesNotHaveAValueForDescription(propertyInfo.Name));
-                    }
                     
                     // If not being case sensitive, make everything lower case.
                     if (!CaseSensitive)
@@ -967,8 +975,11 @@ namespace ToolBelt
                             attribute.ShortName = attribute.ShortName.ToLower(CultureInfo.InvariantCulture);
                     }
                 
-                    argumentCollection.Add(new CommandLineArgument(argTarget, attribute, propertyInfo));
+                    arg = new CommandLineArgument(argTarget, attribute, propertyInfo);
                 }
+
+                argCollection.Add(arg);
+                setStates.Add(arg.Name, false);
             }
             
             if (HasUnprocessedArgument && !HasDefaultArgument)
@@ -982,21 +993,15 @@ namespace ToolBelt
         #region Methods
 
         /// <summary>
-        /// Parses the program argument strings from <see cref="System.Environment.GetCommandLineArgs()"/> and sets the target object properties.
-        /// </summary>
-        /// <param name="argStrings">Argument strings.</param>
-        public void ParseAndSetTarget()
-        {
-            ParseAndSetTarget(new ListRange<string>(Environment.GetCommandLineArgs(), 1));
-        }
-
-        /// <summary>
         /// Parses the supplied command line arguments and sets the target objects properties.
         /// </summary>
         /// <param name="args"></param>
         /// <param name="target"></param>
         public void ParseAndSetTarget(IEnumerable<string> argStrings)
         {
+            foreach (var arg in argCollection)
+                setStates[arg.Name] = false;
+
             if (argStrings == null || argStrings.Count() == 0)
                 return;
 
@@ -1009,6 +1014,7 @@ namespace ToolBelt
                 {
                     // We have a default argument now, everything else should be left unprocessed
                     unprocessedArgument.ParseAndSetTarget(argString);
+                    setStates[unprocessedArgument.Name] = true;
                     continue;
                 }
 
@@ -1109,7 +1115,7 @@ namespace ToolBelt
                         // Needed for the use of the parser in the lambda
                         CommandLineParser parser = this;
 
-                        arg = argumentCollection.Find(
+                        arg = argCollection.Find(
                             item =>
                             {
                                 return
@@ -1120,7 +1126,7 @@ namespace ToolBelt
                     }
                     else
                     {
-                        arg = argumentCollection.Find(
+                        arg = argCollection.Find(
                             item =>
                             {
                                 return
@@ -1131,11 +1137,15 @@ namespace ToolBelt
 
                     if (arg == null)
                     {
-                        throw new CommandLineArgumentException(CommandLineParserResources.UnknownArgument(arg));
+                        throw new CommandLineArgumentException(CommandLineParserResources.UnknownArgument(argumentName));
                     }
                     else
                     {
+                        if (!arg.AllowsMultiple && setStates[arg.Name])
+                            throw new CommandLineArgumentException(CommandLineParserResources.DuplicateCommandLineArgument(arg.Name));
+
                         arg.ParseAndSetTarget(argumentValue);
+                        setStates[arg.Name] = true;
                     }
                     break;
                 default:
@@ -1149,15 +1159,21 @@ namespace ToolBelt
                         }
                             
                         commandArgument.ParseAndSetTarget(command);
+                        setStates[commandArgument.Name] = true;
                     }
                     else if (HasDefaultArgument)
                     {
+                        if (!defaultArgument.AllowsMultiple && setStates[defaultArgument.Name])
+                            throw new CommandLineArgumentException(CommandLineParserResources.DuplicateCommandLineArgument(defaultArgument.Name));
+
                         defaultArgument.ParseAndSetTarget(argString);
+                        setStates[defaultArgument.Name] = true;
                     }
                     else
                     {
                         throw new CommandLineArgumentException(CommandLineParserResources.UnknownArgument(argString));
                     }
+
                     break;
                 }
             }
@@ -1236,7 +1252,7 @@ namespace ToolBelt
         public string GetArgumentString()
         {
             StringBuilder sb = new StringBuilder();
-            List<CommandLineArgument>.Enumerator enumerator = argumentCollection.GetEnumerator();
+            List<CommandLineArgument>.Enumerator enumerator = argCollection.GetEnumerator();
 
             if (HasCommandArgument && commandArgument.HasValue)
             {
@@ -1254,22 +1270,6 @@ namespace ToolBelt
                     if (s.Length > 0)
                         sb.AppendFormat(" " + s);
                 }
-            }
-
-            if (HasDefaultArgument && (!HasCommandArgument || defaultArgument.IsValidForCommand(commandArgument.ToString())))
-            {
-                string s = defaultArgument.ToString();
-
-                if (s.Length > 0)
-                    sb.Append(" " + s);
-            }
-
-            if (HasUnprocessedArgument && (!HasCommandArgument || unprocessedArgument.IsValidForCommand(commandArgument.ToString())))
-            {
-                string s = unprocessedArgument.ToString();
-
-                if (s.Length > 0)
-                    sb.Append(" " + s);
             }
 
             return sb.ToString();
@@ -1414,9 +1414,9 @@ namespace ToolBelt
             // and the descriptions with any necessary modifications, such as the 
             // short switch.
             List<KeyValuePair<CommandLineArgument, string>> switches =
-                new List<KeyValuePair<CommandLineArgument, string>>(argumentCollection.Count);
+                new List<KeyValuePair<CommandLineArgument, string>>(argCollection.Count);
 
-            foreach (CommandLineArgument argument in argumentCollection)
+            foreach (CommandLineArgument argument in argCollection)
             {
                 if (!IsValidArgumentForCommand(argument, command))
                     continue;
@@ -1480,7 +1480,7 @@ namespace ToolBelt
                         CommandLineParserResources.ShortFormat(shortName));
                 }
 
-                string[] descriptionLines = StringUtility.WordWrap(description, (lineLength - 1) - 22);
+                string[] descriptionLines = StringUtility.WordWrap(description == null ? "" : description, (lineLength - 1) - 22);
 
                 for (int i = 0; i < descriptionLines.Length; i++)
                 {
@@ -1578,11 +1578,11 @@ namespace ToolBelt
 
             if (command.Length == 0)
             {
-                return argumentCollection.Count > 0;
+                return argCollection.Count > 0;
             }
             else
             {
-                foreach (CommandLineArgument argument in argumentCollection)
+                foreach (CommandLineArgument argument in argCollection)
                 {
                     if (IsValidArgumentForCommand(argument, command))
                         return true;
@@ -2053,7 +2053,7 @@ namespace ToolBelt
         /// Initializes a new instance of the <see cref="DefaultCommandLineArgumentAttribute"/>
         /// </summary>
         /// <param name="name">Name of the default attribute</param>
-        public DefaultCommandLineArgumentAttribute(string name) : base(name)
+        public DefaultCommandLineArgumentAttribute() : base("default")
         {
         }
     }
@@ -2067,7 +2067,7 @@ namespace ToolBelt
         /// <summary>
         /// Initializes a new instance of the <see cref="UnprocessedCommandLineArgumentAttribute" /> 
         /// </summary>
-        public UnprocessedCommandLineArgumentAttribute(string name) : base(name)
+        public UnprocessedCommandLineArgumentAttribute() : base("unprocessed")
         {
         }
     }
@@ -2082,8 +2082,8 @@ namespace ToolBelt
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandCommandLineArgumentAttribute" /> 
         /// </summary>
-        public CommandCommandLineArgumentAttribute(string name)
-            : base(name)
+        public CommandCommandLineArgumentAttribute()
+            : base("command")
         {
         }
     }

@@ -1,5 +1,5 @@
 //
-// This file genenerated by the Buckle tool on 8/23/2014 at 2:15 PM. 
+// This file genenerated by the Buckle tool on 8/23/2014 at 5:05 PM. 
 //
 // Contains strongly typed wrappers for resources in AppSettingsParserResources.resx
 //
@@ -80,15 +80,6 @@ public class AppSettingsParserResources
     {
         Object[] o = { param0 };
         return new ToolBelt.Message("PropertyShouldBeReadableAndWriteable", typeof(AppSettingsParserResources), ResourceManager, o);
-    }
-
-    /// <summary>
-    /// Property {0} does not have a value for Description
-    /// </summary>
-    public static ToolBelt.Message PropertyDoesNotHaveAValueForDescription(object param0)
-    {
-        Object[] o = { param0 };
-        return new ToolBelt.Message("PropertyDoesNotHaveAValueForDescription", typeof(AppSettingsParserResources), ResourceManager, o);
     }
 
     /// <summary>

@@ -18,13 +18,13 @@ namespace ToolBelt.Tests
 
         class BasicAppSettings
         {
-            [AppSettingsArgument("A number")]
+            [AppSettingsArgument(Description = "A number")]
             public int Number { get; set; }
-            [AppSettingsArgument("A string")]
+            [AppSettingsArgument(Description = "A string")]
             public string String { get; set; }
-            [AppSettingsArgument("A list")]
+            [AppSettingsArgument()]
             public List<string> List { get; set; }
-            [AppSettingsArgument("An enumeration")]
+            [AppSettingsArgument(Description = null)]
             public TestEnum Enum { get; set; }
             public object NotAnAppSetting { get; set; }
         }

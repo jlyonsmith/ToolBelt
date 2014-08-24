@@ -11,9 +11,9 @@ namespace ToolBelt
     public interface IProcessEnvironment
     {
         /// <summary>
-        /// Process the environment.
+        /// Process environment variables.
         /// </summary>
         /// <returns></returns>
-        void ProcessEnvironment();
+        void ProcessEnvironment(IDictionary variables);
     }
 }

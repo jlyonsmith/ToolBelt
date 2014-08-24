@@ -6,7 +6,6 @@ using System.Globalization;
 using System.Collections;
 using System.Linq;
 using System.Collections.Specialized;
-using System.Configuration;
 
 namespace ToolBelt
 {
@@ -349,17 +348,6 @@ namespace ToolBelt
 
         #region Properties
         /// <summary>
-        /// Gets the total number of processed arguments.
-        /// </summary>
-        public int ArgumentCount
-        {
-            get
-            {
-                return argCollection.Count;
-            }
-        }
-
-        /// <summary>
         /// Gets a value indicating if command line processing is case sensitive
         /// </summary>
         public bool CaseSensitive
@@ -367,6 +355,18 @@ namespace ToolBelt
             get
             {
                 return (flags & AppSettingsParserFlags.CaseSensitive) != 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets the argument extracted from the target object.
+        /// </summary>
+        /// <value>The argument collection.</value>
+        public IEnumerable<AppSettingsArgument> ArgumentCollection
+        {
+            get 
+            {
+                return argCollection;
             }
         }
 
@@ -415,12 +415,6 @@ namespace ToolBelt
                 attribute.ValueHint = ExternalGetString(attribute.ValueHint);
                 attribute.Description = ExternalGetString(attribute.Description);
 
-                if (attribute.Description == null)
-                {
-                    throw new ArgumentException(
-                        AppSettingsParserResources.PropertyDoesNotHaveAValueForDescription(propertyInfo.Name));
-                }
-
                 argCollection.Add(new AppSettingsArgument(argTarget, attribute, propertyInfo));
             }
         }
@@ -428,15 +422,6 @@ namespace ToolBelt
         #endregion
 
         #region Methods
-        /// <summary>
-        /// Parses the programs <see cref="ConfigurationManager.AppSettings"/> and sets the corresponding target properties
-        /// </summary>
-        /// <param name="settings">Settings.</param>
-        public void ParseAndSetTarget()
-        {
-            ParseAndSetTarget(ConfigurationManager.AppSettings);
-        }
-
         /// <summary>
         /// Parses the supplied <see cref="NameValueCollection"/> and sets the corresponding target properties
         /// </summary>
@@ -558,9 +543,8 @@ namespace ToolBelt
         /// with the specified argument type.
         /// </summary>
         /// <param name="name">Specifies the checking to be done on the argument.</param>
-        public AppSettingsArgumentAttribute(string description)
+        public AppSettingsArgumentAttribute()
         {
-            this.Description = description;
             this.MethodName = "Parse"; // Default
         }
 

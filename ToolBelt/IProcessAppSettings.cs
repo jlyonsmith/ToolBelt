@@ -2,19 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Configuration;
+using System.Collections.Specialized;
 
 namespace ToolBelt
 {
     /// <summary>
     /// Interface for tasks that process the configuration file
     /// </summary>
-    public interface IProcessConfiguration
+    public interface IProcessAppSettings
     {
         /// <summary>
-        /// Process the configuration at the specified user level
+        /// Process the appSettings section of the app.config file.
         /// </summary>
-        /// <param name="userLevel"></param>
-        /// <returns></returns>
-        void ProcessConfiguration();
+        void ProcessAppSettings(NameValueCollection collection);
     }
 }

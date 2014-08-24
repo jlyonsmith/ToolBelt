@@ -33,9 +33,6 @@
 	<data name="PropertyShouldBeReadableAndWriteable" xml:space="preserve">
 		<value>Property '{0}' should be readable and writeable</value>
 	</data>
-	<data name="PropertyDoesNotHaveAValueForDescription" xml:space="preserve">
-		<value>Property {0} does not have a value for Description</value>
-	</data>
 	<data name="PropertyHasNoAddMethodWithNonObjectParameter" xml:space="preserve">
 		<value>Property '{0}' has no Add method with non-object parameter type.</value>
 	</data>

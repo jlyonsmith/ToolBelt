@@ -178,7 +178,7 @@ namespace ToolBelt.Tests
                 set { arg12 = value; }
             }
 
-            [DefaultCommandLineArgument("default")]
+            [DefaultCommandLineArgument()]
             public string Default
             {
                 get { return defArg; }
@@ -207,7 +207,7 @@ namespace ToolBelt.Tests
 
         class ArgumentsMultiDefaultNoArgs
         {
-            [DefaultCommandLineArgument("default", ValueHint = "<file>")]
+            [DefaultCommandLineArgument(ValueHint = "<file>")]
             public List<string> Default
             {
                 get { return defArgs; }
@@ -259,14 +259,14 @@ namespace ToolBelt.Tests
             string defArg1;
             string defArg2;
 
-            [DefaultCommandLineArgument("default")]
+            [DefaultCommandLineArgument()]
             public string Default1
             {
                 get { return defArg1; }
                 set { defArg1 = value; }
             }
 
-            [DefaultCommandLineArgument("default")]
+            [DefaultCommandLineArgument()]
             public string Default2
             {
                 get { return defArg2; }
@@ -291,7 +291,7 @@ namespace ToolBelt.Tests
         {
             private List<string> unprocessed;
 
-            [UnprocessedCommandLineArgument("unprocessed")]
+            [UnprocessedCommandLineArgument()]
             public List<string> Unprocessed
             {
                 get { return unprocessed; }
@@ -312,14 +312,14 @@ namespace ToolBelt.Tests
                 set { arg = value; }
             }
 
-            [DefaultCommandLineArgument("thing", Description = "<thing>")]
+            [DefaultCommandLineArgument(Description = "<thing>")]
             public string Default
             {
                 get { return def; }
                 set { def = value; }
             }
 
-            [UnprocessedCommandLineArgument("unprocessed")]
+            [UnprocessedCommandLineArgument()]
             public List<string> Unprocessed
             {
                 get { return unprocessed; }
@@ -385,14 +385,14 @@ namespace ToolBelt.Tests
                 set { help = value; }
             }
 
-            [CommandCommandLineArgument("Command", Commands = ",start,stop,pause,help")]
+            [CommandCommandLineArgument(Commands = ",start,stop,pause,help")]
             public string Command
             {
                 get { return command; }
                 set { command = value; }
             }
             
-            [DefaultCommandLineArgument("Default", Commands = "start,stop")]
+            [DefaultCommandLineArgument(Commands = "start,stop")]
             public string Default
             {
                 get { return defArg; }
@@ -566,14 +566,6 @@ namespace ToolBelt.Tests
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public void TestArgumentNoDescription()
-        {
-            // The target object is not derived from the given argument specification type...
-            new CommandLineParser(new ArgumentsNoDescription()).ParseAndSetTarget(null);
-        }
-
-        [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void TestParserNoTarget()
         {
@@ -730,6 +722,14 @@ namespace ToolBelt.Tests
             Assert.DoesNotThrow(delegate { new CommandLineArgumentException(); });
             Assert.DoesNotThrow(delegate { new CommandLineArgumentException("A message"); });
             Assert.DoesNotThrow(delegate { new CommandLineArgumentException("Another message", new SystemException()); });
+        }
+
+        [Test]
+        public void TestNoDuplicates()
+        {
+            var parser = new CommandLineParser(new ArgumentsBasic());
+
+            Assert.Throws<CommandLineArgumentException>(() => parser.ParseAndSetTarget(new string[] { "-arg1:abc", "-arg1:def" }));
         }
 
         [Test]

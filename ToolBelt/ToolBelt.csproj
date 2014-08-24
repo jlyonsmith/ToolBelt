@@ -51,7 +51,6 @@
     <Compile Include="Endianness.cs" />
     <Compile Include="IBuffer.cs" />
     <Compile Include="IBufferManager.cs" />
-    <Compile Include="IProcessConfiguration.cs" />
     <Compile Include="ITool.cs" />
     <Compile Include="IProcessCommandLine.cs" />
     <Compile Include="IProcessEnvironment.cs" />
@@ -75,6 +74,7 @@
     <Compile Include="Resources\CommandLineParserResources.cs" />
     <Compile Include="Resources\ConsoleUtilityResources.cs" />
     <Compile Include="Resources\AppSettingsParserResources.cs" />
+    <Compile Include="IProcessAppSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ToolBelt.snk">
