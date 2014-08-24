@@ -61,6 +61,7 @@
     <Compile Include="Resources\CommandLineParserTestsResources.cs" />
     <Compile Include="CommandLineParserTests.cs" />
     <Compile Include="AppSettingsParserTests.cs" />
+    <Compile Include="CustomType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ToolBelt\ToolBelt.csproj">
@@ -74,7 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\CommandLineParserTestsResources.resources">
-      <LogicalName>ToolBelt.CommandLineParserTestsResources.resources</LogicalName>
+      <LogicalName>ToolBelt.Tests.CommandLineParserTestsResources.resources</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

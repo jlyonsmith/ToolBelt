@@ -27,6 +27,8 @@ namespace ToolBelt.Tests
             [AppSettingsArgument(Description = null)]
             public TestEnum Enum { get; set; }
             public object NotAnAppSetting { get; set; }
+            [AppSettingsArgument(Initializer=typeof(CustomTypeInitializer), MethodName="Parse")]
+            public CustomType Custom { get; set; }
         }
 
         [Test()]
@@ -41,6 +43,7 @@ namespace ToolBelt.Tests
             collection.Add("String", "ABC");
             collection.Add("Enum", "B");
             collection.Add("List", "A,B,C");
+            collection.Add("Custom", "a=1;b=2;c=3");
 
             parser.ParseAndSetTarget(collection);
 
