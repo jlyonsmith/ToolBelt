@@ -24,6 +24,8 @@ namespace ToolBelt.Tests
             public string String { get; set; }
             [AppSettingsArgument()]
             public List<string> List { get; set; }
+            [AppSettingsArgument()]
+            public List<Uri> Uris { get; set; }
             [AppSettingsArgument(Description = null)]
             public TestEnum Enum { get; set; }
             public object NotAnAppSetting { get; set; }
@@ -43,6 +45,7 @@ namespace ToolBelt.Tests
             collection.Add("String", "ABC");
             collection.Add("Enum", "B");
             collection.Add("List", "A,B,C");
+            collection.Add("Uris", "http://here.com,http://there.com");
             collection.Add("Custom", "a=1;b=2;c=3");
 
             parser.ParseAndSetTarget(collection);
@@ -51,6 +54,7 @@ namespace ToolBelt.Tests
             Assert.AreEqual("ABC", target.String);
             Assert.AreEqual(TestEnum.B, target.Enum);
             CollectionAssert.AreEqual(new string[] { "A", "B", "C" }, target.List);
+            CollectionAssert.AreEqual(new Uri[] { new Uri("http://here.com"), new Uri("http://there.com") }, target.Uris);
             Assert.IsNull(target.NotAnAppSetting);
         }
     }
