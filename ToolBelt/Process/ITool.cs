@@ -7,5 +7,6 @@ namespace ToolBelt
     public interface ITool
     {
         void Execute();
+        bool HasOutputErrors { get; }
     }
 }

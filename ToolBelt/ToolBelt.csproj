@@ -39,42 +39,43 @@
     </CustomCommands>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="BigEndianBitConverter.cs" />
-    <Compile Include="CollectionHelper.cs" />
-    <Compile Include="Command.cs" />
-    <Compile Include="ConsoleUtility.cs" />
-    <Compile Include="DirectoryInfoUtility.cs" />
-    <Compile Include="DirectoryUtility.cs" />
-    <Compile Include="EndianBinaryReader.cs" />
-    <Compile Include="EndianBinaryWriter.cs" />
-    <Compile Include="EndianBitConverter.cs" />
-    <Compile Include="Endianness.cs" />
-    <Compile Include="IBuffer.cs" />
-    <Compile Include="IBufferManager.cs" />
-    <Compile Include="ITool.cs" />
-    <Compile Include="IProcessCommandLine.cs" />
-    <Compile Include="IProcessEnvironment.cs" />
-    <Compile Include="LittleEndianBitConverter.cs" />
-    <Compile Include="Memory.cs" />
-    <Compile Include="Message.cs" />
-    <Compile Include="NonClosingStreamWrapper.cs" />
-    <Compile Include="ParsedPath.cs" />
-    <Compile Include="ParsedPathList.cs" />
-    <Compile Include="PathUtility.cs" />
-    <Compile Include="ProcessCycleStopwatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReadOnlyDictionary.cs" />
-    <Compile Include="StreamUtility.cs" />
-    <Compile Include="StringUtility.cs" />
-    <Compile Include="TextFileRegion.cs" />
-    <Compile Include="ListRange.cs" />
-    <Compile Include="EnumerationExtensions.cs" />
-    <Compile Include="CommandLineParser.cs" />
-    <Compile Include="AppSettingsParser.cs" />
     <Compile Include="Resources\CommandLineParserResources.cs" />
     <Compile Include="Resources\ConsoleUtilityResources.cs" />
     <Compile Include="Resources\AppSettingsParserResources.cs" />
-    <Compile Include="IProcessAppSettings.cs" />
+    <Compile Include="IO\DirectoryInfoUtility.cs" />
+    <Compile Include="IO\DirectoryUtility.cs" />
+    <Compile Include="IO\BigEndianBitConverter.cs" />
+    <Compile Include="IO\PathUtility.cs" />
+    <Compile Include="IO\StreamUtility.cs" />
+    <Compile Include="IO\ConsoleUtility.cs" />
+    <Compile Include="IO\EndianBinaryReader.cs" />
+    <Compile Include="IO\EndianBinaryWriter.cs" />
+    <Compile Include="IO\EndianBitConverter.cs" />
+    <Compile Include="IO\Endianness.cs" />
+    <Compile Include="IO\IBuffer.cs" />
+    <Compile Include="IO\IBufferManager.cs" />
+    <Compile Include="IO\NonClosingStreamWrapper.cs" />
+    <Compile Include="IO\ParsedPath.cs" />
+    <Compile Include="IO\ParsedPathList.cs" />
+    <Compile Include="Collections\ReadOnlyDictionary.cs" />
+    <Compile Include="Strings\StringUtility.cs" />
+    <Compile Include="Configuration\AppSettingsParser.cs" />
+    <Compile Include="Configuration\CommandLineParser.cs" />
+    <Compile Include="Collections\EnumerationExtensions.cs" />
+    <Compile Include="IO\TextFileRegion.cs" />
+    <Compile Include="Process\Command.cs" />
+    <Compile Include="Configuration\IProcessAppSettings.cs" />
+    <Compile Include="Configuration\IProcessCommandLine.cs" />
+    <Compile Include="Configuration\IProcessEnvironment.cs" />
+    <Compile Include="IO\LittleEndianBitConverter.cs" />
+    <Compile Include="Process\ITool.cs" />
+    <Compile Include="Collections\ListRange.cs" />
+    <Compile Include="Process\Memory.cs" />
+    <Compile Include="Strings\Message.cs" />
+    <Compile Include="Process\ProcessCycleStopwatch.cs" />
+    <Compile Include="Web\ParsedUrl.cs" />
+    <Compile Include="Process\ToolBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ToolBelt.snk">
@@ -105,5 +106,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
+    <Folder Include="IO\" />
+    <Folder Include="Collections\" />
+    <Folder Include="Strings\" />
+    <Folder Include="Configuration\" />
+    <Folder Include="Process\" />
+    <Folder Include="Web\" />
   </ItemGroup>
 </Project>

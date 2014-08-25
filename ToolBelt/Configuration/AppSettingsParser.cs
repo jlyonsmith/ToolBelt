@@ -199,7 +199,7 @@ namespace ToolBelt
                 }
                 else if (ArgType == typeof(bool))
                 {
-                    value = (object)true;
+                    value = Boolean.Parse(argString);
                 }
                 else if (ArgType.IsEnum)
                 {

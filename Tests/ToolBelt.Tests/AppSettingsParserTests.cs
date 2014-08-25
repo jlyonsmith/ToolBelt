@@ -31,6 +31,8 @@ namespace ToolBelt.Tests
             public object NotAnAppSetting { get; set; }
             [AppSettingsArgument(Initializer=typeof(CustomTypeInitializer), MethodName="Parse")]
             public CustomType Custom { get; set; }
+            [AppSettingsArgument]
+            public bool Flag { get; set; }
         }
 
         [Test()]
@@ -47,6 +49,7 @@ namespace ToolBelt.Tests
             collection.Add("List", "A,B,C");
             collection.Add("Uris", "http://here.com,http://there.com");
             collection.Add("Custom", "a=1;b=2;c=3");
+            collection.Add("Flag", "false");
 
             parser.ParseAndSetTarget(collection);
 
@@ -56,6 +59,7 @@ namespace ToolBelt.Tests
             CollectionAssert.AreEqual(new string[] { "A", "B", "C" }, target.List);
             CollectionAssert.AreEqual(new Uri[] { new Uri("http://here.com"), new Uri("http://there.com") }, target.Uris);
             Assert.IsNull(target.NotAnAppSetting);
+            Assert.AreEqual(false, target.Flag);
         }
     }
 }

@@ -11,6 +11,10 @@ namespace ToolBelt
     public enum MessageType
     {
         /// <summary>
+        /// Informational message
+        /// </summary>
+        Info,
+        /// <summary>
         /// Normal message
         /// </summary>
         Normal,
@@ -21,11 +25,7 @@ namespace ToolBelt
         /// <summary>
         /// Error message
         /// </summary>
-        Error,
-        /// <summary>
-        /// Debug message
-        /// </summary>
-        Debug
+        Error
     };
 
     /// <summary>
@@ -78,7 +78,7 @@ namespace ToolBelt
         }
 
         /// <summary>
-        /// Write a console message
+        /// Write a console message. Goes to the standard error stream, <see cref="Console.Error"/> 
         /// </summary>
         /// <param name="s"></param>
         /// <param name="format"></param>
@@ -87,16 +87,16 @@ namespace ToolBelt
         {
             switch (s)
             {
-                default:
-                case MessageType.Normal:
-                    Console.Out.WriteLine(format, args);
-                    return;
-                case MessageType.Debug:
+                case MessageType.Info:
                     Console.ForegroundColor = ConsoleColor.DarkGray;
                     Console.Error.Write(ConsoleUtilityResources.Debug);
                     Console.Error.WriteLine(format, args);
                     Console.ResetColor();
                     break;
+                default:
+                case MessageType.Normal:
+                    Console.Error.WriteLine(format, args);
+                    return;
                 case MessageType.Warning:
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.Error.Write(ConsoleUtilityResources.Warning);
