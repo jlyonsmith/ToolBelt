@@ -76,6 +76,9 @@
     <Compile Include="Process\ProcessCycleStopwatch.cs" />
     <Compile Include="Web\ParsedUrl.cs" />
     <Compile Include="Process\ToolBase.cs" />
+    <Compile Include="IO\ParsedFilePath.cs" />
+    <Compile Include="IO\ParsedDirectoryPath.cs" />
+    <Compile Include="Strings\Base62KeyGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ToolBelt.snk">

@@ -81,34 +81,70 @@ namespace ToolBelt
         /// Write a console message. Goes to the standard error stream, <see cref="Console.Error"/> 
         /// </summary>
         /// <param name="s"></param>
+        /// <param name="message"></param>
+        public static void WriteMessage(MessageType s, string message)
+        {
+            // NOTE: This override is needed for messages that have { } which is not actually formatting
+
+            switch (s)
+            {
+            case MessageType.Info:
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.Error.Write(ConsoleUtilityResources.Debug);
+                Console.Error.WriteLine(message);
+                Console.ResetColor();
+                break;
+            default:
+            case MessageType.Normal:
+                Console.Error.WriteLine(message);
+                return;
+            case MessageType.Warning:
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Error.Write(ConsoleUtilityResources.Warning);
+                Console.Error.WriteLine(message);
+                Console.ResetColor();
+                break;
+            case MessageType.Error:
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.Write(ConsoleUtilityResources.Error);
+                Console.Error.WriteLine(message);
+                Console.ResetColor();
+                break;
+            }
+        }
+
+        /// <summary>
+        /// Write a console message. Goes to the standard error stream, <see cref="Console.Error"/> 
+        /// </summary>
+        /// <param name="s"></param>
         /// <param name="format"></param>
         /// <param name="args"></param>
         public static void WriteMessage(MessageType s, string format, params object[] args)
         {
             switch (s)
             {
-                case MessageType.Info:
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.Error.Write(ConsoleUtilityResources.Debug);
-                    Console.Error.WriteLine(format, args);
-                    Console.ResetColor();
-                    break;
-                default:
-                case MessageType.Normal:
-                    Console.Error.WriteLine(format, args);
-                    return;
-                case MessageType.Warning:
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.Error.Write(ConsoleUtilityResources.Warning);
-                    Console.Error.WriteLine(format, args);
-                    Console.ResetColor();
-                    break;
-                case MessageType.Error:
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Error.Write(ConsoleUtilityResources.Error);
-                    Console.Error.WriteLine(format, args);
-                    Console.ResetColor();
-                    break;
+            case MessageType.Info:
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.Error.Write(ConsoleUtilityResources.Debug);
+                Console.Error.WriteLine(format, args);
+                Console.ResetColor();
+                break;
+            default:
+            case MessageType.Normal:
+                Console.Error.WriteLine(format, args);
+                return;
+            case MessageType.Warning:
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Error.Write(ConsoleUtilityResources.Warning);
+                Console.Error.WriteLine(format, args);
+                Console.ResetColor();
+                break;
+            case MessageType.Error:
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.Write(ConsoleUtilityResources.Error);
+                Console.Error.WriteLine(format, args);
+                Console.ResetColor();
+                break;
             }
         }
 

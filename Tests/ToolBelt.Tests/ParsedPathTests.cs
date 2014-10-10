@@ -207,7 +207,7 @@ namespace ToolBelt.Tests
         }
 
         #region Assert paths parts
-        private void AssertPathParts(
+        public static void AssertPathParts(
             string path,
             PathType type, 
             string machine,
@@ -234,7 +234,7 @@ namespace ToolBelt.Tests
             Assert.AreEqual(extension, pp.Extension.ToString());
         }
         
-        private void AssertBadPath(
+        public static void AssertBadPath(
             string path, 
             PathType type)
         {
@@ -252,7 +252,7 @@ namespace ToolBelt.Tests
         #endregion      
 
         #region Assert path parts with MakeFullPath()
-        private void AssertPathPartsFull(
+        public static void AssertPathPartsFull(
             string path,
             string baseDir,
             string machine,
@@ -284,7 +284,7 @@ namespace ToolBelt.Tests
             Assert.AreEqual(extension, pp.Extension.ToString());
         }
         
-        private void AssertBadPathFull(
+        public static void AssertBadPathFull(
             string path, 
             string baseDir)
         {
@@ -303,7 +303,7 @@ namespace ToolBelt.Tests
         #endregion
 
         #region Assert path directory with MakeRelativePath()
-        private void AssertPathPartsRelative(
+        public static void AssertPathPartsRelative(
             string path,
             string basePath,
             string directory)
@@ -333,7 +333,7 @@ namespace ToolBelt.Tests
         #endregion
 
         #region Assert path directory with MakeParentPath()
-        private void AssertParentPath(
+        public static void AssertParentPath(
             string path,
             int level,
             string machine,
@@ -382,7 +382,7 @@ namespace ToolBelt.Tests
             Assert.AreEqual(extension, pp.Extension.ToString());
         }
 
-        private void AssertBadParentPath(
+        public static void AssertBadParentPath(
             string path,
             int level)
         {

@@ -63,6 +63,8 @@
     <Compile Include="AppSettingsParserTests.cs" />
     <Compile Include="CustomType.cs" />
     <Compile Include="ParsedUrlTests.cs" />
+    <Compile Include="ParseFilePathTests.cs" />
+    <Compile Include="ParsedDirectoryPathTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ToolBelt\ToolBelt.csproj">
