@@ -97,13 +97,13 @@ namespace ToolBelt
     {
         #region Fields
 
-        private string path;
-        private short machineLength;
-        private short shareLength;
-        private short driveLength;
-        private short dirLength;
-        private short fileLength;
-        private short extLength;
+        protected string path;
+        protected short machineLength;
+        protected short shareLength;
+        protected short driveLength;
+        protected short dirLength;
+        protected short fileLength;
+        protected short extLength;
 
         #endregion
 
@@ -488,7 +488,7 @@ namespace ToolBelt
             }
         }
 
-        private ParsedPath(
+        protected ParsedPath(
             string path, 
             int machineLength, 
             int shareLength, 
@@ -510,7 +510,7 @@ namespace ToolBelt
 
         #region Instance Methods
 
-        private void ValidateAndNormalizePath(ref string path)
+        protected void ValidateAndNormalizePath(ref string path)
         {
             // Null reference is bad
             if (path == null)
@@ -706,7 +706,7 @@ namespace ToolBelt
         /// with the applications current directory as the base path.
         /// </remarks>
         /// <returns>The fully qualified file path</returns>
-        public ParsedPath MakeFullPath()
+        public virtual ParsedPath MakeFullPath()
         {
             return MakeFullPath(null);
         }

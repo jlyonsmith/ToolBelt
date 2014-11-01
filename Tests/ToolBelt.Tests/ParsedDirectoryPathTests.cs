@@ -17,6 +17,18 @@ namespace ToolBelt.Tests
         {
         }
 
+        [Test] public void TestGoodConversion()
+        {
+            var path = new ParsedDirectoryPath(new ParsedPath("a/b", PathType.Directory));
+
+            AssertDirectoryPathParts(path, "", "", "", "a/b/");
+        }
+
+        [Test] public void TestBadConversion()
+        {
+            Assert.Throws<InvalidCastException>(() => new ParsedDirectoryPath(new ParsedPath("a.txt", PathType.File)));
+        }
+
         public static void AssertDirectoryPathParts(
             string path,
             string machine,
