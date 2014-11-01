@@ -161,6 +161,10 @@ namespace ToolBelt
                 throw new NotImplementedException();
 #endif
                 string shell = System.Environment.GetEnvironmentVariable(shellVar);
+
+                if (String.IsNullOrEmpty(shell))
+                    throw new InvalidOperationException("{0} environment variable is not set".InvariantFormat(shellVar));
+
                 string argString = "\"" + scriptFileName + "\"";
 
                 Process p = new Process();

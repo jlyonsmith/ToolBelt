@@ -31,8 +31,15 @@ namespace ToolBelt.Tests
             public object NotAnAppSetting { get; set; }
             [AppSettingsArgument(Initializer=typeof(CustomTypeInitializer), MethodName="Parse")]
             public CustomType Custom { get; set; }
+            [AppSettingsArgument(Initializer=typeof(BasicAppSettings), MethodName="Parse")]
+            public string Custom2 { get; set; }
             [AppSettingsArgument]
             public bool Flag { get; set; }
+
+            public static string Parse(string arg)
+            {
+                return arg + "xxx";
+            }
         }
 
         [Test()]
@@ -48,7 +55,8 @@ namespace ToolBelt.Tests
             collection.Add("Enum", "B");
             collection.Add("List", "A,B,C");
             collection.Add("Uris", "http://here.com,http://there.com");
-            collection.Add("Custom", "a=1;b=2;c=3");
+            collection.Add("Custom", "a=1;b=2");
+            collection.Add("Custom2", "a");
             collection.Add("Flag", "false");
 
             parser.ParseAndSetTarget(collection);
@@ -59,6 +67,9 @@ namespace ToolBelt.Tests
             CollectionAssert.AreEqual(new string[] { "A", "B", "C" }, target.List);
             CollectionAssert.AreEqual(new Uri[] { new Uri("http://here.com"), new Uri("http://there.com") }, target.Uris);
             Assert.IsNull(target.NotAnAppSetting);
+            CollectionAssert.AreEquivalent(new KeyValuePair<string, string>[] 
+                { new KeyValuePair<string, string>("a", "1"), new KeyValuePair<string, string>("b", "2") }, target.Custom.Parameters);
+            Assert.AreEqual("axxx", target.Custom2);
             Assert.AreEqual(false, target.Flag);
         }
     }

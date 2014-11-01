@@ -29,6 +29,7 @@ namespace ToolBelt.Tests
             private string arg10;
             private int arg11;
             int? arg12;
+            string arg14;
             string defArg;
 
             // Short name that is a prefix to the full name
@@ -119,11 +120,25 @@ namespace ToolBelt.Tests
                 set { arg12 = value; }
             }
 
+            // NOTE: No argument 13.  That would be unlucky
+
+            [CommandLineArgument("arg14", Description = "Argument #14", Initializer = typeof(ArgumentsBasic), MethodName="Parse")]
+            public string Arg14
+            {
+                get { return arg14; }
+                set { arg14 = value; }
+            }
+
             [DefaultCommandLineArgument()]
             public string Default
             {
                 get { return defArg; }
                 set { defArg = value; }
+            }
+
+            public static string Parse(string arg)
+            {
+                return arg + "xxx";
             }
         }
 
@@ -358,6 +373,7 @@ namespace ToolBelt.Tests
                 "-arg7:a=1;b=2",
                 "-arg8:blah.txt",
                 "-arg9:blah.txt",
+                "-arg14:a",
                 "something.txt"             
             };
             
@@ -373,8 +389,9 @@ namespace ToolBelt.Tests
                 { new KeyValuePair<string, string>("a", "1"), new KeyValuePair<string, string>("b", "2") }, target.Arg7.Parameters);
             Assert.AreEqual("blah.txt", target.Arg8.ToString());
             Assert.AreEqual("blah.txt", target.Arg9.ToString());
+            Assert.AreEqual("axxx", target.Arg14);
             Assert.AreEqual(
-                " -arg1:valueForArg1 -arg2:1 -arg2:2 -arg3:Alpha -arg3:Beta -arg4 -arg5:10 -arg7:a=1;b=2 -arg8:blah.txt -arg9:blah.txt -arg11:0 something.txt", 
+                " -arg1:valueForArg1 -arg2:1 -arg2:2 -arg3:Alpha -arg3:Beta -arg4 -arg5:10 -arg7:a=1;b=2 -arg8:blah.txt -arg9:blah.txt -arg11:0 -arg14:axxx something.txt", 
                 parser.GetArgumentString());
             Assert.IsNull(target.Arg12);
         }
