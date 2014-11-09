@@ -2,11 +2,11 @@
 <Version>
   <Files>
     <File>ToolBelt/Properties/AssemblyInfo.cs</File>
-    <File>ToolBelt/Tests/ToolBelt.Tests/Properties/AssemblyInfo.cs</File>
     <File>ToolBelt.Service/Properties/AssemblyInfo.cs</File>
-    <File>ToolBelt/Tests/ToolBelt.Service.Tests/Properties/AssemblyInfo.cs</File>
     <File>ToolBelt.Service.Pcl/Properties/AssemblyInfo.cs</File>
-    <File>ToolBelt/Tests/ToolBelt.Service.Pcl.Tests/Properties/AssemblyInfo.cs</File>
+    <File>Tests/ToolBelt.Tests/Properties/AssemblyInfo.cs</File>
+    <File>Tests/ToolBelt.Service.Tests/Properties/AssemblyInfo.cs</File>
+    <File>Tests/ToolBelt.NUnit/Properties/AssemblyInfo.cs</File>
     <File>Tests/CommandTestProgram/Properties/AssemblyInfo.cs</File>
     <File>Tests/NUnitTestProgram/Properties/AssemblyInfo.cs</File>
     <File>ToolBelt.nuspec</File>
@@ -14,7 +14,7 @@
   </Files>
   <Major>3</Major>
   <Minor>0</Minor>
-  <Build>0</Build>
+  <Build>11109</Build>
   <Revision>0</Revision>
   <StartYear>2014</StartYear>
 </Version>
