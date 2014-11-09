@@ -79,6 +79,7 @@
     <Compile Include="IO\ParsedFilePath.cs" />
     <Compile Include="IO\ParsedDirectoryPath.cs" />
     <Compile Include="Strings\Base62KeyGenerator.cs" />
+    <Compile Include="Web\ParsedEmail.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ToolBelt.snk">

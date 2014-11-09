@@ -1,7 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
-using ToolBelt.ServiceStack;
 using System.Collections.Generic;
+using ToolBelt_ServiceStack;
 
 namespace Property
 {

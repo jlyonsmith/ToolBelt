@@ -5,7 +5,7 @@ using ServiceStack;
 using ServiceStack.Host.Handlers;
 using ServiceStack.Web;
 
-namespace ToolBelt.ServiceStack
+namespace ToolBelt.Service
 {
     public class MoreHttpHeaders
     {

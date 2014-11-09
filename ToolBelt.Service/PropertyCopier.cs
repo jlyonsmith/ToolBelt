@@ -5,7 +5,7 @@ using System.Linq;
 using System.Collections;
 using System.Globalization;
 
-namespace ToolBelt.ServiceStack
+namespace ToolBelt.Service
 {
     public static class PropertyCopierExtensions
     {

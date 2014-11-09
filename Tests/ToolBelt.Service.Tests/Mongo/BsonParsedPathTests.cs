@@ -5,8 +5,9 @@ using MongoDB.Bson.Serialization;
 using System.IO;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization.Serializers;
+using ToolBelt;
 
-namespace ToolBelt.MongoDB.Tests
+namespace ToolBelt.Service.Tests
 {
 	class Data
 	{

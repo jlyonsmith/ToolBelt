@@ -1,5 +1,5 @@
 //
-// This file genenerated by the Buckle tool on 4/9/2014 at 4:37 PM. 
+// This file genenerated by the Buckle tool on 11/9/2014 at 8:18 AM. 
 //
 // Contains strongly typed wrappers for resources in ConsoleUtilityResources.resx
 //
@@ -27,6 +27,17 @@ public class ConsoleUtilityResources
         get
         {
             return new ToolBelt.Message("Debug", typeof(ConsoleUtilityResources), ResourceManager, null);
+        }
+    }
+
+    /// <summary>
+    /// info: 
+    /// </summary>
+    public static ToolBelt.Message Info
+    {
+        get
+        {
+            return new ToolBelt.Message("Info", typeof(ConsoleUtilityResources), ResourceManager, null);
         }
     }
 

@@ -8,11 +8,11 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("Release")]
 #endif
 
-[assembly: AssemblyTitle("ToolBelt Unit Tests")]
+[assembly: AssemblyTitle("ToolBelt.Service Unit Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyCompany("John Lyon-Smith")]
 [assembly: AssemblyProduct("ToolBelt")]
-[assembly: AssemblyCopyright("Copyright © 2013, John Lyon-Smith.")]
+[assembly: AssemblyCopyright("Copyright © 2014, John Lyon-Smith.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]

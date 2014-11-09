@@ -254,6 +254,14 @@ namespace ToolBelt
             return this.url;
         }
 
+        public static implicit operator String(ParsedUrl url)
+        {
+            if (url == null)
+                return null;
+
+            return url.ToString();
+        }
+
         public ParsedUrl WithPath(string newPath)
         {
             StringBuilder sb = new StringBuilder(url.Length + newPath.Length);

@@ -2,19 +2,19 @@
 <Version>
   <Files>
     <File>ToolBelt/Properties/AssemblyInfo.cs</File>
-    <File>ToolBelt.MongoDB/Properties/AssemblyInfo.cs</File>
-    <File>ToolBelt.ServiceStack/Properties/AssemblyInfo.cs</File>
-    <File>ToolBelt.ServiceStack.Pcl/Properties/AssemblyInfo.cs</File>
+    <File>ToolBelt/Tests/ToolBelt.Tests/Properties/AssemblyInfo.cs</File>
+    <File>ToolBelt.Service/Properties/AssemblyInfo.cs</File>
+    <File>ToolBelt/Tests/ToolBelt.Service.Tests/Properties/AssemblyInfo.cs</File>
+    <File>ToolBelt.Service.Pcl/Properties/AssemblyInfo.cs</File>
+    <File>ToolBelt/Tests/ToolBelt.Service.Pcl.Tests/Properties/AssemblyInfo.cs</File>
     <File>Tests/CommandTestProgram/Properties/AssemblyInfo.cs</File>
     <File>Tests/NUnitTestProgram/Properties/AssemblyInfo.cs</File>
     <File>ToolBelt.nuspec</File>
-    <File>ToolBelt.MongoDB.nuspec</File>
-    <File>ToolBelt.ServiceStack.nuspec</File>
-    <File>ToolBelt.ServiceStack.Pcl.nuspec</File>
+    <File>ToolBelt.Service.nuspec</File>
   </Files>
-  <Major>2</Major>
+  <Major>3</Major>
   <Minor>0</Minor>
-  <Build>11101</Build>
+  <Build>0</Build>
   <Revision>0</Revision>
   <StartYear>2014</StartYear>
 </Version>

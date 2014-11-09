@@ -1,10 +1,10 @@
 ﻿using NUnit.Framework;
 using System;
 using MongoDB.Bson;
-using ToolBelt.ServiceStack;
+using ToolBelt.Service;
 using System.Collections.Generic;
 
-namespace ToolBelt.MongoDB.Tests
+namespace ToolBelt.Service.Tests
 {
     [TestFixture()]
     public class PropertyCopierTests

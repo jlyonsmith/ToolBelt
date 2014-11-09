@@ -13,9 +13,30 @@ namespace ToolBelt
         /// <summary>
         /// Informational message
         /// </summary>
+        Debug,
+        /// <summary>
+        /// Debug message
+        /// </summary>
+        /// <summary>
+        /// Informational message
+        /// </summary>
+        DebugClean,
+        /// <summary>
+        /// Debug message
+        /// </summary>
+        /// <summary>
+        /// Informational message
+        /// </summary>
         Info,
         /// <summary>
-        /// Normal message
+        /// Informational message
+        /// </summary>
+        /// <summary>
+        /// Informational message
+        /// </summary>
+        InfoClean,
+        /// <summary>
+        /// Informational message
         /// </summary>
         Normal,
         /// <summary>
@@ -23,9 +44,17 @@ namespace ToolBelt
         /// </summary>
         Warning,
         /// <summary>
+        /// Warning message with no prefix
+        /// </summary>
+        WarningClean,
+        /// <summary>
         /// Error message
         /// </summary>
-        Error
+        Error,
+        /// <summary>
+        /// Error message with no prefix
+        /// </summary>
+        ErrorClean
     };
 
     /// <summary>
@@ -88,9 +117,25 @@ namespace ToolBelt
 
             switch (s)
             {
+            case MessageType.Debug:
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.Error.Write(ConsoleUtilityResources.Debug);
+                Console.Error.WriteLine(message);
+                Console.ResetColor();
+                break;
+            case MessageType.DebugClean:
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.Error.WriteLine(message);
+                Console.ResetColor();
+                break;
             case MessageType.Info:
                 Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.Error.Write(ConsoleUtilityResources.Debug);
+                Console.Error.Write(ConsoleUtilityResources.Info);
+                Console.Error.WriteLine(message);
+                Console.ResetColor();
+                break;
+            case MessageType.InfoClean:
+                Console.ForegroundColor = ConsoleColor.DarkGray;
                 Console.Error.WriteLine(message);
                 Console.ResetColor();
                 break;
@@ -104,9 +149,19 @@ namespace ToolBelt
                 Console.Error.WriteLine(message);
                 Console.ResetColor();
                 break;
+            case MessageType.WarningClean:
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Error.WriteLine(message);
+                Console.ResetColor();
+                break;
             case MessageType.Error:
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.Error.Write(ConsoleUtilityResources.Error);
+                Console.Error.WriteLine(message);
+                Console.ResetColor();
+                break;
+            case MessageType.ErrorClean:
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.Error.WriteLine(message);
                 Console.ResetColor();
                 break;

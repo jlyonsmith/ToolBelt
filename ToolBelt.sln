@@ -5,15 +5,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		ToolBelt.version = ToolBelt.version
 		README.md = README.md
-		ToolBelt.nuspec = ToolBelt.nuspec
 		LICENSE.md = LICENSE.md
 		ToolBelt.version.config = ToolBelt.version.config
-		ToolBelt.MongoDB.nuspec = ToolBelt.MongoDB.nuspec
-		ToolBelt.ServiceStack.nuspec = ToolBelt.ServiceStack.nuspec
-		ToolBelt.ServiceStack.Pcl.nuspec = ToolBelt.ServiceStack.Pcl.nuspec
+		ToolBelt.nuspec = ToolBelt.nuspec
+		ToolBelt.Service.nuspec = ToolBelt.Service.nuspec
+		ToolBelt.Service.Pcl.nuspec = ToolBelt.Service.Pcl.nuspec
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.NUnit", "ToolBelt.NUnit\ToolBelt.NUnit.csproj", "{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{07024690-13E6-40E8-9FEC-5541056517E1}"
 EndProject
@@ -23,17 +20,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.Tests", "Tests\Too
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitTestProgram", "Tests\NUnitTestProgram\NUnitTestProgram.csproj", "{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.MongoDB.Tests", "Tests\ToolBelt.MongoDB.Tests\ToolBelt.MongoDB.Tests.csproj", "{85606A4E-E488-4C0A-8482-E27DB31FC7CA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.Service.Tests", "Tests\ToolBelt.Service.Tests\ToolBelt.Service.Tests.csproj", "{8DB38635-D1BE-4CDB-BC1B-CEF814483AE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.ServiceStack.Tests", "Tests\ToolBelt.ServiceStack.Tests\ToolBelt.ServiceStack.Tests.csproj", "{D2494FF1-BD08-40FB-8D31-4CCB85BFF0B7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.NUnit", "Tests\ToolBelt.NUnit\ToolBelt.NUnit.csproj", "{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt", "ToolBelt\ToolBelt.csproj", "{2055D34D-3DF2-444B-937B-32CC1A6E11DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.MongoDB", "ToolBelt.MongoDB\ToolBelt.MongoDB.csproj", "{9ED61F47-B679-4507-A32C-18E5362F8D95}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.Service", "ToolBelt.Service\ToolBelt.Service.csproj", "{B4D697E2-D32B-450F-88CF-0F66F2C7D39E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.ServiceStack", "ToolBelt.ServiceStack\ToolBelt.ServiceStack.csproj", "{C3AA3397-E427-443C-B9FE-2F2D5998A938}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.ServiceStack.Pcl", "ToolBelt.ServiceStack.Pcl\ToolBelt.ServiceStack.Pcl.csproj", "{A52813CB-4426-402F-A437-5C935D4E839C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.Service.Pcl", "ToolBelt.Service.Pcl\ToolBelt.Service.Pcl.csproj", "{6D31A27B-E7C4-4182-B3AC-7CE2E1220FE2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,58 +55,46 @@ Global
 		{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}.Default|Any CPU.Build.0 = Debug|Any CPU
 		{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}.Release|x86.ActiveCfg = Release|Any CPU
 		{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}.Release|x86.Build.0 = Release|Any CPU
-		{85606A4E-E488-4C0A-8482-E27DB31FC7CA}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{85606A4E-E488-4C0A-8482-E27DB31FC7CA}.Debug|x86.Build.0 = Debug|Any CPU
-		{85606A4E-E488-4C0A-8482-E27DB31FC7CA}.Default|Any CPU.ActiveCfg = Debug|Any CPU
-		{85606A4E-E488-4C0A-8482-E27DB31FC7CA}.Default|Any CPU.Build.0 = Debug|Any CPU
-		{85606A4E-E488-4C0A-8482-E27DB31FC7CA}.Release|x86.ActiveCfg = Release|Any CPU
-		{85606A4E-E488-4C0A-8482-E27DB31FC7CA}.Release|x86.Build.0 = Release|Any CPU
-		{9ED61F47-B679-4507-A32C-18E5362F8D95}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{9ED61F47-B679-4507-A32C-18E5362F8D95}.Debug|x86.Build.0 = Debug|Any CPU
-		{9ED61F47-B679-4507-A32C-18E5362F8D95}.Default|Any CPU.ActiveCfg = Debug|Any CPU
-		{9ED61F47-B679-4507-A32C-18E5362F8D95}.Default|Any CPU.Build.0 = Debug|Any CPU
-		{9ED61F47-B679-4507-A32C-18E5362F8D95}.Release|x86.ActiveCfg = Release|Any CPU
-		{9ED61F47-B679-4507-A32C-18E5362F8D95}.Release|x86.Build.0 = Release|Any CPU
-		{A52813CB-4426-402F-A437-5C935D4E839C}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{A52813CB-4426-402F-A437-5C935D4E839C}.Debug|x86.Build.0 = Debug|Any CPU
-		{A52813CB-4426-402F-A437-5C935D4E839C}.Default|Any CPU.ActiveCfg = Debug|Any CPU
-		{A52813CB-4426-402F-A437-5C935D4E839C}.Default|Any CPU.Build.0 = Debug|Any CPU
-		{A52813CB-4426-402F-A437-5C935D4E839C}.Release|x86.ActiveCfg = Release|Any CPU
-		{A52813CB-4426-402F-A437-5C935D4E839C}.Release|x86.Build.0 = Release|Any CPU
+		{6D31A27B-E7C4-4182-B3AC-7CE2E1220FE2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6D31A27B-E7C4-4182-B3AC-7CE2E1220FE2}.Debug|x86.Build.0 = Debug|Any CPU
+		{6D31A27B-E7C4-4182-B3AC-7CE2E1220FE2}.Default|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D31A27B-E7C4-4182-B3AC-7CE2E1220FE2}.Default|Any CPU.Build.0 = Debug|Any CPU
+		{6D31A27B-E7C4-4182-B3AC-7CE2E1220FE2}.Release|x86.ActiveCfg = Release|Any CPU
+		{6D31A27B-E7C4-4182-B3AC-7CE2E1220FE2}.Release|x86.Build.0 = Release|Any CPU
+		{8DB38635-D1BE-4CDB-BC1B-CEF814483AE0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8DB38635-D1BE-4CDB-BC1B-CEF814483AE0}.Debug|x86.Build.0 = Debug|Any CPU
+		{8DB38635-D1BE-4CDB-BC1B-CEF814483AE0}.Default|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DB38635-D1BE-4CDB-BC1B-CEF814483AE0}.Default|Any CPU.Build.0 = Debug|Any CPU
+		{8DB38635-D1BE-4CDB-BC1B-CEF814483AE0}.Release|x86.ActiveCfg = Release|Any CPU
+		{8DB38635-D1BE-4CDB-BC1B-CEF814483AE0}.Release|x86.Build.0 = Release|Any CPU
+		{B4D697E2-D32B-450F-88CF-0F66F2C7D39E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B4D697E2-D32B-450F-88CF-0F66F2C7D39E}.Debug|x86.Build.0 = Debug|Any CPU
+		{B4D697E2-D32B-450F-88CF-0F66F2C7D39E}.Default|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4D697E2-D32B-450F-88CF-0F66F2C7D39E}.Default|Any CPU.Build.0 = Debug|Any CPU
+		{B4D697E2-D32B-450F-88CF-0F66F2C7D39E}.Release|x86.ActiveCfg = Release|Any CPU
+		{B4D697E2-D32B-450F-88CF-0F66F2C7D39E}.Release|x86.Build.0 = Release|Any CPU
 		{BEEE8EE8-832C-4068-AA22-4CFE69F46044}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{BEEE8EE8-832C-4068-AA22-4CFE69F46044}.Debug|x86.Build.0 = Debug|Any CPU
 		{BEEE8EE8-832C-4068-AA22-4CFE69F46044}.Default|Any CPU.ActiveCfg = Debug|Any CPU
 		{BEEE8EE8-832C-4068-AA22-4CFE69F46044}.Default|Any CPU.Build.0 = Debug|Any CPU
 		{BEEE8EE8-832C-4068-AA22-4CFE69F46044}.Release|x86.ActiveCfg = Release|Any CPU
 		{BEEE8EE8-832C-4068-AA22-4CFE69F46044}.Release|x86.Build.0 = Release|Any CPU
-		{C3AA3397-E427-443C-B9FE-2F2D5998A938}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{C3AA3397-E427-443C-B9FE-2F2D5998A938}.Debug|x86.Build.0 = Debug|Any CPU
-		{C3AA3397-E427-443C-B9FE-2F2D5998A938}.Default|Any CPU.ActiveCfg = Debug|Any CPU
-		{C3AA3397-E427-443C-B9FE-2F2D5998A938}.Default|Any CPU.Build.0 = Debug|Any CPU
-		{C3AA3397-E427-443C-B9FE-2F2D5998A938}.Release|x86.ActiveCfg = Release|Any CPU
-		{C3AA3397-E427-443C-B9FE-2F2D5998A938}.Release|x86.Build.0 = Release|Any CPU
 		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}.Debug|x86.ActiveCfg = Debug|x86
 		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}.Debug|x86.Build.0 = Debug|x86
 		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}.Default|Any CPU.ActiveCfg = Debug|x86
 		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}.Default|Any CPU.Build.0 = Debug|x86
 		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}.Release|x86.ActiveCfg = Release|x86
 		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}.Release|x86.Build.0 = Release|x86
-		{D2494FF1-BD08-40FB-8D31-4CCB85BFF0B7}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D2494FF1-BD08-40FB-8D31-4CCB85BFF0B7}.Debug|x86.Build.0 = Debug|Any CPU
-		{D2494FF1-BD08-40FB-8D31-4CCB85BFF0B7}.Default|Any CPU.ActiveCfg = Debug|Any CPU
-		{D2494FF1-BD08-40FB-8D31-4CCB85BFF0B7}.Default|Any CPU.Build.0 = Debug|Any CPU
-		{D2494FF1-BD08-40FB-8D31-4CCB85BFF0B7}.Release|x86.ActiveCfg = Release|Any CPU
-		{D2494FF1-BD08-40FB-8D31-4CCB85BFF0B7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{BEEE8EE8-832C-4068-AA22-4CFE69F46044} = {07024690-13E6-40E8-9FEC-5541056517E1}
 		{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE} = {07024690-13E6-40E8-9FEC-5541056517E1}
 		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622} = {07024690-13E6-40E8-9FEC-5541056517E1}
-		{85606A4E-E488-4C0A-8482-E27DB31FC7CA} = {07024690-13E6-40E8-9FEC-5541056517E1}
-		{D2494FF1-BD08-40FB-8D31-4CCB85BFF0B7} = {07024690-13E6-40E8-9FEC-5541056517E1}
+		{8DB38635-D1BE-4CDB-BC1B-CEF814483AE0} = {07024690-13E6-40E8-9FEC-5541056517E1}
+		{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13} = {07024690-13E6-40E8-9FEC-5541056517E1}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = ToolBelt.NUnit\ToolBelt.NUnit.csproj
+		StartupItem = Tests\CommandTestProgram\CommandTestProgram.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1
 		$1.FileWidth = 120

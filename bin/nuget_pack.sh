@@ -1,4 +1,5 @@
 #!/bin/bash
+rm *.nupkg
 mono ~/lib/NuGet/NuGet.exe pack ToolBelt.nuspec
 mono ~/lib/NuGet/NuGet.exe pack ToolBelt.MongoDB.nuspec
 mono ~/lib/NuGet/NuGet.exe pack ToolBelt.ServiceStack.nuspec

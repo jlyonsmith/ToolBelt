@@ -35,7 +35,7 @@ namespace ToolBelt
 
         public virtual void WriteInfo(string format, params object[] args)
         {
-            ConsoleUtility.WriteMessage(MessageType.Normal, format, args);
+            ConsoleUtility.WriteMessage(MessageType.Info, format, args);
         }
 
         public virtual void WriteMessage(string format, params object[] args)

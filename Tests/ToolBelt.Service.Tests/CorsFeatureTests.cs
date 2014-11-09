@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
-using ToolBelt.ServiceStack;
+using ToolBelt.Service;
 using ServiceStack;
 using ServiceStack.Web;
 using System.Collections.Generic;
@@ -14,6 +14,19 @@ namespace ToolBelt.ServiceStack.Tests
         List<Func<IHttpRequest, IHttpHandler>> rawHttpHandlers = new List<Func<IHttpRequest, IHttpHandler>>();
 
         #region IAppHost
+
+        public string ResolveLocalizedString(string text, IRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public global::ServiceStack.Configuration.IAppSettings AppSettings
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         public global::ServiceStack.Host.ServiceMetadata Metadata
         {
@@ -215,9 +228,9 @@ namespace ToolBelt.ServiceStack.Tests
         [Test()]
         public void TestCorsFeature()
         {
-            var corsFeature = new CorsFeature(
+            var corsFeature = new ToolBelt.Service.CorsFeature(
                 allowOrigins: "http://localhost:1337",
-                allowHeaders: CorsFeature.DefaultHeaders + ",Authorization,Accept,X-Requested-With",
+                allowHeaders: ToolBelt.Service.CorsFeature.DefaultHeaders + ",Authorization,Accept,X-Requested-With",
                 exposeHeaders: true,
                 allowCredentials: true
             );

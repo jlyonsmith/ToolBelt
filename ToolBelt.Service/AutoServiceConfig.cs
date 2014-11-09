@@ -10,7 +10,7 @@ using ToolBelt;
 using System.IO;
 using System.Collections.Specialized;
 
-namespace ToolBelt.ServiceStack
+namespace ToolBelt.Service
 {
     public abstract class AutoServiceConfig : IProcessCommandLine, IProcessAppSettings
     {

@@ -6,7 +6,7 @@ using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson;
 
-namespace ToolBelt.MongoDB
+namespace ToolBelt.Service
 {
     /// <summary>
     /// Represents a serializer for ParsedPath.
