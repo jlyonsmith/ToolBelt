@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>ServiceBelt</id>
+    <version>3.0.11109.0</version>
+    <authors>jlyonsmith</authors>
+    <owners>jlyonsmith</owners>
+    <licenseUrl>http://github.com/jlyonsmith/ToolBelt/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>http://github.com/jlyonsmith/ToolBelt</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Plugins and utility classes for REST API projects using Mono, ServiceStack, MongoDB and RQL</description>
+    <releaseNotes>Targeted and tested for Mono on OSX and Linux systems.</releaseNotes>
+    <copyright>Copyright (c) 2014 John Lyon-Smith</copyright>
+    <tags>utility servicestack plugin cors copy mongodb mono rql rest osx linux</tags>
+  </metadata>
+  <files>
+    <file src="ServiceBelt/bin/Release/ServiceBelt.dll" target="lib/net45" /> 
+  </files>
+</package>

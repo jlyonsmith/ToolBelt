@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8DB38635-D1BE-4CDB-BC1B-CEF814483AE0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ToolBelt.Service.Tests</RootNamespace>
+    <AssemblyName>ToolBelt.Service.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Bson">
+      <HintPath>..\..\packages\mongocsharpdriver.1.9.2\lib\net35\MongoDB.Bson.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver">
+      <HintPath>..\..\packages\mongocsharpdriver.1.9.2\lib\net35\MongoDB.Driver.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>..\..\packages\ServiceStack.Interfaces.4.0.32\lib\portable-wp80+sl5+net40+win8+monotouch+monoandroid\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\..\packages\ServiceStack.Text.4.0.32\lib\net40\ServiceStack.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Common">
+      <HintPath>..\..\packages\ServiceStack.Common.4.0.32\lib\net40\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Client">
+      <HintPath>..\..\packages\ServiceStack.Client.4.0.32\lib\net40\ServiceStack.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack">
+      <HintPath>..\..\packages\ServiceStack.4.0.32\lib\net40\ServiceStack.dll</HintPath>
+    </Reference>
+    <Reference Include="Rql">
+      <HintPath>..\..\packages\Rql.2.0.10928.0\lib\net45\Rql.dll</HintPath>
+    </Reference>
+    <Reference Include="JWT">
+      <HintPath>..\..\packages\JWT.1.3.2\lib\3.5\JWT.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="Rql.MongoDB">
+      <HintPath>..\..\packages\Rql.MongoDB.2.0.10928.0\lib\net45\Rql.MongoDB.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Mongo\" />
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Mongo\BsonParsedPathTests.cs" />
+    <Compile Include="PropertyCopierTests.cs" />
+    <Compile Include="CorsFeatureTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ToolBelt\ToolBelt.csproj">
+      <Project>{2055D34D-3DF2-444B-937B-32CC1A6E11DF}</Project>
+      <Name>ToolBelt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToolBelt.NUnit\ToolBelt.NUnit.csproj">
+      <Project>{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}</Project>
+      <Name>ToolBelt.NUnit</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ServiceBelt\ServiceBelt.csproj">
+      <Project>{B4D697E2-D32B-450F-88CF-0F66F2C7D39E}</Project>
+      <Name>ServiceBelt</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

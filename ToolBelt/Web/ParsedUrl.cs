@@ -12,10 +12,10 @@ namespace ToolBelt
 	{
         static Regex reUrl = new Regex(
             @"^(?'scheme'[a-z]+)://((?'user'.+?)(:(?'password'.+?))?@)?((?'host'[a-z\.0-9-\*]+)(:(?'port'\d+))?)?((?'path'/.*?)?(\?(?'params'.+))?)?$", 
-            RegexOptions.ExplicitCapture);
+            RegexOptions.ExplicitCapture | RegexOptions.Singleline);
         static Regex reParam = new Regex(
             @"(?'key'[A-Za-z0-9_-]+?)(=(?'newPath'.*?))*?(&|$)", 
-            RegexOptions.ExplicitCapture);
+            RegexOptions.ExplicitCapture | RegexOptions.Singleline);
 
         string url;
         short userIndex;
