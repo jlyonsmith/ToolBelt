@@ -127,7 +127,7 @@ namespace ServiceBelt
                 return new ListResponse<TSmo> 
                     { Items = smoList, Count = smoList.Count, Limit = limit, Offset = skip, DbQuery = (query == null ? "" : query.ToString()) };
                 #else
-                return new Smo.ListResponse<TSmo> 
+                return new ListResponse<TSmo> 
                     { Items = smoList, Count = smoList.Count, Limit = limit, Offset = skip };
                 #endif
             }
