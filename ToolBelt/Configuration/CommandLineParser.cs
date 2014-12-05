@@ -1418,7 +1418,7 @@ namespace ToolBelt
 
             foreach (CommandLineArgument argument in argCollection)
             {
-                if (!IsValidArgumentForCommand(argument, command))
+                if (argument.IsCommandArg || argument.IsDefaultArg || !IsValidArgumentForCommand(argument, command))
                     continue;
                 
                 string valueText = "";
@@ -1434,9 +1434,19 @@ namespace ToolBelt
                 }
                 else if (
                     argument.ArgType == typeof(FileInfo) ||
-                    argument.ArgType == typeof(ParsedPath))
+                    argument.ArgType == typeof(ParsedPath) ||
+                    argument.ArgType == typeof(ParsedDirectoryPath) ||
+                    argument.ArgType == typeof(ParsedFilePath))
                 {
                     valueText = ":<" + CommandLineParserResources.FileName_Lowercase + ">";
+                }
+                else if (argument.ArgType == typeof(ParsedUrl))
+                {
+                    valueText = ":<url>";
+                }
+                else if (argument.ArgType == typeof(ParsedEmail))
+                {
+                    valueText = ":<email>";
                 }
                 else if (
                     argument.ArgType == typeof(int) ||

@@ -8,7 +8,7 @@
     <licenseUrl>http://github.com/jlyonsmith/ToolBelt/blob/master/LICENSE.md</licenseUrl>
     <projectUrl>http://github.com/jlyonsmith/ToolBelt</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>An extremely useful collection of utility classes.</description>
+    <description>An extremely useful collection of utility classes for .NET</description>
     <releaseNotes>Targeted and tested for Mono on OSX and Linux systems.</releaseNotes>
     <copyright>Copyright (C) 2014 John Lyon-Smith</copyright>
     <tags>utility path endian console localization commandline string extension mono osx linux</tags>

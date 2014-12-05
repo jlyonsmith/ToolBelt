@@ -35,7 +35,7 @@ namespace ServiceBelt
 
                 try
                 {
-                    loginToken = tokenManager.ToLoginToken(auth.Substring(bearerPrefix.Length));
+                    loginToken = tokenManager.ToSecurityToken(auth.Substring(bearerPrefix.Length), "login");
                 }
                 catch (Exception)
                 {

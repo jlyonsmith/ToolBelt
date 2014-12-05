@@ -24,14 +24,14 @@ namespace ServiceBelt
             return "{0}.Login.{1}".Fmt(id.ToString(), appName);
         }
 
-        public string LoginUser(ISecuredUser user)
+        public string LoginUser(IAuthenticatedUser user)
         {
             Cache.Add(GetCacheName(user.Id), user);
 
-            return Token.ToLoginJwt(new SecurityToken(user.Email, user.Id, TimeSpan.FromDays(1)));
+            return Token.ToJwtToken(new SecurityToken(user.Email, user.Id, TimeSpan.FromDays(1)), "login");
         }
 
-        public ISecuredUser GetLoggedInUser(IRequest request)
+        public IAuthenticatedUser GetLoggedInUser(IRequest request)
         {
             object obj;
 
@@ -39,15 +39,20 @@ namespace ServiceBelt
             {
                 var token = (SecurityToken)obj;
 
-                return Cache.Get<ISecuredUser>(GetCacheName(token.UserId));
+                return Cache.Get<IAuthenticatedUser>(GetCacheName(token.UserId));
             }
             else
                 return null;
         }
 
-        public void UpdateLoggedInUser(ISecuredUser user)
+        public T GetLoggedInUserAs<T>(IRequest request) where T : class
         {
-            Cache.Set<ISecuredUser>(GetCacheName(user.Id), user);
+            return GetLoggedInUser(request) as T;
+        }
+
+        public void UpdateLoggedInUser(IAuthenticatedUser user)
+        {
+            Cache.Set<IAuthenticatedUser>(GetCacheName(user.Id), user);
         }
 
         public void LogoutUser(IRequest request)

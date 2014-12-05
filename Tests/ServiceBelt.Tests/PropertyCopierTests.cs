@@ -4,7 +4,7 @@ using MongoDB.Bson;
 using ServiceBelt;
 using System.Collections.Generic;
 
-namespace ServiceBelt.Tests
+namespace ServiceBelt
 {
     [TestFixture()]
     public class PropertyCopierTests

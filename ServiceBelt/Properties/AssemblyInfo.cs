@@ -1,5 +1,4 @@
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug")]
@@ -8,7 +7,7 @@ using System.Runtime.CompilerServices;
 #endif
 
 [assembly: AssemblyTitle("ServiceBeltStack")]
-[assembly: AssemblyDescription("Programmers ToolBelt for Services")]
+[assembly: AssemblyDescription("ToolBelt for Services")]
 [assembly: AssemblyCompany("John Lyon-Smith")]
 [assembly: AssemblyProduct("")]
 [assembly: AssemblyCopyright("(c) 2014, John Lyon-Smith")]

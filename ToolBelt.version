@@ -11,7 +11,7 @@
     <File>Tests/NUnitTestProgram/Properties/AssemblyInfo.cs</File>
     <File>ToolBelt.nuspec</File>
     <File>ServiceBelt.nuspec</File>
-    <File>ServiceBelt.Pcl.nuspec</File>
+    <File>AppBelt.nuspec</File>
     <File>Scratch/ToolBelt.version.txt</File>
   </Files>
   <Major>3</Major>

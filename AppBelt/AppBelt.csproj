@@ -8,8 +8,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{6D31A27B-E7C4-4182-B3AC-7CE2E1220FE2}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>ServiceBelt.Pcl</RootNamespace>
-    <AssemblyName>ServiceBelt.Pcl</AssemblyName>
+    <RootNamespace>AppBelt</RootNamespace>
+    <AssemblyName>AppBelt</AssemblyName>
     <TargetFrameworkProfile>Profile78</TargetFrameworkProfile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>

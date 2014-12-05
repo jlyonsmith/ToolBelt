@@ -68,27 +68,12 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AutoServiceConfig.cs" />
-    <Compile Include="CorsFeature.cs" />
     <Compile Include="LoggedInAttribute.cs" />
     <Compile Include="LoginTokenFeature.cs" />
     <Compile Include="PropertyCopier.cs" />
     <Compile Include="SecurityToken.cs" />
     <Compile Include="StaticFileHandler.cs" />
-    <Compile Include="Managers\EmailManager.cs" />
-    <Compile Include="Managers\IDirectoryManager.cs" />
-    <Compile Include="Managers\IEmailManager.cs" />
-    <Compile Include="Managers\IEmailManagerConfig.cs" />
-    <Compile Include="Managers\IResourceManager.cs" />
-    <Compile Include="Managers\ISecuredUser.cs" />
-    <Compile Include="Managers\ISessionManager.cs" />
-    <Compile Include="Managers\ITokenManager.cs" />
-    <Compile Include="Managers\ITokenManagerConfig.cs" />
-    <Compile Include="Managers\ResourceManager.cs" />
-    <Compile Include="Managers\SessionManager.cs" />
-    <Compile Include="Managers\TokenManager.cs" />
     <Compile Include="Mongo\ParsedPathSerializer.cs" />
-    <Compile Include="Managers\MongoManager.cs" />
-    <Compile Include="Managers\IMongoManager.cs" />
     <Compile Include="AutoWiredValidator.cs" />
     <Compile Include="DataValidatorExtensions.cs" />
     <Compile Include="ICollectionObject.cs" />
@@ -96,6 +81,30 @@
     <Compile Include="IHasObjectId.cs" />
     <Compile Include="Mongo\ParsedUrlSerializer.cs" />
     <Compile Include="Mongo\ParsedEmailSerializer.cs" />
+    <Compile Include="RqlHelper.cs" />
+    <Compile Include="Services\Data\MongoService.cs" />
+    <Compile Include="Models\Service\IHasResourceId.cs" />
+    <Compile Include="Models\Service\ResourceBase.cs" />
+    <Compile Include="Models\Service\ResourceGetParams.cs" />
+    <Compile Include="Models\Service\ListResponse.cs" />
+    <Compile Include="Models\Service\PostResponse.cs" />
+    <Compile Include="Models\Service\PutResponse.cs" />
+    <Compile Include="Models\Service\BatchResponse.cs" />
+    <Compile Include="Features\CorsFeature.cs" />
+    <Compile Include="Services\Managers\EmailManager.cs" />
+    <Compile Include="Services\Managers\IDirectoryManager.cs" />
+    <Compile Include="Services\Managers\IEmailManager.cs" />
+    <Compile Include="Services\Managers\IEmailManagerConfig.cs" />
+    <Compile Include="Services\Managers\IMongoManager.cs" />
+    <Compile Include="Services\Managers\IResourceManager.cs" />
+    <Compile Include="Services\Managers\ISessionManager.cs" />
+    <Compile Include="Services\Managers\ITokenManager.cs" />
+    <Compile Include="Services\Managers\ITokenManagerConfig.cs" />
+    <Compile Include="Services\Managers\MongoManager.cs" />
+    <Compile Include="Services\Managers\ResourceManager.cs" />
+    <Compile Include="Services\Managers\SessionManager.cs" />
+    <Compile Include="Services\Managers\TokenManager.cs" />
+    <Compile Include="Services\Managers\IAuthenticatedUser.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -103,6 +112,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Mongo\" />
+    <Folder Include="Services\" />
+    <Folder Include="Services\Data\" />
+    <Folder Include="Models\" />
+    <Folder Include="Models\Service\" />
+    <Folder Include="Features\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToolBelt\ToolBelt.csproj">

@@ -6,8 +6,8 @@ using System.Reflection;
 [assembly: AssemblyConfiguration("Release")]
 #endif
 
-[assembly: AssemblyTitle("ServiceBelt.Pcl")]
-[assembly: AssemblyDescription("Portable Programmers ToolBelt for Service Clients")]
+[assembly: AssemblyTitle("AppBelt")]
+[assembly: AssemblyDescription("PCL Application ToolBelt")]
 [assembly: AssemblyCompany("John Lyon-Smith")]
 [assembly: AssemblyProduct("")]
 [assembly: AssemblyCopyright("(c) 2014, John Lyon-Smith")]

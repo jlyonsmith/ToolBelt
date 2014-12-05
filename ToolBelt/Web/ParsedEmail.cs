@@ -73,6 +73,11 @@ namespace ToolBelt
             return this.email;
         }
 
+        public string ToShortString()
+        {
+            return this.User + "@" + this.Host;
+        }
+
         public static implicit operator String(ParsedEmail email)
         {
             if (email == null)
