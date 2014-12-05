@@ -18,7 +18,13 @@ if [[ $? -ne 0 ]]; then
 	git checkout -- .
 	exit 1
 fi
+VERSIONFILE=Scratch/${APPNAME}.version.txt
+if [[ ! -e $VERSIONFILE ]]; then
+	git checkout -- .
+	echo "error: Version file" $VERSIONFILE "does not exist"
+	exit 1
+fi
 git add . 
 mkdir scratch 2> /dev/null
-git commit -F Scratch/$APPNAME.version.txt
+git commit -F $VERSIONFILE
 popd
