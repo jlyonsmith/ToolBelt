@@ -3,7 +3,7 @@
   <Files>
     <File>ToolBelt/Properties/AssemblyInfo.cs</File>
     <File>ServiceBelt/Properties/AssemblyInfo.cs</File>
-    <File>ServiceBelt.Pcl/Properties/AssemblyInfo.cs</File>
+    <File>AppBelt/Properties/AssemblyInfo.cs</File>
     <File>Tests/ToolBelt.Tests/Properties/AssemblyInfo.cs</File>
     <File>Tests/ServiceBelt.Tests/Properties/AssemblyInfo.cs</File>
     <File>Tests/ToolBelt.NUnit/Properties/AssemblyInfo.cs</File>
