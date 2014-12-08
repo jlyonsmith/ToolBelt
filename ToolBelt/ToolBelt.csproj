@@ -85,7 +85,6 @@
     <None Include="..\ToolBelt.snk">
       <Link>ToolBelt.snk</Link>
     </None>
-    <None Include="packages.config" />
     <None Include="Resources\CommandLineParserResources.resx" />
     <None Include="Resources\ConsoleUtilityResources.resx" />
     <None Include="Resources\makefile" />
