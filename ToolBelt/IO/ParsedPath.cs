@@ -1006,6 +1006,7 @@ namespace ToolBelt
             if (path == null)
                 return false;
 
+            // TODO: Should not ignore case for Mac/Unix!
             return this.path.Equals(path.path, StringComparison.InvariantCultureIgnoreCase);
         }
 

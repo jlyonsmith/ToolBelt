@@ -80,6 +80,7 @@
     <Compile Include="IO\ParsedDirectoryPath.cs" />
     <Compile Include="Strings\Base62KeyGenerator.cs" />
     <Compile Include="Web\ParsedEmail.cs" />
+    <Compile Include="Web\OAuthUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\ToolBelt.snk">
@@ -94,6 +95,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

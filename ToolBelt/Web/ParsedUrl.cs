@@ -8,8 +8,10 @@ using System.Text;
 
 namespace ToolBelt
 {
-	public class ParsedUrl
+	public sealed class ParsedUrl
 	{
+        public static readonly string UnencodedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
+
         static Regex reUrl = new Regex(
             @"^(?'scheme'[a-z]+)://((?'user'.+?)(:(?'password'.+?))?@)?((?'host'[a-z\.0-9-\*]+)(:(?'port'\d+))?)?((?'path'/.*?)?(\?(?'params'.+))?)?$", 
             RegexOptions.ExplicitCapture | RegexOptions.Singleline);
@@ -55,6 +57,22 @@ namespace ToolBelt
             }
         }
 
+        public string UserAndPassword
+        {
+            get
+            {
+                var user = User;
+                var password = Password;
+
+                if (user != null && password == null)
+                    return user + "@";
+                else if (user != null && password != null)
+                    return user + ":" + password + "@";
+                else
+                    return "";
+            }
+        }
+
         public string Host
         { 
             get
@@ -88,7 +106,7 @@ namespace ToolBelt
             }
         }
 
-        public string Query 
+        public string QueryParams 
         { 
             get
             {
@@ -113,6 +131,43 @@ namespace ToolBelt
                 else
                     return host + ":" + port.Value.ToString();
             }
+        }
+
+        public string All 
+        {
+            get
+            {
+                var queryParams = QueryParams;
+
+                if (queryParams == null)
+                    queryParams = "";
+                else
+                    queryParams = "?" + queryParams;
+
+                return AllNoQueryParams + queryParams;
+            }
+        }
+
+        public string AllNoQueryParams 
+        {
+            get
+            {
+                var path = Path;
+
+                if (path == null)
+                    path = "";
+
+                return Scheme + "://" + UserAndPassword + HostAndPort + path;
+            }
+        }
+
+        public static string CombineAsQueryParams(List<KeyValuePair<string, string>> pairs)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            AppendQueryParams(sb, pairs);
+
+            return sb.ToString();
         }
 
         static void AppendQueryParams(StringBuilder sb, List<KeyValuePair<string, string>> queryParams)
@@ -147,7 +202,7 @@ namespace ToolBelt
 
             StringBuilder sb = new StringBuilder();
 
-            sb.Append(scheme);
+            sb.Append(scheme.ToLower());
             sb.Append("://");
 
             if (user.Length > 0)
@@ -203,7 +258,7 @@ namespace ToolBelt
             else
                 pathIndex = -1;
 
-            if (queryParams != null)
+            if (queryParams.Count != 0)
             {
                 sb.Append("?");
 
@@ -229,13 +284,14 @@ namespace ToolBelt
             queryIndex = newQueryIndex;
         }
 
-        List<KeyValuePair<string, string>> ParseQueryParams(string s)
+        public static List<KeyValuePair<string, string>> ParseQueryParams(string s)
         {
+            var pairs = new List<KeyValuePair<string, string>>();
+
             if (String.IsNullOrEmpty(s))
-                return null;
+                return pairs;
 
             var match = reParam.Match(s);
-            var pairs = new List<KeyValuePair<string, string>>();
 
             while (match.Success)
             {
@@ -289,19 +345,108 @@ namespace ToolBelt
             return new ParsedUrl(sb.ToString(), userIndex, passwordIndex, hostIndex, portIndex, newPathIndex, newQueryIndex);
         }
 
-        public ParsedUrl WithQuery(string newQuery)
+        public ParsedUrl WithPort(int? port = null)
         {
-            StringBuilder sb = new StringBuilder(url.Length + newQuery.Length);
+            var s = (port.HasValue ? ":" + port.Value.ToString() : "");
+            var sb = new StringBuilder(url.Length + s.Length);
 
-            sb.Append(url.Substring(0, (queryIndex > 0 ? queryIndex - 1 : url.Length)));
-            sb.Append("?");
+            sb.Append(url.Substring(0, portIndex != -1 ? portIndex - 1 : pathIndex != -1 ? pathIndex : queryIndex != -1 ? queryIndex - 1 : url.Length));
 
-            short newQueryIndex = (short)sb.Length;
-            var queryParams = ParseQueryParams(newQuery);
+            short newPortIndex = -1, newPathIndex = -1, newQueryIndex = -1;
 
-            AppendQueryParams(sb, queryParams);
+            if (port.HasValue)
+            {
+                newPortIndex = (short)(sb.Length + 1);
+                sb.Append(s);
+            }
+
+            if (pathIndex >= 0)
+            {
+                newPathIndex = (short)sb.Length;
+                sb.Append(this.Path);
+            }
+
+            if (queryIndex >= 0)
+            {
+                newQueryIndex = (short)sb.Length;
+                sb.Append(this.QueryParams);
+            }
+
+            return new ParsedUrl(sb.ToString(), userIndex, passwordIndex, hostIndex, newPortIndex, newPathIndex, newQueryIndex);
+        }
+
+        public ParsedUrl WithQueryParams(string queryParams)
+        {
+            return WithQueryParams(ParseQueryParams(queryParams));
+        }
+
+        public ParsedUrl WithQueryParams(List<KeyValuePair<string, string>> queryParams)
+        {
+            var sb = new StringBuilder(url.Length);
+            short newQueryIndex = -1;
+
+            sb.Append(AllNoQueryParams);
+
+            if (queryParams.Count > 0)
+            {
+                sb.Append("?");
+                newQueryIndex = (short)sb.Length;
+
+                for (int i = 0; i < queryParams.Count; i++)
+                {
+                    var queryParam = queryParams[i];
+
+                    sb.AppendFormat("{0}={1}{2}", queryParam.Key, queryParam.Value, i < queryParams.Count - 1 ? "&" : "");
+                }
+            }
 
             return new ParsedUrl(sb.ToString(), userIndex, passwordIndex, hostIndex, portIndex, pathIndex, newQueryIndex);
+        }
+
+        public static string UrlEncode(string s, bool uppercaseHex = true)
+        {
+            StringBuilder result = new StringBuilder();
+            var format = uppercaseHex ? "{0:X2}" : "{0:x2}";
+
+            foreach (char c in s)
+            {
+                if (UnencodedChars.IndexOf(c) != -1)
+                {
+                    result.Append(c);
+                }
+                else
+                {
+                    result.Append('%' + String.Format(format, (int)c));
+                }
+            }
+
+            return result.ToString();
+        }
+
+        public override bool Equals(object obj)
+        {
+            ParsedUrl path = obj as ParsedUrl;
+
+            if (path == null)
+                return false;
+
+            return this.url.Equals(path.url, StringComparison.InvariantCulture);
+        }
+
+        public override int GetHashCode()
+        {
+            return url.GetHashCode();
+        }
+
+        public static bool Equals(ParsedUrl url1, ParsedPath url2)
+        {
+            if ((object)url1 == (object)url2)
+                return true;
+
+            if ((object)url1 == null || (object)url2 == null)
+                return false;
+
+            return url1.Equals(url2);
         }
 	}
 }
