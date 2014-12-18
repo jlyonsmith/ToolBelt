@@ -29,7 +29,12 @@ namespace ToolBelt
         public void ProcessCommandLine(string[] args)
         {
             parser = new CommandLineParser(this);
-            parser.CommandName = parser.ProcessName + " " + Path.GetFileName(Assembly.GetEntryAssembly().Location);
+
+            if (Type.GetType("Mono.Runtime") != null)
+            {
+                parser.CommandName = "mono " + Path.GetFileName(Assembly.GetEntryAssembly().Location);
+            }
+
             parser.ParseAndSetTarget(args);
         }
 

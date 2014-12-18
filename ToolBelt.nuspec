@@ -11,7 +11,7 @@
     <description>An extremely useful collection of utility classes for .NET</description>
     <releaseNotes>Targeted and tested for Mono on OSX and Linux systems.</releaseNotes>
     <copyright>Copyright (C) 2014 John Lyon-Smith</copyright>
-    <tags>utility path endian console localization commandline string extension mono osx linux</tags>
+    <tags>oauth utility path endian console localization commandline string extension mono osx linux</tags>
   </metadata>
   <files>
     <file src="ToolBelt/bin/Release/ToolBelt.dll" target="lib/net45" /> 
