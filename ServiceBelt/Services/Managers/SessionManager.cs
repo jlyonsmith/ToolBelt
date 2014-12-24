@@ -7,6 +7,13 @@ using System.Reflection;
 
 namespace ServiceBelt
 {
+    internal class AuthenticatedUser : IAuthenticatedUser
+    {
+        public RqlId Id { get; set; }
+        public string Email { get; set; }
+        public int Role { get; set; }
+    }
+
     public class SessionManager : ISessionManager
     {
         public ICacheClient Cache { get; set; }
@@ -31,7 +38,7 @@ namespace ServiceBelt
             return Token.ToJwtToken(new SecurityToken(user.Email, user.Id, TimeSpan.FromDays(1)), "login");
         }
 
-        public IAuthenticatedUser GetLoggedInUser(IRequest request)
+        public T GetLoggedInUserAs<T>(IRequest request) where T : class
         {
             object obj;
 
@@ -39,15 +46,10 @@ namespace ServiceBelt
             {
                 var token = (SecurityToken)obj;
 
-                return Cache.Get<IAuthenticatedUser>(GetCacheName(token.UserId));
+                return Cache.Get<T>(GetCacheName(token.UserId));
             }
             else
                 return null;
-        }
-
-        public T GetLoggedInUserAs<T>(IRequest request) where T : class
-        {
-            return GetLoggedInUser(request) as T;
         }
 
         public void UpdateLoggedInUser(IAuthenticatedUser user)
@@ -57,7 +59,7 @@ namespace ServiceBelt
 
         public void LogoutUser(IRequest request)
         {
-            var user = GetLoggedInUser(request);
+            var user = GetLoggedInUserAs<AuthenticatedUser>(request);
 
             if (user != null)
                 Cache.Remove(GetCacheName(user.Id));

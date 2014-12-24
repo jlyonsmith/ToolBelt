@@ -6,7 +6,6 @@ namespace ServiceBelt
 {
     public interface ISessionManager
     {
-        IAuthenticatedUser GetLoggedInUser(IRequest request);
         T GetLoggedInUserAs<T>(IRequest request) where T : class;
         void UpdateLoggedInUser(IAuthenticatedUser user);
         string LoginUser(IAuthenticatedUser user);

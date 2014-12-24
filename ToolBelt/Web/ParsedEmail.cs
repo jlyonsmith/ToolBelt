@@ -68,14 +68,17 @@ namespace ToolBelt
             this.email = sb.ToString();
         }
 
+        public string UserAndHost
+        {
+            get
+            {
+                return this.User + "@" + this.Host;
+            }
+        }
+        
         public override string ToString()
         {
             return this.email;
-        }
-
-        public string ToShortString()
-        {
-            return this.User + "@" + this.Host;
         }
 
         public static implicit operator String(ParsedEmail email)

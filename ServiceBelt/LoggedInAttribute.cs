@@ -26,7 +26,7 @@ namespace ServiceBelt
 
         public override void Execute(IRequest req, IResponse res, object requestDto)
         {
-            var user = Session.GetLoggedInUser(req);
+            var user = Session.GetLoggedInUserAs<AuthenticatedUser>(req);
 
             if (user == null)
             {

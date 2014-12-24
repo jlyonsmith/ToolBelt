@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Net.Mail;
 using System.Net;
+using System.Text;
 using System.Collections.Generic;
 using ToolBelt;
 using System.Text.RegularExpressions;
+using ServiceStack.Logging;
 
 namespace ServiceBelt
 {
     public class EmailManager : IEmailManager
     {
+        ILog log = LogManager.GetLogger(typeof(EmailManager));
+
         Regex re = new Regex(@"^<h1.*?>(?'title'.*?)</h1>$", RegexOptions.Multiline | RegexOptions.Multiline);
 
         public ParsedUrl SmtpUrl { get; private set; } 
@@ -17,7 +21,7 @@ namespace ServiceBelt
         public EmailManager(IEmailManagerConfig config)
         {
             this.SmtpUrl = config.AwsSesSmtpUrl;
-            this.SupportEmail = config.SupportEmail;
+            this.SupportEmail = config.SupportEmail.UserAndHost;
         }
 
         public bool Send(string to, string template, Dictionary<string, string> variables = null)
@@ -40,16 +44,26 @@ namespace ServiceBelt
 
             message.IsBodyHtml = true;
 
-            // NOTE: If the following code throws then see http://www.mono-project.com/docs/faq/security/ for details on certificates.
-            // Avoid doing this, which will silence the error but is NOT a shippable solution:
-            // ServicePointManager.ServerCertificateValidationCallback = (obj, cert, chain, error) => true;
+            // NOTE: To avoid SSL errors, run:
+            //
+            // certmgr --ssl https://www.amazon.com
 
             try
             {
                 client.Send(message);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                var sb = new StringBuilder();
+
+                while (e != null)
+                {
+                    sb.Append("|");
+                    sb.AppendLine("  " + e.Message);
+                    e = e.InnerException;
+                }
+
+                log.Error("Unable to send email to '{0}'{1}".InvariantFormat(to, sb.ToString()));
                 return false;
             }
 
