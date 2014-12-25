@@ -13,6 +13,19 @@ This is my collection of .NET utility classes which works on both Microsoft and 
 - `StringUtility`, including word wrapping text and tag substition
 - `ProcessCycleStopwatch` (Windows only) for CPU cycle timings
 
-Plus a host of other useful classes.  Enjoy!
+Plus a host of other useful classes.
+
+### ServiceBelt Utility Library
+
+A host of classes for use with:
+
+- ToolBelt
+- [ServiceStack](https://github.com/ServiceStack/ServiceStack)
+- [MongoDB C# Driver](https://github.com/mongodb/mongo-csharp-driver)
+- [REST Query Language](https://github.com/jlyonsmith/Rql)
+
+### AppBelt 
+
+PCL classes for connecting to RESTful services, in particular those written with ServiceBelt.
 
 [![Build Status](https://travis-ci.org/jlyonsmith/ToolBelt.svg?branch=master)](https://travis-ci.org/jlyonsmith/ToolBelt)
