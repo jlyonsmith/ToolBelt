@@ -6,7 +6,7 @@ using ServiceStack.Web;
 using System.Collections.Generic;
 using System.Web;
 
-namespace ServiceBelt
+namespace ServiceBelt.Tests
 {
     class TestAppHost : IAppHost
     {

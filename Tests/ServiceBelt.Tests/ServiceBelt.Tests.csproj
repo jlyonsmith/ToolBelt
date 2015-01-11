@@ -73,12 +73,15 @@
   <ItemGroup>
     <Folder Include="Mongo\" />
     <Folder Include="Properties\" />
+    <Folder Include="Services\" />
+    <Folder Include="Services\Managers\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mongo\BsonParsedPathTests.cs" />
     <Compile Include="PropertyCopierTests.cs" />
     <Compile Include="CorsFeatureTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Managers\HiddenDataManagerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ToolBelt\ToolBelt.csproj">

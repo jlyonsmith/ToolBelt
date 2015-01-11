@@ -105,6 +105,8 @@
     <Compile Include="Services\Managers\TokenManager.cs" />
     <Compile Include="Services\Managers\IAuthenticatedUser.cs" />
     <Compile Include="Features\LoginTokenFeature.cs" />
+    <Compile Include="Services\Managers\HiddenDataManager.cs" />
+    <Compile Include="Services\Managers\IHiddenDataManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

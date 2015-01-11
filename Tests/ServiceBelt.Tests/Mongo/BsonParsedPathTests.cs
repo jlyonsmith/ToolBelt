@@ -7,7 +7,7 @@ using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization.Serializers;
 using ToolBelt;
 
-namespace ServiceBelt
+namespace ServiceBelt.Tests
 {
 	class Data
 	{
