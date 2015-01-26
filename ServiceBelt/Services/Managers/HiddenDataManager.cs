@@ -66,7 +66,7 @@ namespace ServiceBelt
 
                 using (CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
                 {
-                    data = new byte[Marshal.SizeOf<int>()];
+                    data = new byte[Marshal.SizeOf(typeof(int))];
                     cs.Read(data, 0, data.Length);
 
                     data = new byte[BitConverter.ToInt32(data, 0)];
