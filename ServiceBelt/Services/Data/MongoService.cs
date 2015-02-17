@@ -29,12 +29,18 @@ namespace ServiceBelt
         public ISessionManager Session { get; set; }
         public IMongoManager Mongo { get; set; }
 
+        public virtual void BeforeValidation(TDmo dmo)
+        {
+        }
+
         public virtual HttpResult Post(TSmo smo)
         {
             var dmo = smo.CopyAsNew<TDmo>();
             IValidator<TDmo> validator = ServiceStackHost.Instance.Container.Resolve<IValidator<TDmo>>();
 
             dmo.Updated = dmo.Created = DateTime.UtcNow;
+
+            BeforeValidation(dmo);
 
             validator.ValidateAndThrow(dmo);
 
@@ -78,6 +84,9 @@ namespace ServiceBelt
             dmo.Updated = DateTime.UtcNow;
             
             IValidator<TDmo> validator = ServiceStackHost.Instance.Container.Resolve<IValidator<TDmo>>();
+
+            BeforeValidation(dmo);
+
             var result = validator.Validate(dmo);
 
             if (!result.IsValid)

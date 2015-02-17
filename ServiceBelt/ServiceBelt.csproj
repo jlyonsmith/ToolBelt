@@ -91,7 +91,6 @@
     <Compile Include="Models\Service\BatchResponse.cs" />
     <Compile Include="Features\CorsFeature.cs" />
     <Compile Include="Services\Managers\EmailManager.cs" />
-    <Compile Include="Services\Managers\IDirectoryManager.cs" />
     <Compile Include="Services\Managers\IEmailManager.cs" />
     <Compile Include="Services\Managers\IEmailManagerConfig.cs" />
     <Compile Include="Services\Managers\IMongoManager.cs" />
