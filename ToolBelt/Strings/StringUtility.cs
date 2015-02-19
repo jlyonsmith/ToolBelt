@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Globalization;
+using System.Linq;
 
 namespace ToolBelt
 {
@@ -192,25 +193,10 @@ namespace ToolBelt
         /// <param name="tagPrefix">The tag prefix</param>
         /// <param name="tagSuffix">The tag suffix</param>
         /// <param name="dictionary">A dictionary of tag values</param>
-        /// <returns>A string with all tags replaced</returns>
-        public static string ReplaceTags(this string source, string tagPrefix, string tagSuffix, IDictionary dictionary)
-        {
-            return ReplaceTags(source, tagPrefix, tagSuffix, dictionary, TaggedStringOptions.LeaveUnknownTags);
-        }
-
-        /// <summary>
-        /// This method searches for each occurrence of a tagged variable in <c>source</c> and 
-        /// replaces it with the value from the a dictionary <c>subs</c>.  Comparisons are done case
-        /// insensitively. 
-        /// </summary>
-        /// <param name="source">String containing tagged entities</param>
-        /// <param name="tagPrefix">The tag prefix</param>
-        /// <param name="tagSuffix">The tag suffix</param>
-        /// <param name="dictionary">A dictionary of tag values</param>
         /// <param name="flags"><see cref="TaggedStringOptions"/> for the replace operation</param>
         /// <returns>A string with all tags replaced</returns>
         public static string ReplaceTags(
-            this string source, string tagPrefix, string tagSuffix, IDictionary dictionary, TaggedStringOptions flags)
+            this string source, string tagPrefix, string tagSuffix, IDictionary tagDictionary, TaggedStringOptions flags = TaggedStringOptions.RemoveUnknownTags)
         {
             if (string.IsNullOrEmpty(source))
                 return source;
@@ -231,10 +217,10 @@ namespace ToolBelt
 
                 string key = source.Substring(tagStart + tagPrefix.Length, tagEnd - tagStart - tagPrefix.Length);
 
-                if (dictionary.Contains(key))
+                if (tagDictionary.Contains(key))
                 {
                     sb.Remove(tagStart, tagEnd + tagSuffix.Length - tagStart);
-                    sb.Insert(tagStart, (string)dictionary[key]);
+                    sb.Insert(tagStart, tagDictionary[key].ToString());
                 }
                 else
                 {

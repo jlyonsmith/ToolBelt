@@ -68,5 +68,18 @@ namespace ToolBelt.Tests
 
             Assert.AreEqual("saltsaltsalt", StringUtility.ReplaceTags(source, prefix, suffix, tagsCaseInsensitive, TaggedStringOptions.RemoveUnknownTags));
         }
+
+        [Test]
+        public void ReplaceTagsWithFunkyIDictionary()
+        {
+            var tags = new Dictionary<string, ParsedUrl>() 
+            {
+                { "0", new ParsedUrl("file:///User/sally") },
+                { "1", new ParsedUrl("file:///User/david") }
+            };
+            var source = "[Xyz]({{0}})\n[x] {{1}}";
+
+            Assert.AreEqual("[Xyz](file:///User/sally)\n[x] file:///User/david", StringUtility.ReplaceTags(source, "{{", "}}", tags, TaggedStringOptions.LeaveUnknownTags));
+        }
     }
 }
