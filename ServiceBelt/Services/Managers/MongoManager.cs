@@ -12,6 +12,7 @@ using System.Text;
 using ServiceBelt;
 using MongoDB.Driver.GridFS;
 using MongoDB.Bson.Serialization;
+using ToolBelt;
 
 namespace ServiceBelt
 {
@@ -219,6 +220,11 @@ namespace ServiceBelt
             }
 
             BsonSerializer.RegisterSerializer(typeof(TimeSpan), new Rql.MongoDB.TimeSpanSerializer());
+            BsonSerializer.RegisterSerializer(typeof(ParsedPath), new ParsedPathSerializer());
+            BsonSerializer.RegisterSerializer(typeof(ParsedFilePath), new ParsedPathSerializer());
+            BsonSerializer.RegisterSerializer(typeof(ParsedDirectoryPath), new ParsedPathSerializer());
+            BsonSerializer.RegisterSerializer(typeof(ParsedUrl), new ParsedUrlSerializer());
+            BsonSerializer.RegisterSerializer(typeof(ParsedEmail), new ParsedEmailSerializer());
         }
 
         void CreateCollectionIndexes(Type dataModelType)
