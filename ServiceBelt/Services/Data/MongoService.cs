@@ -33,6 +33,10 @@ namespace ServiceBelt
         {
         }
 
+        public virtual void AfterUpdate(TDmo dmo)
+        {
+        }
+
         public virtual HttpResult Post(TSmo smo)
         {
             var dmo = smo.CopyAsNew<TDmo>();
@@ -47,6 +51,8 @@ namespace ServiceBelt
             var collectionName = MongoUtils.ToCamelCase(typeof(TDmo).Name);
 
             Mongo.GetDatabase().GetCollection<TDmo>(collectionName).Save(dmo);
+
+            AfterUpdate(dmo);
 
             var smoId = dmo.Id.ToRqlId();
             var result = new HttpResult(new PostResponse(RqlDateTime.UtcNow, smoId), HttpStatusCode.Created);
@@ -97,6 +103,8 @@ namespace ServiceBelt
             IMongoUpdate update = Update.Replace(dmo);
 
             Mongo.GetCollection<TDmo>().Update(Query<TDmo>.EQ(e => e.Id, dmo.Id), update);
+
+            AfterUpdate(dmo);
 
             return new PutResponse(new RqlDateTime(dmo.Updated));
         }
