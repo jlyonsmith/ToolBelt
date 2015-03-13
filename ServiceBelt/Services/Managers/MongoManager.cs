@@ -219,12 +219,20 @@ namespace ServiceBelt
                 CreateCollectionIndexes(dataModelCollectionType);
             }
 
-            BsonSerializer.RegisterSerializer(typeof(TimeSpan), new Rql.MongoDB.TimeSpanSerializer());
-            BsonSerializer.RegisterSerializer(typeof(ParsedPath), new ParsedPathSerializer());
-            BsonSerializer.RegisterSerializer(typeof(ParsedFilePath), new ParsedPathSerializer());
-            BsonSerializer.RegisterSerializer(typeof(ParsedDirectoryPath), new ParsedPathSerializer());
-            BsonSerializer.RegisterSerializer(typeof(ParsedUrl), new ParsedUrlSerializer());
-            BsonSerializer.RegisterSerializer(typeof(ParsedEmail), new ParsedEmailSerializer());
+            TryRegisterSerializer(typeof(TimeSpan), new Rql.MongoDB.TimeSpanSerializer());
+            TryRegisterSerializer(typeof(ParsedPath), new ParsedPathSerializer());
+            TryRegisterSerializer(typeof(ParsedFilePath), new ParsedPathSerializer());
+            TryRegisterSerializer(typeof(ParsedDirectoryPath), new ParsedPathSerializer());
+            TryRegisterSerializer(typeof(ParsedUrl), new ParsedUrlSerializer());
+            TryRegisterSerializer(typeof(ParsedEmail), new ParsedEmailSerializer());
+        }
+
+        void TryRegisterSerializer(Type type, IBsonSerializer serializer)
+        {
+            if (BsonSerializer.LookupSerializer(type) != null)
+                return;
+
+            BsonSerializer.RegisterSerializer(type, serializer);
         }
 
         void CreateCollectionIndexes(Type dataModelType)
