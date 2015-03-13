@@ -26,8 +26,18 @@ namespace ServiceBelt
         where TSmoQuery: ResourceGetParams
         where TDmo: ICollectionObject, new()
     {
-        public ISessionManager Session { get; set; }
+        public MongoService()
+        {
+            this.container = ServiceStackHost.Instance.Container;
+        }
+
+        public MongoService(Funq.Container container)
+        {
+            this.container = container;
+        }
+
         public IMongoManager Mongo { get; set; }
+        private Funq.Container container;
 
         public virtual void BeforeValidation(TDmo dmo)
         {
@@ -40,7 +50,7 @@ namespace ServiceBelt
         public virtual HttpResult Post(TSmo smo)
         {
             var dmo = smo.CopyAsNew<TDmo>();
-            IValidator<TDmo> validator = ServiceStackHost.Instance.Container.Resolve<IValidator<TDmo>>();
+            IValidator<TDmo> validator = container.Resolve<IValidator<TDmo>>();
 
             dmo.Updated = dmo.Created = DateTime.UtcNow;
 
@@ -57,7 +67,11 @@ namespace ServiceBelt
             var smoId = dmo.Id.ToRqlId();
             var result = new HttpResult(new PostResponse(RqlDateTime.UtcNow, smoId), HttpStatusCode.Created);
 
-            result.Headers[HttpHeaders.Location] = this.Request.AbsoluteUri + "/" + HttpUtility.UrlEncode(smoId.ToString());
+            if (this.Request != null)
+            {
+                // Give the canonical location of the new entity
+                result.Headers[HttpHeaders.Location] = this.Request.AbsoluteUri + "/" + HttpUtility.UrlEncode(smoId.ToString());
+            }
 
             return result;
         }
@@ -76,20 +90,35 @@ namespace ServiceBelt
 
         public virtual PutResponse Put(TSmo smo)
         {
-            // Merge the new values into the old; allows for partial updates AND allows for complex validation
-
             var dmoId = smo.Id.ToObjectId();
-            var dmo = Mongo.GetCollection<TDmo>().FindOneById(dmoId);
+            TDmo dmo = default(TDmo);
 
-            if (dmo == null)
-                throw HttpError.NotFound("Resource '{0}' id '{1}' was not found".Fmt(MongoUtils.ToCamelCase(smo.GetType().Name), smo.Id));
+            if (String.IsNullOrEmpty(smo.Fields))
+            {
+                // No fields given; just overwrite the entire object
+                dmo = smo.CopyAsNew<TDmo>();
+            }
+            else
+            {
+                // Fields given; get the current object value and overwrite with just the fields specified
+                dmo = Mongo.GetCollection<TDmo>().FindOneById(dmoId);
 
-            PropertyCopier.Copy(smo, dmo);
+                if (dmo == null)
+                    throw HttpError.NotFound("Resource '{0}' id '{1}' was not found".Fmt(MongoUtils.ToCamelCase(smo.GetType().Name), smo.Id));
+
+                var fieldHash = new FieldSpecParser()
+                    .Parse(smo.Fields).Fields
+                    .Where(f => f.Presence == FieldSpecPresence.Included)
+                    .Select(f => f.Name)
+                    .ToHashSet();
+
+                PropertyCopier.Copy(smo, dmo, pi => fieldHash.Contains(MongoUtils.ToCamelCase(pi.Name)));
+            }
 
             // Set new updated time
             dmo.Updated = DateTime.UtcNow;
             
-            IValidator<TDmo> validator = ServiceStackHost.Instance.Container.Resolve<IValidator<TDmo>>();
+            IValidator<TDmo> validator = container.Resolve<IValidator<TDmo>>();
 
             BeforeValidation(dmo);
 
