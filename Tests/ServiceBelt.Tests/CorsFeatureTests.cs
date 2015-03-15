@@ -15,6 +15,14 @@ namespace ServiceBelt.Tests
 
         #region IAppHost
 
+        public List<Action<IAppHost>> OnDisposeCallbacks
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public string ResolveLocalizedString(string text, IRequest request)
         {
             throw new NotImplementedException();
