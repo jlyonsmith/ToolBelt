@@ -20,7 +20,6 @@ namespace ServiceBelt
     {
         private enum ReferenceType
         {
-            Id,
             IdInDocument,
             IdInList,
             IdInDocumentList,
@@ -36,8 +35,10 @@ namespace ServiceBelt
             }
 
             public Type CollectionType { get; set; }
+
             public string FullFieldName { get; set; }
-            public string FieldName 
+
+            public string FieldName
             { 
                 get
                 {
@@ -45,7 +46,8 @@ namespace ServiceBelt
                     return FullFieldName.Substring(n == -1 ? 0 : n + 1);
                 }
             }
-            public string ParentFieldName 
+
+            public string ParentFieldName
             { 
                 get
                 {
@@ -53,12 +55,13 @@ namespace ServiceBelt
                     return FullFieldName.Substring(0, n == -1 ? FullFieldName.Length : n);
                 }
             }
+
             public ReferenceType ReferenceType { get; set; }
         }
 
         private class DeletionItem
         {
-            public DeletionItem(Type collectionType, ObjectId id, bool deleteWhenUnreferred = true) 
+            public DeletionItem(Type collectionType, ObjectId id, bool deleteWhenUnreferred = true)
             { 
                 this.CollectionType = collectionType;
                 this.Id = id;
@@ -66,7 +69,9 @@ namespace ServiceBelt
             }
 
             public Type CollectionType { get; private set; }
+
             public ObjectId Id { get; private set; }
+
             public bool DeleteWhenUnreferred { get; private set; }
         }
 
@@ -137,24 +142,23 @@ namespace ServiceBelt
                     Type propType = propInfo.PropertyType;
                     string fieldName = MakeFieldNames(parentPropInfos, propInfo);
 
-                    if (propType == typeof(ObjectId))
+                    if (propType == typeof(ObjectId) || propType == typeof(ObjectId?))
                     {
                         var lastPropInfo = parentPropInfos.LastOrDefault();
                         var lastPropType = lastPropInfo == null ? null : lastPropInfo.PropertyType;
 
                         referrers.Add(new CollectionReferrer(
                             referringType, fieldName,
-                            lastPropType == null ? ReferenceType.Id :
-                            (lastPropType.IsGenericType && lastPropType.GetGenericTypeDefinition() == typeof(List<>)) ? ReferenceType.IdInDocumentList :
-                            typeof(IDocumentObject).IsAssignableFrom(lastPropType) ? ReferenceType.IdInDocument : 
-                            ReferenceType.Id));
+                            (lastPropType != null && (lastPropType.IsGenericType && lastPropType.GetGenericTypeDefinition() == typeof(List<>))) ? 
+                                ReferenceType.IdInDocumentList :
+                                ReferenceType.IdInDocument));
                     }
                     else if (propType == typeof(List<ObjectId>))
                     {
                         referrers.Add(new CollectionReferrer(referringType, fieldName, ReferenceType.IdInList));
                     }
-                    else if (propType.IsGenericType && 
-                        propType.GetGenericTypeDefinition() == typeof(List<>))
+                    else if (propType.IsGenericType &&
+                             propType.GetGenericTypeDefinition() == typeof(List<>))
                     {
                         Type genericArg = propType.GetGenericArguments()[0];
 
@@ -185,9 +189,14 @@ namespace ServiceBelt
         private Dictionary<PropertyInfo, Type> referenceMembers = new Dictionary<PropertyInfo, Type>();
         private Queue<DeletionItem> queue = new Queue<DeletionItem>();
 
-        private string GetCollectionNameFromType(Type type)
+        public string GetCollectionName(Type type)
         {
             return MongoUtils.ToCamelCase(type.Name);
+        }
+
+        public string GetCollectionName<T>()
+        {
+            return GetCollectionName(typeof(T));
         }
 
         public MongoManager(MongoUrl mongoUrl, params Type[] dataModelMarkerTypes)
@@ -238,7 +247,7 @@ namespace ServiceBelt
         void CreateCollectionIndexes(Type dataModelType)
         {
             PropertyInfo[] propInfos = dataModelType.GetProperties();
-            var collection = database.GetCollection(GetCollectionNameFromType(dataModelType));
+            var collection = database.GetCollection(GetCollectionName(dataModelType));
 
             foreach (var propInfo in propInfos)
             {
@@ -269,8 +278,7 @@ namespace ServiceBelt
         // BUG #76: Change this to take an enumeration of the possible roots; slide, image
         public MongoGridFS GetGridFS(string root)
         {
-            var settings = new MongoGridFSSettings()
-            {
+            var settings = new MongoGridFSSettings() {
                 Root = root,
                 ChunkSize = 31 * 1024
             };
@@ -280,7 +288,7 @@ namespace ServiceBelt
 
         public MongoCollection<T> GetCollection<T>() where T: ICollectionObject
         {
-            return database.GetCollection<T>(GetCollectionNameFromType(typeof(T)));
+            return database.GetCollection<T>(GetCollectionName(typeof(T)));
         }
 
         private List<CollectionReferrer> GetCollectionReferrers(Type collectionType)
@@ -311,17 +319,25 @@ namespace ServiceBelt
             return referrers;
         }
 
-        public void CleanUpAlreadyDeleted(Type collectionType, ObjectId id)
+        /// <summary>>
+        /// Clean-up objects that refer to an object that may or may not have been 
+        /// already deleted.  This is used when scrubbing the database.
+        /// </summary>
+        public void DeleteReferrers(Type collectionType, ObjectId referredToId, Action<Type, ObjectId> deleted = null)
         {
-            InternalDelete(collectionType, id, deleteWhenUnreferred: false);
+            InternalDelete(collectionType, referredToId, deleted, deleteWhenUnreferred: false);
         }
 
-        public void Delete(Type collectionType, ObjectId id)
+        /// <summary>
+        /// Delete objects and remove all references from referrers, deleting them 
+        /// those objects if they are no longer 
+        /// </summary>
+        public void Delete(Type collectionType, ObjectId id, Action<Type, ObjectId> deleted = null)
         {
-            InternalDelete(collectionType, id, deleteWhenUnreferred: true);
+            InternalDelete(collectionType, id, deleted, deleteWhenUnreferred: true);
         }
 
-        public void InternalDelete(Type collectionType, ObjectId id, bool deleteWhenUnreferred)
+        public void InternalDelete(Type collectionType, ObjectId id, Action<Type, ObjectId> deleted, bool deleteWhenUnreferred)
         {
             lock (queue)
             {
@@ -345,38 +361,44 @@ namespace ServiceBelt
                 // Search referrers for references to this object id
                 foreach (var referrer in referrers)
                 {
-                    MongoCollection coll = database.GetCollection(GetCollectionNameFromType(referrer.CollectionType));
+                    MongoCollection coll = database.GetCollection(GetCollectionName(referrer.CollectionType));
 
                     var cursor = coll.FindAs<BsonDocument>(Query.EQ(referrer.FullFieldName, item.Id));
 
                     foreach (var doc in cursor)
                     {
-                        if (referrer.ReferenceType == ReferenceType.IdInList)
+                        switch (referrer.ReferenceType)
                         {
+                        case ReferenceType.IdInList:
                             coll.Update(Query.EQ("_id", doc["_id"]), Update.Pull(referrer.FullFieldName, item.Id));
-                        }
-                        else if (referrer.ReferenceType == ReferenceType.IdInDocumentList)
-                        {
+                            break;
+                        case ReferenceType.IdInDocumentList:
                             coll.Update(Query.EQ("_id", doc["_id"]), Update.Pull(referrer.ParentFieldName, Query.EQ(referrer.FieldName, item.Id)));
-                        }
-                        else
-                        {
+                            break;
+                        case ReferenceType.IdInDocument:
                             lock (queue)
                             {
                                 queue.Enqueue(new DeletionItem(referrer.CollectionType, doc["_id"].AsObjectId, deleteWhenUnreferred: true));
                             }
+                            break;
                         }
                     }
                 }
 
+                // Nothing refers to this document now, we can delete it
                 if (item.DeleteWhenUnreferred)
-                    database.GetCollection(GetCollectionNameFromType(item.CollectionType)).Remove(Query.EQ("_id", item.Id));
+                {
+                    database.GetCollection(GetCollectionName(item.CollectionType)).Remove(Query.EQ("_id", item.Id));
+
+                    if (deleted != null)
+                        deleted(item.CollectionType, item.Id);
+                }
             }
         }
 
         public bool ItemExistsInCollection(Type collectionType, ObjectId id)
         {
-            return (database.GetCollection(GetCollectionNameFromType(collectionType)).Find(Query.EQ("_id", id)).SetLimit(1).Size() != 0);
+            return (database.GetCollection(GetCollectionName(collectionType)).Find(Query.EQ("_id", id)).SetLimit(1).Size() != 0);
         }
 
         public Type GetReferencedCollectionType(PropertyInfo refPropInfo)

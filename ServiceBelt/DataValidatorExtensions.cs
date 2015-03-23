@@ -33,7 +33,7 @@ namespace ServiceBelt
     public class IsInEnumValidator<T> : PropertyValidator
     {
         // See http://fluentvalidation.codeplex.com/discussions/401309
-        public IsInEnumValidator() : base("Property '{PropertyName}' it not a valid enum value.", "")
+        public IsInEnumValidator() : base("Property '{PropertyName}' it not a valid enum value.", "InvalidEnum")
         {
         }
 
@@ -56,8 +56,7 @@ namespace ServiceBelt
 
     public class IsUrlValidator : PropertyValidator
     {
-        public IsUrlValidator() :
-            base("URI '{Uri}' is not well formed", "")
+        public IsUrlValidator() : base("URI '{Uri}' is not well formed", "InvalidUrl")
         {
         }
 
@@ -81,7 +80,7 @@ namespace ServiceBelt
     {
         private IMongoManager mongo;
 
-        public IsReferenceValidator(IMongoManager mongo) : base("Object id '{ObjectId}' not found in collection '{CollectionName}'", "")
+        public IsReferenceValidator(IMongoManager mongo) : base("Object id '{ObjectId}' not found in collection '{CollectionName}'", "InvalidReference")
         {
             this.mongo = mongo;
         }
@@ -124,7 +123,10 @@ namespace ServiceBelt
 
                 if (!mongo.ItemExistsInCollection(collectionType, id))
                 {
-                    failures.Add(CreateValidationError(context));
+                    var failure = CreateValidationError(context);
+
+                    failure.CustomState = collectionType;
+                    failures.Add(failure);
                 }
             }
 

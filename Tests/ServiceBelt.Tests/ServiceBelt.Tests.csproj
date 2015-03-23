@@ -83,6 +83,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Managers\HiddenDataManagerTests.cs" />
     <Compile Include="Services\MongoServiceTests.cs" />
+    <Compile Include="Services\Managers\MongoManagerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ToolBelt\ToolBelt.csproj">
