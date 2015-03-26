@@ -1,5 +1,7 @@
 ### ToolBelt Utility Library
 
+[![Build Status](https://travis-ci.org/jlyonsmith/ToolBelt.svg?branch=master)](https://travis-ci.org/jlyonsmith/ToolBelt)
+
 This is my collection of .NET utility classes which works on both Microsoft and Mono implementations of .NET. Some of the highlights include:
 
 - `Command` class for easily running external processes and capturing output
@@ -28,4 +30,3 @@ A host of classes for use with:
 
 PCL classes for connecting to RESTful services, in particular those written with ServiceBelt.
 
-[![Build Status](https://travis-ci.org/jlyonsmith/ToolBelt.svg?branch=master)](https://travis-ci.org/jlyonsmith/ToolBelt)
