@@ -1,4 +1,9 @@
-language: objective-c
+language: csharp
+
+mono:
+  - latest
+
+solution: ToolBelt.sln
 
 services:
   - mongodb
@@ -7,18 +12,15 @@ services:
 env:
   global:
     - EnableNuGetPackageRestore=true 
-  matrix:
-    - MONO_VERSION="3.2.6"
 
-before_install:
-  - wget "http://download.xamarin.com/MonoFrameworkMDK/Macx86/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg"
-  - sudo installer -pkg "MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg" -target /
+install:
+  - nuget restore ToolBelt.sln
+  - nuget install NUnit.Runners -Version 2.6.4
 
 script:
-  - bin/travis_packages.sh
-  - bin/travis_build.sh /property:Configuration=Debug ToolBelt.sln
-  - bin/travis_build.sh /property:Configuration=Release ToolBelt.sln
-  - bin/travis_test.sh Tests/ToolBelt.Tests/bin/Debug/ToolBelt.Tests.dll
-  - bin/travis_test.sh Tests/ToolBelt.Tests/bin/Release/ToolBelt.Tests.dll
-  - bin/travis_test.sh Tests/ServiceBelt.Tests/bin/Debug/ServiceBelt.Tests.dll
-  - bin/travis_test.sh Tests/ServiceBelt.Tests/bin/Release/ServiceBelt.Tests.dll
+  - xbuild /p:Configuration=Debug ToolBelt.sln
+  - xbuild /p:Configuration=Release ToolBelt.sln
+  - mono ./packages/NUnit.Runners.2.6.4/tools/nunit-console.exe ./Tests/ToolBelt.Tests/bin/Debug/ToolBelt.Tests.dll
+  - mono ./packages/NUnit.Runners.2.6.4/tools/nunit-console.exe ./Tests/ToolBelt.Tests/bin/Release/ToolBelt.Tests.dll
+  - mono ./packages/NUnit.Runners.2.6.4/tools/nunit-console.exe ./Tests/ServiceBelt.Tests/bin/Debug/ServiceBelt.Tests.dll
+  - mono ./packages/NUnit.Runners.2.6.4/tools/nunit-console.exe ./Tests/ServiceBelt.Tests/bin/Release/ServiceBelt.Tests.dll
