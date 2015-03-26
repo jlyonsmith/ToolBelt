@@ -48,7 +48,7 @@ namespace ServiceBelt.Tests
         [Test]
         public void TestPostGetPutDelete()
         {
-            var mongo = new MongoManager(new MongoUrl("mongodb://localhost:27017/testMongoService"), typeof(DmoData));
+            var mongo = new MongoManager(new MongoUrl("mongodb://127.0.0.1/testMongoService"), typeof(DmoData));
             var container = new Funq.Container();
 
             container.Register<IMongoManager>(mongo);

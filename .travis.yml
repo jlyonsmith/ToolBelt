@@ -2,6 +2,7 @@ language: objective-c
 
 services:
   - mongodb
+  - redis-server
 
 env:
   global:

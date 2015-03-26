@@ -66,7 +66,7 @@ namespace ServiceBelt.Tests
         [Test()]
         public void TestDeleter()
         {
-            var mongo = new MongoManager(new MongoUrl("mongodb://localhost:27017/testMongoManager"), typeof(Thing));
+            var mongo = new MongoManager(new MongoUrl("mongodb://127.0.0.1/testMongoManager"), typeof(Thing));
             var db = mongo.GetDatabase();
 
             var thingCollectionName = mongo.GetCollectionName<Thing>();
