@@ -37,12 +37,6 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Configuration" />
     <Reference Include="WindowsBase" />
-    <Reference Include="MongoDB.Bson">
-      <HintPath>..\packages\mongocsharpdriver.1.10.0\lib\net35\MongoDB.Bson.dll</HintPath>
-    </Reference>
-    <Reference Include="MongoDB.Driver">
-      <HintPath>..\packages\mongocsharpdriver.1.10.0\lib\net35\MongoDB.Driver.dll</HintPath>
-    </Reference>
     <Reference Include="ServiceStack.Interfaces">
       <HintPath>..\packages\ServiceStack.Interfaces.4.0.38\lib\portable-wp80+sl5+net40+win8+monotouch+monoandroid\ServiceStack.Interfaces.dll</HintPath>
     </Reference>
@@ -58,11 +52,14 @@
     <Reference Include="ServiceStack">
       <HintPath>..\packages\ServiceStack.4.0.38\lib\net40\ServiceStack.dll</HintPath>
     </Reference>
+    <Reference Include="MongoDB.Driver.Core">
+      <HintPath>..\packages\MongoDB.Driver.Core.2.0.0\lib\net45\MongoDB.Driver.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Rql.MongoDB">
-      <HintPath>..\packages\Rql.MongoDB.2.0.20315.1\lib\net45\Rql.MongoDB.dll</HintPath>
+      <HintPath>..\packages\Rql.MongoDB.3.0.10419.0\lib\net45\Rql.MongoDB.dll</HintPath>
     </Reference>
     <Reference Include="Rql">
-      <HintPath>..\packages\Rql.2.0.20315.1\lib\net45\Rql.dll</HintPath>
+      <HintPath>..\packages\Rql.3.0.10419.0\lib\net45\Rql.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

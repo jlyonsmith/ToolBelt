@@ -17,26 +17,15 @@ namespace ServiceBelt
 
         public ParsedUrl SmtpUrl { get; private set; } 
         public string SupportEmail { get; private set; }
-        public bool Disabled { get; set; }
 
         public EmailManager(IEmailManagerConfig config)
         {
-            if (String.IsNullOrEmpty(config.AwsSesSmtpUrl))
-            {
-                this.Disabled = true;
-                return;
-            }
-
-            this.Disabled = false;
             this.SmtpUrl = config.AwsSesSmtpUrl;
             this.SupportEmail = config.SupportEmail.UserAndHost;
         }
 
         public bool Send(string to, string template, Dictionary<string, string> variables = null)
         {
-            if (!Disabled)
-                return false;
-            
             // Send an email to confirm the email address
             var client = new SmtpClient(SmtpUrl.Host, SmtpUrl.Port ?? 587)
             {
