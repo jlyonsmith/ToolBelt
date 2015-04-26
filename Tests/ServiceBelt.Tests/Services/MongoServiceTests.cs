@@ -46,7 +46,7 @@ namespace ServiceBelt.Tests
     public class MongoServiceTests
     {
         [Test]
-        public void TestPostGetPutDelete()
+        public async void TestPostGetPutDelete()
         {
             var mongo = new MongoManager(new MongoUrl("mongodb://127.0.0.1/testMongoService"), typeof(DmoData));
             var container = new Funq.Container();
@@ -61,9 +61,9 @@ namespace ServiceBelt.Tests
 
             RqlHelper.AddRqlPropertyCopiers();
 
-            mongo.GetDatabase().DropCollection("test");
+            await mongo.GetDatabase().DropCollectionAsync("test");
 
-            var postResult = service.Post(new SmoData
+            var postResult = await service.Post(new SmoData
                 {
                     Field1 = "a",
                     Field2 = "b",
@@ -74,27 +74,27 @@ namespace ServiceBelt.Tests
 
             var id = ((PostResponse)postResult.Response).Id;
 
-            var getResult = service.Get(new SmoQuery { Id = id }) as SmoData;
+            var getResult = await service.Get(new SmoQuery { Id = id }) as SmoData;
 
             Assert.NotNull(getResult);
             Assert.AreEqual("a", getResult.Field1);
             Assert.AreEqual("b", getResult.Field2);
             Assert.AreEqual("c", getResult.Field3);
 
-            var putResult = service.Put(new SmoData { Id = id, Field1 = "x", Field2 = "y", Field3 = "z" });
+            var putResponse = await service.Put(new SmoData { Id = id, Field1 = "x", Field2 = "y", Field3 = "z" });
 
-            Assert.Less((DateTime)putResult.Updated, DateTime.UtcNow);
+            Assert.Less((DateTime)putResponse.Updated, DateTime.UtcNow);
 
-            getResult = service.Get(new SmoQuery { Id = ((PostResponse)postResult.Response).Id }) as SmoData;
+            getResult = await service.Get(new SmoQuery { Id = ((PostResponse)postResult.Response).Id }) as SmoData;
 
             Assert.NotNull(getResult);
             Assert.AreEqual("x", getResult.Field1);
             Assert.AreEqual("y", getResult.Field2);
             Assert.AreEqual("z", getResult.Field3);
 
-            putResult = service.Put(new SmoData { Id = id, Field1 = "X", Fields = "field1(1)" });
+            putResponse = await service.Put(new SmoData { Id = id, Field1 = "X", Fields = "field1(1)" });
 
-            getResult = service.Get(new SmoQuery { Id = id }) as SmoData;
+            getResult = await service.Get(new SmoQuery { Id = id }) as SmoData;
 
             Assert.NotNull(getResult);
             Assert.AreEqual("X", getResult.Field1);
@@ -103,7 +103,7 @@ namespace ServiceBelt.Tests
 
             service.Delete(new SmoQuery { Id = id });
 
-            Assert.Throws<HttpError>(() => service.Get(new SmoQuery { Id = id }));
+            Assert.Throws<HttpError>(async () => await service.Get(new SmoQuery { Id = id }));
         }
     }
 }

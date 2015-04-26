@@ -93,7 +93,7 @@ namespace ToolBelt
 #if WINDOWS
     [Serializable]
 #endif
-    public class ParsedPath : IComparable
+    public class ParsedPath : IComparable, IFormattable
     {
         #region Fields
 
@@ -868,7 +868,7 @@ namespace ToolBelt
         /// <returns>This path made relative to the give base path</returns>
         public ParsedPath MakeRelativePath(ParsedPath basePath)
         {
-            if (!this.IsFullPath && !basePath.IsFullPath)
+            if (this.IsRelativePath || basePath.IsRelativePath)
                 throw new ArgumentException("Both paths must be fully qualified");
                 
             if (this.Volume != basePath.Volume)
@@ -985,7 +985,50 @@ namespace ToolBelt
 
         #endregion
 
+		#region IFormattable
+
+		/// <summary>
+		/// Convert the path to a string.
+		/// </summary>
+		/// <returns>The path as a string.</returns>
+		/// <param name="format">The format character, either '/' or '\', to indicated what path separators to use</param>
+		/// <param name="formatProvider">A format provider.</param>
+		public string ToString(string format, IFormatProvider formatProvider)
+		{
+			if (formatProvider != null)
+			{
+				ICustomFormatter formatter = formatProvider.GetFormat(this.GetType()) as ICustomFormatter;
+
+				if (formatter != null)
+					return formatter.Format(format, this, formatProvider);
+			}
+
+			if (format == null) 
+				format = "/";
+
+			switch (format)
+			{
+			case "\\":
+				return this.path.Replace(PathUtility.DirectorySeparatorChar, PathUtility.AltDirectorySeparatorChar);
+			case "/":
+			default:
+				return this.path;
+			}
+		}
+
+		#endregion
+
         #region Overrides
+		/// <summary>
+		/// Convert the path to a string.
+		/// </summary>
+		/// <returns>The string.</returns>
+		/// <param name="format">Format.</param>
+		public string ToString(string format)
+		{
+			return ToString(format, null);
+		}
+
         /// <summary>
         /// Returns a <see cref="T:System.String"/> equivalent to the entire path 
         /// </summary>
@@ -1286,17 +1329,6 @@ namespace ToolBelt
             }
         }
             
-        /// <summary>
-        /// Gets a boolean value which indicates if the path is fully qualified.
-        /// </summary>
-        public bool IsFullPath
-        {
-            get 
-            {
-                return (HasVolume && !IsRelativePath);
-            }
-        }
-        
         /// <summary>
         /// Gets an array containing the sub-directories that make up the full directory name.
         /// </summary>

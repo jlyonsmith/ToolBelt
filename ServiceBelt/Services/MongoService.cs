@@ -9,7 +9,6 @@ using System.Web;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
-using MongoDB.Driver.Builders;
 using Rql;
 using Rql.MongoDB;
 using ServiceStack;
@@ -17,6 +16,7 @@ using ServiceStack.DataAnnotations;
 using ServiceStack.FluentValidation;
 using ServiceStack.FluentValidation.Results;
 using ServiceStackService = global::ServiceStack.Service;
+using System.Threading.Tasks;
 
 namespace ServiceBelt
 {
@@ -47,7 +47,7 @@ namespace ServiceBelt
         {
         }
 
-        public virtual HttpResult Post(TSmo smo)
+        public async virtual Task<HttpResult> Post(TSmo smo)
         {
             var dmo = smo.CopyAsNew<TDmo>();
             IValidator<TDmo> validator = container.Resolve<IValidator<TDmo>>();
@@ -60,7 +60,7 @@ namespace ServiceBelt
 
             var collectionName = MongoUtils.ToCamelCase(typeof(TDmo).Name);
 
-            Mongo.GetDatabase().GetCollection<TDmo>(collectionName).Save(dmo);
+            await Mongo.GetDatabase().GetCollection<TDmo>(collectionName).InsertOneAsync(dmo);
 
             AfterUpdate(dmo);
 
@@ -88,7 +88,7 @@ namespace ServiceBelt
             }
         }
 
-        public virtual PutResponse Put(TSmo smo)
+        public async virtual Task<PutResponse> Put(TSmo smo)
         {
             var dmoId = smo.Id.ToObjectId();
             TDmo dmo = default(TDmo);
@@ -101,7 +101,7 @@ namespace ServiceBelt
             else
             {
                 // Fields given; get the current object value and overwrite with just the fields specified
-                dmo = Mongo.GetCollection<TDmo>().FindOneById(dmoId);
+                dmo = await Mongo.GetCollection<TDmo>().Find(d => d.Id == dmoId).FirstOrDefaultAsync();
 
                 if (dmo == null)
                     throw HttpError.NotFound("Resource '{0}' id '{1}' was not found".Fmt(MongoUtils.ToCamelCase(smo.GetType().Name), smo.Id));
@@ -129,64 +129,51 @@ namespace ServiceBelt
                 throw new ValidationException(result.Errors);   
             }
 
-            IMongoUpdate update = Update.Replace(dmo);
-
-            Mongo.GetCollection<TDmo>().Update(Query<TDmo>.EQ(e => e.Id, dmo.Id), update);
+            await Mongo.GetCollection<TDmo>().ReplaceOneAsync(d => d.Id == dmo.Id, dmo);
 
             AfterUpdate(dmo);
 
             return new PutResponse(new RqlDateTime(dmo.Updated));
         }
 
-        public virtual object Get(TSmoQuery smoQuery)
+        public async virtual Task<object> Get(TSmoQuery smoQuery)
         {
             var collectionName = MongoUtils.ToCamelCase(typeof(TDmo).Name);
             var collection = Mongo.GetCollection<TDmo>();
-            var fieldsCompiler = new FieldSpecToMongoFieldsCompiler();
-            var fields = (smoQuery.Fields== null ? Fields.Null : fieldsCompiler.Compile(smoQuery.Fields));
-            MongoCursor<TDmo> cursor;
+            var fieldsCompiler = new FieldSpecToProjectionDefinition();
+            var projection = fieldsCompiler.Compile<TDmo>(smoQuery.Fields);
+            IAsyncCursor<TDmo> cursor;
 
             if (!smoQuery.Id.HasValue)
             {
-                var queryCompiler = new RqlToMongoQueryCompiler();
-                var query = (smoQuery.Where == null ? Query.Null : queryCompiler.Compile(smoQuery.Where));
-
-                var sortByCompiler = new SortSpecToMongoSortByCompiler();
-                var sortBy = (smoQuery.Sort== null ? SortBy.Null : sortByCompiler.Compile(smoQuery.Sort));
-
-                if (sortBy == SortBy.Null)
-                    sortBy = new SortByBuilder().Ascending(new[] { "$natural" });
-
+                var filter = new RqlToMongoFilterDefinition().Compile<TDmo>(smoQuery.Where);
+                var sort = new SortSpecToSortDefinition().Compile<TDmo>(smoQuery.Sort);
                 var limit = (smoQuery.Limit > 1000 ? 1000 : smoQuery.Limit);
+                var skip = (smoQuery.Offset < 0 ? (int)(await collection.CountAsync(filter)) + smoQuery.Offset : smoQuery.Offset);
 
-                var skip = smoQuery.Offset;
+                using (cursor = await collection.Find(filter).Sort(sort).Limit(limit).Skip(skip).Project(projection).ToCursorAsync())
+                {
+                    var dmoList = await cursor.ToListAsync();
+                    var smoList = dmoList.CopyAsNew<List<TSmo>>();
 
-                if (skip < 0)
-                    skip = (int)collection.Count(query) + skip;
-
-                cursor = collection.Find(query).SetSortOrder(sortBy).SetLimit(limit).SetSkip(skip).SetFields(fields);
-
-                var dmoList = cursor.ToList();
-                var smoList = dmoList.CopyAsNew<List<TSmo>>();
-
-                #if DEBUG
-                return new ListResponse<TSmo> 
-                    { Items = smoList, Count = smoList.Count, Limit = limit, Offset = skip, DbQuery = (query == null ? "" : query.ToString()) };
-                #else
-                return new ListResponse<TSmo> 
-                    { Items = smoList, Count = smoList.Count, Limit = limit, Offset = skip };
-                #endif
+                    #if DEBUG
+                    return new ListResponse<TSmo> 
+                        { Items = smoList, Count = smoList.Count, Limit = limit, Offset = skip, DbQuery = (filter == null ? "" : filter.ToString()) };
+                    #else
+                    return new ListResponse<TSmo> 
+                        { Items = smoList, Count = smoList.Count, Limit = limit, Offset = skip };
+                    #endif
+                }
             }
             else
             {
                 var id = smoQuery.Id.ToObjectId();
+                var doc = await collection.Find(d => d.Id == id).Project(projection).FirstOrDefaultAsync();
 
-                cursor = collection.Find(Query<TDmo>.EQ(d => d.Id, id)).SetFields(fields);
-
-                if (cursor.Count() == 0)
+                if (doc == null)
                     throw new HttpError(HttpStatusCode.NotFound, String.Format("Resource '{0}' with id '{1}' not found", collectionName, id));
 
-                return cursor.ToList()[0].CopyAsNew<TSmo>();
+                return doc.CopyAsNew<TSmo>();
             }
         }
     }

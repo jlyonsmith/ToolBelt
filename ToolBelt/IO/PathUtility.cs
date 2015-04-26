@@ -115,36 +115,24 @@ namespace ToolBelt
         /// </summary>
         public static readonly char DirectorySeparatorChar = Path.DirectorySeparatorChar;
         public static readonly string DirectorySeparator = Path.DirectorySeparatorChar.ToString();
-        
+
+		/// <summary>
+		/// Alternate character used to separate the directories
+		/// </summary>
+		public static readonly char AltDirectorySeparatorChar = '\\';
+		public static readonly string AltDirectorySeparator = AltDirectorySeparatorChar.ToString();
+
         /// <summary>
         /// Character used to separate the paths
         /// </summary>
-#if WINDOWS
-        public static readonly char PathSeparatorChar = ';';
-#else
-        public static readonly char PathSeparatorChar = ':';
-#endif
-        public static readonly string PathSeparator = PathSeparatorChar.ToString();
-        
-        /// <summary>
-        /// Alternate character used to separate the directories ('\' on Unix, '/' on Windows)
-        /// </summary>
-#if WINDOWS
-        public static readonly char AltDirectorySeparatorChar = '/';
-#else
-        public static readonly char AltDirectorySeparatorChar = '\\';
-        public static readonly string AltDirectorySeparator = AltDirectorySeparatorChar.ToString();
-#endif
-        
-        /// <summary>
-        /// Alternate character used to separate the paths (':' on Unix, ';  ' on Windows)
-        /// </summary>
-#if WINDOWS
-        public static readonly char AltPathSeparatorChar = ':';
-#else
+		public static readonly char PathSeparatorChar = ':';
+		public static readonly string PathSeparator = PathSeparatorChar.ToString();
+
+		/// <summary>
+		/// Alternate character used as the path separator
+		/// </summary>
         public static readonly char AltPathSeparatorChar = ';';
-        public static readonly string AltPathSeparator = AltPathSeparatorChar.ToString();
-#endif
+		public static readonly string AltPathSeparator = AltPathSeparatorChar.ToString();
         
         /// <summary>
         /// Character used to separate the file extension from the main part of the file name.

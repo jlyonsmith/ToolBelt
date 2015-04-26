@@ -158,6 +158,24 @@ namespace ToolBelt.Tests
 
             Assert.IsNull(url.Port);
         }
+
+        [Test()]
+        public void TestEncodedPassword()
+        {
+            ParsedUrl url = new ParsedUrl("smtp://user%40google.com:xa5%26z@gmail.com:587/smtp");
+
+            Assert.AreEqual("smtp", url.Scheme);
+            Assert.AreEqual("gmail.com", url.Host);
+            Assert.AreEqual("user@google.com", url.User);
+            Assert.AreEqual("xa5&z", url.Password);
+            Assert.AreEqual("/smtp", url.Path);
+            Assert.AreEqual(587, url.Port);
+            Assert.IsNull(url.QueryParams);
+
+            url = url.WithPort();
+
+            Assert.IsNull(url.Port);
+        }
     }
 }
 

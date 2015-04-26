@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using ServiceStack.DataAnnotations;
 using MongoDB.Bson.Serialization.Attributes;
 using System.Linq;
-using MongoDB.Driver.Builders;
 using System.Reflection;
 using MongoDB.Driver;
 using ServiceBelt;
@@ -64,7 +63,7 @@ namespace ServiceBelt.Tests
     public class MongoManagerTests
     {
         [Test()]
-        public void TestDeleter()
+        public async void TestDeleter()
         {
             var mongo = new MongoManager(new MongoUrl("mongodb://127.0.0.1/testMongoManager"), typeof(Thing));
             var db = mongo.GetDatabase();
@@ -72,7 +71,7 @@ namespace ServiceBelt.Tests
             var thingCollectionName = mongo.GetCollectionName<Thing>();
             var thingReferrerCollectionName = mongo.GetCollectionName<ThingReferrer>();
 
-            db.DropCollection(thingCollectionName);
+            await db.DropCollectionAsync(thingCollectionName);
 
             var things = new List<Thing>();
 
@@ -81,10 +80,10 @@ namespace ServiceBelt.Tests
                 things.Add(new Thing { Something = String.Format("Thing{0}", i) });
             }
 
-            db.GetCollection(thingCollectionName).InsertBatch(things);
-            List<ObjectId> thingIds = mongo.GetCollection<Thing>().FindAll().SetFields("_id").Select(t => t.Id).ToList();
+            await db.GetCollection<Thing>(thingCollectionName).InsertManyAsync(things);
+            var thingIds = (await mongo.GetCollection<Thing>().Find(new BsonDocument()).Project(x => x.Id).ToListAsync());
 
-            db.DropCollection(thingReferrerCollectionName);
+            await db.DropCollectionAsync(thingReferrerCollectionName);
 
             var thingReferrers = new ThingReferrer[]
             {
@@ -113,36 +112,36 @@ namespace ServiceBelt.Tests
                 },
             };
 
-            db.GetCollection(thingReferrerCollectionName).InsertBatch(thingReferrers);
+            await db.GetCollection<ThingReferrer>(thingReferrerCollectionName).InsertManyAsync(thingReferrers);
 
-            List<ObjectId> thingReferrerIds = mongo.GetCollection<ThingReferrer>().FindAll().SetFields("_id").Select(t => t.Id).ToList();
+            var thingReferrerIds = await mongo.GetCollection<ThingReferrer>().Find(new BsonDocument()).Project(x => x.Id).ToListAsync();
 
-            Assert.AreEqual(5, mongo.GetCollection<ThingReferrer>().Count());
-            Assert.AreEqual(10, mongo.GetCollection<Thing>().Count());
+            Assert.AreEqual(5, await mongo.GetCollection<ThingReferrer>().CountAsync(new BsonDocument()));
+            Assert.AreEqual(10, await mongo.GetCollection<Thing>().CountAsync(new BsonDocument()));
 
             ThingReferrer thingReferrer;
 
-            mongo.Delete(typeof(Thing), thingIds[1]);
-            Assert.AreEqual(3, mongo.GetCollection<ThingReferrer>().Count());
-            Assert.AreEqual(9, mongo.GetCollection<Thing>().Count());
+            await mongo.Delete(typeof(Thing), thingIds[1]);
+            Assert.AreEqual(3, await mongo.GetCollection<ThingReferrer>().CountAsync(new BsonDocument()));
+            Assert.AreEqual(9, await mongo.GetCollection<Thing>().CountAsync(new BsonDocument()));
 
-            mongo.Delete(typeof(Thing), thingIds[2]);
-            Assert.AreEqual(3, mongo.GetCollection<ThingReferrer>().Count());
-            thingReferrer = mongo.GetCollection<ThingReferrer>().FindOneById(thingReferrerIds[1]);
+            await mongo.Delete(typeof(Thing), thingIds[2]);
+            Assert.AreEqual(3, await mongo.GetCollection<ThingReferrer>().CountAsync(new BsonDocument()));
+            thingReferrer = await mongo.GetCollection<ThingReferrer>().Find(x => x.Id == thingReferrerIds[1]).FirstOrDefaultAsync();
             Assert.NotNull(thingReferrer);
             Assert.AreEqual(1, thingReferrer.ThingIds.Count);
-            Assert.AreEqual(8, mongo.GetCollection<Thing>().Count());
+            Assert.AreEqual(8, await mongo.GetCollection<Thing>().CountAsync(new BsonDocument()));
             
-            mongo.Delete(typeof(Thing), thingIds[4]);
-            Assert.AreEqual(3, mongo.GetCollection<ThingReferrer>().Count());
-            thingReferrer = mongo.GetCollection<ThingReferrer>().FindOneById(thingReferrerIds[2]);
+            await mongo.Delete(typeof(Thing), thingIds[4]);
+            Assert.AreEqual(3, await mongo.GetCollection<ThingReferrer>().CountAsync(new BsonDocument()));
+            thingReferrer = await mongo.GetCollection<ThingReferrer>().Find(x => x.Id == thingReferrerIds[2]).FirstOrDefaultAsync();
             Assert.NotNull(thingReferrer);
             Assert.AreEqual(1, thingReferrer.OrderedThings.Count);
-            Assert.AreEqual(7, mongo.GetCollection<Thing>().Count());
+            Assert.AreEqual(7, await mongo.GetCollection<Thing>().CountAsync(new BsonDocument()));
 
-            mongo.Delete(typeof(Thing), thingIds[6]);
-            Assert.AreEqual(2, mongo.GetCollection<ThingReferrer>().Count());
-            Assert.AreEqual(6, mongo.GetCollection<Thing>().Count());
+            await mongo.Delete(typeof(Thing), thingIds[6]);
+            Assert.AreEqual(2, await mongo.GetCollection<ThingReferrer>().CountAsync(new BsonDocument()));
+            Assert.AreEqual(6, await mongo.GetCollection<Thing>().CountAsync(new BsonDocument()));
         }
     }
 }

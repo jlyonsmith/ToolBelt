@@ -4,15 +4,14 @@ using System.Configuration;
 using System.Reflection;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
-using MongoDB.Driver.Builders;
 using ServiceStack.DataAnnotations;
 using MongoDB.Bson;
 using System.Linq;
 using System.Text;
 using ServiceBelt;
-using MongoDB.Driver.GridFS;
 using MongoDB.Bson.Serialization;
 using ToolBelt;
+using System.Threading.Tasks;
 
 namespace ServiceBelt
 {
@@ -181,8 +180,7 @@ namespace ServiceBelt
             }
         }
 
-        private MongoDatabase database;
-        private MongoServer server;
+        private IMongoDatabase database;
         private MongoClient client;
         private Assembly[] assemblies;
         private Dictionary<Type, List<CollectionReferrer>> typeReferrers = new Dictionary<Type, List<CollectionReferrer>>();
@@ -202,8 +200,7 @@ namespace ServiceBelt
         public MongoManager(MongoUrl mongoUrl, params Type[] dataModelMarkerTypes)
         {
             this.client = new MongoClient(mongoUrl);
-            this.server = client.GetServer();
-            this.database = server.GetDatabase(mongoUrl.DatabaseName);
+            this.database = client.GetDatabase(mongoUrl.DatabaseName);
             this.assemblies = dataModelMarkerTypes.Select(t => t.Assembly).ToArray();
 
             var pack = new ConventionPack();
@@ -244,49 +241,36 @@ namespace ServiceBelt
             BsonSerializer.RegisterSerializer(type, serializer);
         }
 
-        void CreateCollectionIndexes(Type dataModelType)
+        async void CreateCollectionIndexes(Type dataModelType)
         {
             PropertyInfo[] propInfos = dataModelType.GetProperties();
-            var collection = database.GetCollection(GetCollectionName(dataModelType));
+            var collection = database.GetCollection<BsonDocument>(GetCollectionName(dataModelType));
 
             foreach (var propInfo in propInfos)
             {
-                object[] attrs = propInfo.GetCustomAttributes(typeof(IndexAttribute), true);
+                var attr = propInfo.GetCustomAttribute<IndexAttribute>(true);
 
-                if (attrs.Length != 1)
+                if (attr == null)
                     continue;
 
-                var attr = (IndexAttribute)attrs[0];
+                var indexBuilder = Builders<BsonDocument>.IndexKeys;
+                var index = indexBuilder.Ascending(MongoUtils.ToCamelCase(propInfo.Name));
 
-                IndexKeysBuilder index = new IndexKeysBuilder();
+                var options = new CreateIndexOptions 
+                {
+                    Unique = attr.Unique
+                };
 
-                index.Ascending(MongoUtils.ToCamelCase(propInfo.Name));
-
-                IndexOptionsBuilder options = new IndexOptionsBuilder();
-
-                options.SetUnique(attr.Unique);
-
-                collection.CreateIndex(index);
+                await collection.Indexes.CreateOneAsync(index, options);
             }
         }
 
-        public MongoDatabase GetDatabase()
+        public IMongoDatabase GetDatabase()
         {
             return database;
         }
 
-        // BUG #76: Change this to take an enumeration of the possible roots; slide, image
-        public MongoGridFS GetGridFS(string root)
-        {
-            var settings = new MongoGridFSSettings() {
-                Root = root,
-                ChunkSize = 31 * 1024
-            };
-
-            return GetDatabase().GetGridFS(settings);
-        }
-
-        public MongoCollection<T> GetCollection<T>() where T: ICollectionObject
+        public IMongoCollection<T> GetCollection<T>() where T: ICollectionObject
         {
             return database.GetCollection<T>(GetCollectionName(typeof(T)));
         }
@@ -323,21 +307,21 @@ namespace ServiceBelt
         /// Clean-up objects that refer to an object that may or may not have been 
         /// already deleted.  This is used when scrubbing the database.
         /// </summary>
-        public void DeleteReferrers(Type collectionType, ObjectId referredToId, Action<Type, ObjectId> deleted = null)
+        public async Task DeleteReferrers(Type collectionType, ObjectId referredToId, Action<Type, ObjectId> deleted = null)
         {
-            InternalDelete(collectionType, referredToId, deleted, deleteWhenUnreferred: false);
+            await InternalDelete(collectionType, referredToId, deleted, deleteWhenUnreferred: false);
         }
 
         /// <summary>
         /// Delete objects and remove all references from referrers, deleting them 
         /// those objects if they are no longer 
         /// </summary>
-        public void Delete(Type collectionType, ObjectId id, Action<Type, ObjectId> deleted = null)
+        public async Task Delete(Type collectionType, ObjectId id, Action<Type, ObjectId> deleted = null)
         {
-            InternalDelete(collectionType, id, deleted, deleteWhenUnreferred: true);
+            await InternalDelete(collectionType, id, deleted, deleteWhenUnreferred: true);
         }
 
-        public void InternalDelete(Type collectionType, ObjectId id, Action<Type, ObjectId> deleted, bool deleteWhenUnreferred)
+        private async Task InternalDelete(Type collectionType, ObjectId id, Action<Type, ObjectId> deleted, bool deleteWhenUnreferred)
         {
             lock (queue)
             {
@@ -357,30 +341,36 @@ namespace ServiceBelt
                 }
 
                 List<CollectionReferrer> referrers = GetCollectionReferrers(item.CollectionType);
+                var updateBuilder = Builders<BsonDocument>.Update;
+                var filterBuilder = Builders<BsonDocument>.Filter;
 
                 // Search referrers for references to this object id
                 foreach (var referrer in referrers)
                 {
-                    MongoCollection coll = database.GetCollection(GetCollectionName(referrer.CollectionType));
+                    var collection = database.GetCollection<BsonDocument>(GetCollectionName(referrer.CollectionType));
 
-                    var cursor = coll.FindAs<BsonDocument>(Query.EQ(referrer.FullFieldName, item.Id));
-
-                    foreach (var doc in cursor)
+                    using (var cursor = await collection.FindAsync(filterBuilder.Eq(referrer.FullFieldName, item.Id)))
                     {
-                        switch (referrer.ReferenceType)
+                        while (await cursor.MoveNextAsync())
                         {
-                        case ReferenceType.IdInList:
-                            coll.Update(Query.EQ("_id", doc["_id"]), Update.Pull(referrer.FullFieldName, item.Id));
-                            break;
-                        case ReferenceType.IdInDocumentList:
-                            coll.Update(Query.EQ("_id", doc["_id"]), Update.Pull(referrer.ParentFieldName, Query.EQ(referrer.FieldName, item.Id)));
-                            break;
-                        case ReferenceType.IdInDocument:
-                            lock (queue)
+                            foreach (var doc in cursor.Current)
                             {
-                                queue.Enqueue(new DeletionItem(referrer.CollectionType, doc["_id"].AsObjectId, deleteWhenUnreferred: true));
+                                switch (referrer.ReferenceType)
+                                {
+                                case ReferenceType.IdInList:
+                                    await collection.UpdateOneAsync(filterBuilder.Eq("_id", doc["_id"]), updateBuilder.Pull(referrer.FullFieldName, item.Id));
+                                    break;
+                                case ReferenceType.IdInDocumentList:
+                                    await collection.UpdateOneAsync(filterBuilder.Eq("_id", doc["_id"]), updateBuilder.PullFilter(referrer.ParentFieldName, filterBuilder.Eq(referrer.FieldName, item.Id)));
+                                    break;
+                                case ReferenceType.IdInDocument:
+                                    lock (queue)
+                                    {
+                                        queue.Enqueue(new DeletionItem(referrer.CollectionType, doc["_id"].AsObjectId, deleteWhenUnreferred: true));
+                                    }
+                                    break;
+                                }
                             }
-                            break;
                         }
                     }
                 }
@@ -388,7 +378,7 @@ namespace ServiceBelt
                 // Nothing refers to this document now, we can delete it
                 if (item.DeleteWhenUnreferred)
                 {
-                    database.GetCollection(GetCollectionName(item.CollectionType)).Remove(Query.EQ("_id", item.Id));
+                    await database.GetCollection<BsonDocument>(GetCollectionName(item.CollectionType)).DeleteOneAsync(filterBuilder.Eq("_id", item.Id));
 
                     if (deleted != null)
                         deleted(item.CollectionType, item.Id);
@@ -396,9 +386,10 @@ namespace ServiceBelt
             }
         }
 
-        public bool ItemExistsInCollection(Type collectionType, ObjectId id)
+        public async Task<bool> ItemExistsInCollection(Type collectionType, ObjectId id)
         {
-            return (database.GetCollection(GetCollectionName(collectionType)).Find(Query.EQ("_id", id)).SetLimit(1).Size() != 0);
+            // Use ConfigureAwait when caller might block on the call
+            return (await database.GetCollection<BsonDocument>(GetCollectionName(collectionType)).Find(x => x["_id"] == id).Limit(1).CountAsync().ConfigureAwait(false) != 0);
         }
 
         public Type GetReferencedCollectionType(PropertyInfo refPropInfo)

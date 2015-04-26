@@ -178,12 +178,13 @@ namespace ToolBelt.Tests
         
         [Test] public void MakeRelativePath()
         {
-            AssertPathPartsRelative(@"c:\a\p.q", @"c:\a\", @".\");
-            AssertPathPartsRelative(@"c:\a\", @"c:\a\b\c\p.q", @"..\..\"); 
-            AssertPathPartsRelative(@"c:\a\b\c\p.q", @"c:\a\", @".\b\c\"); 
-            AssertPathPartsRelative(@"c:\a\b\c\p.q", @"c:\a\x\y\", @"..\..\b\c\");
+            AssertPathPartsRelative(@"c:\a\p.q", @"c:\a\", @"./");
+            AssertPathPartsRelative(@"c:\a\", @"c:\a\b\c\p.q", @"../../"); 
+            AssertPathPartsRelative(@"c:\a\b\c\p.q", @"c:\a\", @"./b/c/"); 
+            AssertPathPartsRelative(@"c:\a\b\c\p.q", @"c:\a\x\y\", @"../../b/c/");
+            AssertPathPartsRelative(@"/a/b/c.e", @"/a/b/x/y/z.1", @"../../");
 
-            AssertBadPathPartsRelative(@"..\a.txt", @"c:\a\b");
+            AssertBadPathPartsRelative(@"..\a.txt", @"c:/a/b");
             AssertBadPathPartsRelative(@"a.txt", @"b");
         }
 
@@ -309,9 +310,6 @@ namespace ToolBelt.Tests
             string directory)
         {
             ParsedPath pp = new ParsedPath(path, PathType.Unknown).MakeRelativePath(new ParsedPath(basePath, PathType.Unknown));
-#if MACOS
-            directory = directory.Replace(@"\", "/");
-#endif
             Assert.AreEqual(directory, pp.Directory.ToString());
         }
 
@@ -421,9 +419,8 @@ namespace ToolBelt.Tests
             Assert.IsTrue(new ParsedPath(@"C:\share\foo\...\thing.txt", PathType.Unknown).IsRelativePath);
             Assert.IsTrue(new ParsedPath(@"...\thing.txt", PathType.Unknown).IsRelativePath);
             Assert.IsFalse(new ParsedPath(@"\\machine\share\foo\thing.txt", PathType.Unknown).IsRelativePath);
-            Assert.IsTrue(new ParsedPath(@"C:\share\foo\thing.txt", PathType.Unknown).IsFullPath);
-            Assert.IsFalse(new ParsedPath(@"\thing.txt", PathType.Unknown).IsFullPath);
-            Assert.IsFalse(new ParsedPath(@"c:\a\..\thing.txt", PathType.Unknown).IsFullPath);
+            Assert.IsFalse(new ParsedPath(@"C:\share\foo\thing.txt", PathType.Unknown).IsRelativePath);
+            Assert.IsFalse(new ParsedPath(@"/home/thing.txt", PathType.Unknown).IsRelativePath);
         }
 
         [Test] public void TestSubDirectories()

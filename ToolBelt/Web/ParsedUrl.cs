@@ -208,13 +208,13 @@ namespace ToolBelt
             if (user.Length > 0)
             {
                 userIndex = (short)sb.Length;
-                sb.Append(user);
+                sb.Append(Uri.UnescapeDataString(user));
 
                 if (password.Length > 0)
                 {
                     sb.Append(":");
                     passwordIndex = (short)sb.Length;
-                    sb.Append(password);
+                    sb.Append(Uri.UnescapeDataString(password));
                 }
                 else
                     passwordIndex = -1;

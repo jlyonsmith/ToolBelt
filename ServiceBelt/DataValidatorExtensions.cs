@@ -121,7 +121,7 @@ namespace ServiceBelt
             {
                 context.MessageFormatter.AppendArgument("ObjectId", id);
 
-                if (!mongo.ItemExistsInCollection(collectionType, id))
+                if (!mongo.ItemExistsInCollection(collectionType, id).Result)
                 {
                     var failure = CreateValidationError(context);
 

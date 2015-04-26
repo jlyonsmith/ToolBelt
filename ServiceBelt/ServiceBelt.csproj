@@ -55,8 +55,11 @@
     <Reference Include="MongoDB.Driver.Core">
       <HintPath>..\packages\MongoDB.Driver.Core.2.0.0\lib\net45\MongoDB.Driver.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Rql.MongoDB">
-      <HintPath>..\packages\Rql.MongoDB.3.0.10419.0\lib\net45\Rql.MongoDB.dll</HintPath>
+    <Reference Include="MongoDB.Driver">
+      <HintPath>..\packages\MongoDB.Driver.2.0.0\lib\net45\MongoDB.Driver.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Bson">
+      <HintPath>..\packages\MongoDB.Bson.2.0.0\lib\net45\MongoDB.Bson.dll</HintPath>
     </Reference>
     <Reference Include="Rql">
       <HintPath>..\packages\Rql.3.0.10419.0\lib\net45\Rql.dll</HintPath>
@@ -119,6 +122,10 @@
     <ProjectReference Include="..\ToolBelt\ToolBelt.csproj">
       <Project>{2055D34D-3DF2-444B-937B-32CC1A6E11DF}</Project>
       <Name>ToolBelt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Rql\Rql.MongoDB\Rql.MongoDB.csproj">
+      <Project>{E09CAA07-E704-4DFA-B18C-E21D3715249B}</Project>
+      <Name>Rql.MongoDB</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

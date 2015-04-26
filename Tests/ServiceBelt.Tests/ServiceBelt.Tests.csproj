@@ -62,9 +62,6 @@
     <Reference Include="MongoDB.Driver">
       <HintPath>..\..\packages\MongoDB.Driver.2.0.0\lib\net45\MongoDB.Driver.dll</HintPath>
     </Reference>
-    <Reference Include="Rql.MongoDB">
-      <HintPath>..\..\packages\Rql.MongoDB.3.0.10419.0\lib\net45\Rql.MongoDB.dll</HintPath>
-    </Reference>
     <Reference Include="Rql">
       <HintPath>..\..\packages\Rql.3.0.10419.0\lib\net45\Rql.dll</HintPath>
     </Reference>
@@ -100,6 +97,10 @@
     <ProjectReference Include="..\..\ServiceBelt\ServiceBelt.csproj">
       <Project>{B4D697E2-D32B-450F-88CF-0F66F2C7D39E}</Project>
       <Name>ServiceBelt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Rql\Rql.MongoDB\Rql.MongoDB.csproj">
+      <Project>{E09CAA07-E704-4DFA-B18C-E21D3715249B}</Project>
+      <Name>Rql.MongoDB</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
