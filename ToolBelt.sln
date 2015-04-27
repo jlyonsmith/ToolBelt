@@ -1,6 +1,7 @@
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", ".\Solution Items", "{EF60F8C0-BCDF-484C-9F81-1262C02A4315}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EF60F8C0-BCDF-484C-9F81-1262C02A4315}"
 	ProjectSection(SolutionItems) = preProject
 		ToolBelt.version = ToolBelt.version
 		README.md = README.md
@@ -12,23 +13,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", ".\Solutio
 		popper.config = popper.config
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", ".\Tests", "{07024690-13E6-40E8-9FEC-5541056517E1}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{07024690-13E6-40E8-9FEC-5541056517E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandTestProgram", ".\Tests\CommandTestProgram\CommandTestProgram.csproj", "{BEEE8EE8-832C-4068-AA22-4CFE69F46044}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBelt.Tests", "Tests\ServiceBelt.Tests\ServiceBelt.Tests.csproj", "{8DB38635-D1BE-4CDB-BC1B-CEF814483AE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.Tests", ".\Tests\ToolBelt.Tests\ToolBelt.Tests.csproj", "{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandTestProgram", "Tests\CommandTestProgram\CommandTestProgram.csproj", "{BEEE8EE8-832C-4068-AA22-4CFE69F46044}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitTestProgram", ".\Tests\NUnitTestProgram\NUnitTestProgram.csproj", "{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitTestProgram", "Tests\NUnitTestProgram\NUnitTestProgram.csproj", "{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.NUnit", ".\Tests\ToolBelt.NUnit\ToolBelt.NUnit.csproj", "{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.Tests", "Tests\ToolBelt.Tests\ToolBelt.Tests.csproj", "{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBelt.Tests", ".\Tests\ServiceBelt.Tests\ServiceBelt.Tests.csproj", "{8DB38635-D1BE-4CDB-BC1B-CEF814483AE0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.NUnit", "Tests\ToolBelt.NUnit\ToolBelt.NUnit.csproj", "{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt", ".\ToolBelt\ToolBelt.csproj", "{2055D34D-3DF2-444B-937B-32CC1A6E11DF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt", "ToolBelt\ToolBelt.csproj", "{2055D34D-3DF2-444B-937B-32CC1A6E11DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBelt", ".\ServiceBelt\ServiceBelt.csproj", "{B4D697E2-D32B-450F-88CF-0F66F2C7D39E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBelt", "ServiceBelt\ServiceBelt.csproj", "{B4D697E2-D32B-450F-88CF-0F66F2C7D39E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppBelt", ".\AppBelt\AppBelt.csproj", "{6D31A27B-E7C4-4182-B3AC-7CE2E1220FE2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppBelt", "AppBelt\AppBelt.csproj", "{6D31A27B-E7C4-4182-B3AC-7CE2E1220FE2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,76 +70,11 @@ Global
 		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}.Release|x86.ActiveCfg = Release|x86
 		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
-	GlobalSection(NestedProjects)
-		{BEEE8EE8-832C-4068-AA22-4CFE69F46044} = {07024690-13E6-40E8-9FEC-5541056517E1}
-		{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE} = {07024690-13E6-40E8-9FEC-5541056517E1}
-		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622} = {07024690-13E6-40E8-9FEC-5541056517E1}
-		{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13} = {07024690-13E6-40E8-9FEC-5541056517E1}
+	GlobalSection(NestedProjects) = preSolution
 		{8DB38635-D1BE-4CDB-BC1B-CEF814483AE0} = {07024690-13E6-40E8-9FEC-5541056517E1}
+		{BEEE8EE8-832C-4068-AA22-4CFE69F46044} = {07024690-13E6-40E8-9FEC-5541056517E1}
+		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622} = {07024690-13E6-40E8-9FEC-5541056517E1}
+		{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE} = {07024690-13E6-40E8-9FEC-5541056517E1}
+		{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13} = {07024690-13E6-40E8-9FEC-5541056517E1}
 	EndGlobalSection
-	GlobalSection(MonoDevelopProperties)
-		Policies = $0
-		$0.TextStylePolicy = $1
-		$1.FileWidth = 120
-		$1.TabsToSpaces = False
-		$1.EolMarker = Unix
-		$1.inheritsSet = VisualStudio
-		$1.inheritsScope = text/plain
-		$1.scope = text/plain
-		$0.TextStylePolicy = $2
-		$2.inheritsSet = null
-		$2.scope = text/microsoft-resx
-		$0.XmlFormattingPolicy = $3
-		$3.inheritsSet = null
-		$3.scope = text/microsoft-resx
-		$0.TextStylePolicy = $4
-		$4.inheritsSet = null
-		$4.scope = application/xml
-		$0.XmlFormattingPolicy = $5
-		$5.inheritsSet = Mono
-		$5.inheritsScope = application/xml
-		$5.scope = application/xml
-		$0.TextStylePolicy = $6
-		$6.inheritsSet = null
-		$6.scope = application/config+xml
-		$0.XmlFormattingPolicy = $7
-		$7.inheritsSet = null
-		$7.scope = application/config+xml
-		$0.TextStylePolicy = $8
-		$8.FileWidth = 120
-		$8.NoTabsAfterNonTabs = True
-		$8.EolMarker = Unix
-		$8.inheritsSet = VisualStudio
-		$8.inheritsScope = text/plain
-		$8.scope = text/x-csharp
-		$0.CSharpFormattingPolicy = $9
-		$9.AnonymousMethodBraceStyle = NextLine
-		$9.PropertyBraceStyle = NextLine
-		$9.PropertyGetBraceStyle = NextLine
-		$9.PropertySetBraceStyle = NextLine
-		$9.EventBraceStyle = NextLine
-		$9.EventAddBraceStyle = NextLine
-		$9.EventRemoveBraceStyle = NextLine
-		$9.StatementBraceStyle = NextLine
-		$9.ElseNewLinePlacement = NewLine
-		$9.CatchNewLinePlacement = NewLine
-		$9.FinallyNewLinePlacement = NewLine
-		$9.WhileNewLinePlacement = NewLine
-		$9.BeforeMethodDeclarationParentheses = False
-		$9.BeforeMethodCallParentheses = False
-		$9.BeforeConstructorDeclarationParentheses = False
-		$9.BeforeIndexerDeclarationBracket = False
-		$9.BeforeDelegateDeclarationParentheses = False
-		$9.NewParentheses = False
-		$9.SpacesBeforeBrackets = False
-		$9.inheritsSet = Mono
-		$9.inheritsScope = text/x-csharp
-		$9.scope = text/x-csharp
-		$0.DotNetNamingPolicy = $10
-		$10.DirectoryNamespaceAssociation = None
-		$10.ResourceNamePolicy = FileFormatDefault
-	EndGlobalSection
-	GlobalSection(SolutionProperties)
-		HideSolutionNode = FALSE
-	EndGlobalSection
-Global
+EndGlobal

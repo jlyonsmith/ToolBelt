@@ -3,8 +3,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>ToolBelt.Tests</RootNamespace>

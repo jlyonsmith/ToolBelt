@@ -17,6 +17,9 @@
   <Major>4</Major>
   <Minor>0</Minor>
   <Build>10427</Build>
-  <Revision>0</Revision>
+  <Revision>1</Revision>
   <StartYear>2015</StartYear>
+  <Company>John Lyon-Smith</Company>
+  <Product>The ToolBelt Libraries</Product>
+  <Copyright>Copyright (c) 2015, John Lyon-Smith</Copyright>
 </Version>

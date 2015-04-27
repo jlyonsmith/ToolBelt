@@ -3,8 +3,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>NUnitTestProgram</RootNamespace>
