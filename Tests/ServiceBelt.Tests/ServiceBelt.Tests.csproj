@@ -1,10 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8DB38635-D1BE-4CDB-BC1B-CEF814483AE0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>ServiceBelt.Tests</RootNamespace>
@@ -35,21 +33,6 @@
       <HintPath>..\..\packages\JWT.1.3.2\lib\3.5\JWT.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
-    <Reference Include="ServiceStack.Interfaces">
-      <HintPath>..\..\packages\ServiceStack.Interfaces.4.0.38\lib\portable-wp80+sl5+net40+win8+monotouch+monoandroid\ServiceStack.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Text">
-      <HintPath>..\..\packages\ServiceStack.Text.4.0.38\lib\net40\ServiceStack.Text.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Common">
-      <HintPath>..\..\packages\ServiceStack.Common.4.0.38\lib\net40\ServiceStack.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Client">
-      <HintPath>..\..\packages\ServiceStack.Client.4.0.38\lib\net40\ServiceStack.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack">
-      <HintPath>..\..\packages\ServiceStack.4.0.38\lib\net40\ServiceStack.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -62,8 +45,26 @@
     <Reference Include="MongoDB.Driver">
       <HintPath>..\..\packages\MongoDB.Driver.2.0.0\lib\net45\MongoDB.Driver.dll</HintPath>
     </Reference>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>..\..\packages\ServiceStack.Interfaces.4.0.40\lib\portable-wp80+sl5+net40+win8+monotouch+monoandroid+xamarin.ios10\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\..\packages\ServiceStack.Text.4.0.40\lib\net40\ServiceStack.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Common">
+      <HintPath>..\..\packages\ServiceStack.Common.4.0.40\lib\net40\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Client">
+      <HintPath>..\..\packages\ServiceStack.Client.4.0.40\lib\net40\ServiceStack.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack">
+      <HintPath>..\..\packages\ServiceStack.4.0.40\lib\net40\ServiceStack.dll</HintPath>
+    </Reference>
+    <Reference Include="Rql.MongoDB">
+      <HintPath>..\..\packages\Rql.MongoDB.3.0.10427.0\lib\net45\Rql.MongoDB.dll</HintPath>
+    </Reference>
     <Reference Include="Rql">
-      <HintPath>..\..\packages\Rql.3.0.10419.0\lib\net45\Rql.dll</HintPath>
+      <HintPath>..\..\packages\Rql.3.0.10427.0\lib\net45\Rql.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -97,10 +98,6 @@
     <ProjectReference Include="..\..\ServiceBelt\ServiceBelt.csproj">
       <Project>{B4D697E2-D32B-450F-88CF-0F66F2C7D39E}</Project>
       <Name>ServiceBelt</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Rql\Rql.MongoDB\Rql.MongoDB.csproj">
-      <Project>{E09CAA07-E704-4DFA-B18C-E21D3715249B}</Project>
-      <Name>Rql.MongoDB</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

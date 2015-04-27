@@ -1,7 +1,6 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EF60F8C0-BCDF-484C-9F81-1262C02A4315}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", ".\Solution Items", "{EF60F8C0-BCDF-484C-9F81-1262C02A4315}"
 	ProjectSection(SolutionItems) = preProject
 		ToolBelt.version = ToolBelt.version
 		README.md = README.md
@@ -10,27 +9,26 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		ToolBelt.nuspec = ToolBelt.nuspec
 		ServiceBelt.nuspec = ServiceBelt.nuspec
 		AppBelt.nuspec = AppBelt.nuspec
+		popper.config = popper.config
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{07024690-13E6-40E8-9FEC-5541056517E1}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", ".\Tests", "{07024690-13E6-40E8-9FEC-5541056517E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandTestProgram", "Tests\CommandTestProgram\CommandTestProgram.csproj", "{BEEE8EE8-832C-4068-AA22-4CFE69F46044}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandTestProgram", ".\Tests\CommandTestProgram\CommandTestProgram.csproj", "{BEEE8EE8-832C-4068-AA22-4CFE69F46044}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.Tests", "Tests\ToolBelt.Tests\ToolBelt.Tests.csproj", "{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.Tests", ".\Tests\ToolBelt.Tests\ToolBelt.Tests.csproj", "{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitTestProgram", "Tests\NUnitTestProgram\NUnitTestProgram.csproj", "{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitTestProgram", ".\Tests\NUnitTestProgram\NUnitTestProgram.csproj", "{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.NUnit", "Tests\ToolBelt.NUnit\ToolBelt.NUnit.csproj", "{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt.NUnit", ".\Tests\ToolBelt.NUnit\ToolBelt.NUnit.csproj", "{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBelt.Tests", "Tests\ServiceBelt.Tests\ServiceBelt.Tests.csproj", "{8DB38635-D1BE-4CDB-BC1B-CEF814483AE0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBelt.Tests", ".\Tests\ServiceBelt.Tests\ServiceBelt.Tests.csproj", "{8DB38635-D1BE-4CDB-BC1B-CEF814483AE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt", "ToolBelt\ToolBelt.csproj", "{2055D34D-3DF2-444B-937B-32CC1A6E11DF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBelt", ".\ToolBelt\ToolBelt.csproj", "{2055D34D-3DF2-444B-937B-32CC1A6E11DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBelt", "ServiceBelt\ServiceBelt.csproj", "{B4D697E2-D32B-450F-88CF-0F66F2C7D39E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBelt", ".\ServiceBelt\ServiceBelt.csproj", "{B4D697E2-D32B-450F-88CF-0F66F2C7D39E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppBelt", "AppBelt\AppBelt.csproj", "{6D31A27B-E7C4-4182-B3AC-7CE2E1220FE2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rql.MongoDB", "..\Rql\Rql.MongoDB\Rql.MongoDB.csproj", "{E09CAA07-E704-4DFA-B18C-E21D3715249B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppBelt", ".\AppBelt\AppBelt.csproj", "{6D31A27B-E7C4-4182-B3AC-7CE2E1220FE2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -70,19 +68,15 @@ Global
 		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}.Debug|x86.Build.0 = Debug|x86
 		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}.Release|x86.ActiveCfg = Release|x86
 		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622}.Release|x86.Build.0 = Release|x86
-		{E09CAA07-E704-4DFA-B18C-E21D3715249B}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E09CAA07-E704-4DFA-B18C-E21D3715249B}.Debug|x86.Build.0 = Debug|Any CPU
-		{E09CAA07-E704-4DFA-B18C-E21D3715249B}.Release|x86.ActiveCfg = Debug|Any CPU
-		{E09CAA07-E704-4DFA-B18C-E21D3715249B}.Release|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
+	GlobalSection(NestedProjects)
 		{BEEE8EE8-832C-4068-AA22-4CFE69F46044} = {07024690-13E6-40E8-9FEC-5541056517E1}
 		{0C9CDD97-4BEA-43E4-83E4-158FD5DE91BE} = {07024690-13E6-40E8-9FEC-5541056517E1}
 		{CFB58CE7-FFA5-449F-B11E-01A6FF4D5622} = {07024690-13E6-40E8-9FEC-5541056517E1}
 		{6179EC39-BE40-4AF6-A330-4E5BCBFB9A13} = {07024690-13E6-40E8-9FEC-5541056517E1}
 		{8DB38635-D1BE-4CDB-BC1B-CEF814483AE0} = {07024690-13E6-40E8-9FEC-5541056517E1}
 	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
+	GlobalSection(MonoDevelopProperties)
 		Policies = $0
 		$0.TextStylePolicy = $1
 		$1.FileWidth = 120
@@ -144,7 +138,7 @@ Global
 		$10.DirectoryNamespaceAssociation = None
 		$10.ResourceNamePolicy = FileFormatDefault
 	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
+	GlobalSection(SolutionProperties)
 		HideSolutionNode = FALSE
 	EndGlobalSection
-EndGlobal
+Global

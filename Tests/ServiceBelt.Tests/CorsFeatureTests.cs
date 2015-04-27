@@ -22,7 +22,6 @@ namespace ServiceBelt.Tests
                 throw new NotImplementedException();
             }
         }
-
         public string ResolveLocalizedString(string text, IRequest request)
         {
             throw new NotImplementedException();
@@ -35,7 +34,6 @@ namespace ServiceBelt.Tests
                 throw new NotImplementedException();
             }
         }
-
         public global::ServiceStack.Host.ServiceMetadata Metadata
         {
             get
@@ -66,7 +64,7 @@ namespace ServiceBelt.Tests
         {
             throw new NotImplementedException();
         }
-        public void OnEndRequest()
+        public void OnEndRequest(IRequest request)
         {
             throw new NotImplementedException();
         }
