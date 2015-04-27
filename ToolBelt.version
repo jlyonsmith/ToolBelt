@@ -14,9 +14,9 @@
     <File>AppBelt.nuspec</File>
     <File>Scratch/ToolBelt.version.txt</File>
   </Files>
-  <Major>3</Major>
+  <Major>4</Major>
   <Minor>0</Minor>
-  <Build>20427</Build>
+  <Build>0</Build>
   <Revision>0</Revision>
-  <StartYear>2014</StartYear>
+  <StartYear>2015</StartYear>
 </Version>
