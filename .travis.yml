@@ -15,7 +15,7 @@ env:
 
 install:
   - nuget restore ToolBelt.sln
-  - nuget install NUnit.Runners -Version 2.6.4
+  - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory packages
 
 script:
   - xbuild /p:Configuration=Debug ToolBelt.sln
