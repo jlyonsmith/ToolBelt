@@ -61,10 +61,10 @@
       <HintPath>..\..\packages\ServiceStack.4.0.40\lib\net40\ServiceStack.dll</HintPath>
     </Reference>
     <Reference Include="Rql.MongoDB">
-      <HintPath>..\..\packages\Rql.MongoDB.3.0.10427.0\lib\net45\Rql.MongoDB.dll</HintPath>
+      <HintPath>..\..\packages\Rql.MongoDB.3.0.10429.0\lib\net45\Rql.MongoDB.dll</HintPath>
     </Reference>
     <Reference Include="Rql">
-      <HintPath>..\..\packages\Rql.3.0.10427.0\lib\net45\Rql.dll</HintPath>
+      <HintPath>..\..\packages\Rql.3.0.10429.0\lib\net45\Rql.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

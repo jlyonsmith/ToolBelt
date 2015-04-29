@@ -17,8 +17,8 @@
 	  <dependency id="MongoDB.Bson" version="2.0.0" />
 	  <dependency id="MongoDB.Driver" version="2.0.0" />
 	  <dependency id="MongoDB.Driver.Core" version="2.0.0" />
-      <dependency id="Rql" version="3.0.10427.0" />
-      <dependency id="Rql.MongoDB" version="3.0.10427.0" />
+      <dependency id="Rql" version="3.0.10429.0" />
+      <dependency id="Rql.MongoDB" version="3.0.10429.0" />
       <dependency id="ServiceStack" version="4.0.40" />
     </dependencies>
   </metadata>
