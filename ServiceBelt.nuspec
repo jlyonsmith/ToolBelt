@@ -9,15 +9,17 @@
     <projectUrl>http://github.com/jlyonsmith/ToolBelt</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Plugins and utility classes for REST API projects using Mono, ServiceStack, MongoDB and RQL</description>
-    <releaseNotes>Targeted and tested for Mono on OSX and Linux systems.</releaseNotes>
-    <copyright>Copyright (c) 2014 John Lyon-Smith</copyright>
-    <tags>utility servicestack plugin cors copy mongodb mono rql rest osx linux</tags>
+    <releaseNotes>Fixes NuGet MongoDB and ServiceStack dependences</releaseNotes>
+    <copyright>Copyright (c) 2015 John Lyon-Smith</copyright>
+    <tags>utility servicestack plugin cors copy mongodb mono rql rest osx linux windows</tags>
     <dependencies>
       <dependency id="JWT" version="1.3.2" />
-      <dependency id="mongocsharpdriver" version="1.9.2" />
-      <dependency id="Rql" version="2.0.10928.0" />
-      <dependency id="Rql.MongoDB" version="2.0.10928.0" />
-      <dependency id="ServiceStack" version="4.0.32" />
+	  <dependency id="MongoDB.Bson" version="2.0.0" />
+	  <dependency id="MongoDB.Driver" version="2.0.0" />
+	  <dependency id="MongoDB.Driver.Core" version="2.0.0" />
+      <dependency id="Rql" version="3.0.10427.0" />
+      <dependency id="Rql.MongoDB" version="3.0.10427.0" />
+      <dependency id="ServiceStack" version="4.0.40" />
     </dependencies>
   </metadata>
   <files>
