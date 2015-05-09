@@ -146,8 +146,8 @@ namespace ServiceBelt
 
             if (!smoQuery.Id.HasValue)
             {
-                var filter = new RqlToMongoFilterDefinition().Compile<TDmo>(smoQuery.Where);
-                var sort = new SortSpecToSortDefinition().Compile<TDmo>(smoQuery.Sort);
+                var filter = smoQuery.Where != null ? new RqlToMongoFilterDefinition().Compile<TDmo>(smoQuery.Where) : new BsonDocument();
+                var sort = smoQuery.Sort != null ? new SortSpecToSortDefinition().Compile<TDmo>(smoQuery.Sort) : new BsonDocument();
                 var limit = (smoQuery.Limit > 1000 ? 1000 : smoQuery.Limit);
                 var skip = (smoQuery.Offset < 0 ? (int)(await collection.CountAsync(filter)) + smoQuery.Offset : smoQuery.Offset);
 
